@@ -10,6 +10,7 @@ def extract_text_from_pdf(pdf_file):
     with pdfplumber.open(io.BytesIO(pdf_file.read())) as pdf:
         for page in pdf.pages:
             text += page.extract_text() + "\n"
+    print(text)
     return text
 def extract_values(text):
     values = {
