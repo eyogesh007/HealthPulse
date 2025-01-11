@@ -1,7 +1,7 @@
 import io
 import pdfplumber
 import re
-from flask import Flask, render_template, request, session, redirect, url_for
+from flask import Flask, render_template, request, session, redirect
 
 app = Flask(__name__)
 app.secret_key = 'your_unique_secret_key'
