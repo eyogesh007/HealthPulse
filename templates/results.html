@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Health Test Results</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: black;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        
+
+        h2 {
+            color: whitesmoke;
+            font-size: 1.5em; /* Reduced font size */
+            margin-top: 10px;
+            text-align: center;
+            font-weight: 600;
+        }
+        .head {
+            color: whitesmoke;
+            font-size: 1.5em; /* Reduced font size */
+            margin-top: 10px;
+            text-align: center;
+            font-weight: 600;
+        }
+        h3 {
+            color: whitesmoke;
+            font-size: 1.1em; /* Reduced font size */
+            margin-top: 6px;
+            text-align: center;
+            font-weight: 400;
+        }
+
+        form {
+            background-color: #1a1a1a;
+            padding: 20px; /* Reduced padding */
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 70%;
+            margin: 0 auto;
+        }
+
+        label {
+            font-size: 1em; /* Reduced font size */
+            color: white;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        input[type="file"] {
+            font-size: 1em;
+            padding: 10px;
+            margin-bottom: 20px;
+            background-color: black;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            display: block;
+            width: 100%;
+            cursor: pointer;
+        }
+
+        input[type="number"] {
+            padding: 10px;
+            font-size: 1em;
+            width: 100%;
+            margin: 10px 0 20px;
+            border: 2px solid #333;
+            border-radius: 5px;
+            box-sizing: border-box;
+            background-color: black;
+            color: white;
+        }
+
+        button {
+            background-color: #71B7FB;
+            color: white;
+            padding: 15px;
+            font-size: 1em; /* Reduced font size */
+            width: 100%;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+            width: 100%;
+        }
+
+        li {
+            background-color: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 5px;
+            padding: 10px; /* Reduced padding */
+            margin: 5px 0;
+            font-size: 1em; /* Reduced font size */
+            color: whitesmoke;
+        }
+
+        .container {
+            text-align: center;
+            margin-top: 50px;
+            width: 100%;
+        }
+
+        .success-message {
+            font-size: 1em; /* Reduced font size */
+            color: #4CAF50;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+
+        .error-message {
+            font-size: 1em; /* Reduced font size */
+            color: #f44336;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+
+        .form-table {
+            display: table;
+            width: 100%;
+        }
+
+        .form-row {
+            display: table-row;
+            text-align: left;
+        }
+
+        .form-label, .form-input {
+            display: table-cell;
+            padding: 5px;
+        }
+
+        .preserve-whitespace {
+            white-space: pre-wrap;
+            text-align: left;
+        }
+
+        .tooltip {
+            display: inline;
+            position: relative;
+            margin-left: 10px;
+            color: white;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 200px;
+            background-color: #1a1a1a;
+            color: #fff;
+            text-align: center;
+            border-radius: 5px;
+            padding: 5px 0;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%; 
+            left: 50%;
+            margin-left: -100px; 
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .form-label, .form-input, .form-unit, .form-range {
+            display: table-cell;
+            padding: 5px;
+        }
+
+        .advice-item {
+            cursor: pointer;
+            margin: 5px 0;
+            border: 0.2px solid #ccc;
+            padding: 2px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .advice-item:hover {
+            background-color: #1a1a1a;
+        }
+
+        .advice-summary {
+            margin: 10px;
+        }
+
+        .advice-details {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2em;
+            }
+
+            h2 {
+                font-size: 1.2em;
+            }
+
+            form {
+                width: 90%;
+            }
+
+            .form-table {
+                display: block;
+            }
+
+            .form-row {
+                display: block;
+                margin-bottom: 15px;
+            }
+
+            .form-label, .form-input, .form-unit, .form-range {
+                display: block;
+                width: 100%;
+                text-align: left;
+                padding: 5px 0;
+            }
+
+            input[type="number"] {
+                width: 100%;
+            }
+
+            ul {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.5em;
+            }
+
+            h2 {
+                font-size: 1em;
+            }
+
+            .advice-item {
+                padding: 10px;
+            }
+
+            .advice-summary {
+                margin: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    {% if values %}
+    {% set reference_ranges = {
+        "Haemoglobin": "13-17",
+        "Total RBC Count": "4.5-5.5",
+        "Packed Cell Volume / Hematocrit": "40-50",
+        "MCV": "83-101",
+        "MCH": "27-32",
+        "MCHC": "31.5-34.5",
+        "RDW": "11.6-14",
+        "Total Leucocytes Count": "4000-10,000",
+        "Neutrophils": "40-80",
+        "Lymphocytes": "20-40",
+        "Eosinophils": "1-6",
+        "Monocytes": "2-10",
+        "Basophils": "0-2",
+        "Absolute Neutrophil Count": "2500-7000",
+        "Absolute Lymphocyte Count": "1000-3000",
+        "Absolute Eosinophil Count": "20-500",
+        "Absolute Monocyte Count": "200-1000",
+        "Platelet Count": "150,000-410,000",
+        "Erythrocyte Sedimentation Rate": "0-15",
+        "Fasting Plasma Glucose": "70-100",
+        "Glycated Hemoglobin": "< 5.7",
+        "Triglycerides": "< 150",
+        "Total Cholesterol": "< 200",
+        "LDL Cholesterol": "< 100",
+        "HDL Cholesterol": "> 60",
+        "VLDL Cholesterol": "5-30",
+        "Total Cholesterol / HDL Cholesterol Ratio": "< 4.5",
+        "LDL Cholesterol / HDL Cholesterol Ratio": "< 3.0",
+        "Total Bilirubin": "0.3-1.2",
+        "Direct Bilirubin": "< 0.2",
+        "Indirect Bilirubin": "0.3-1",
+        "SGPT/ALT": "0-50",
+        "SGOT/AST": "0-50",
+        "Alkaline Phosphatase": "43-115",
+        "Total Protein": "6.6-8.3",
+        "Albumin": "3.5-5.2",
+        "Globulin": "1.8-3.6",
+        "Protein A/G Ratio": "0.8-2.0",
+        "Gamma Glutamyl Transferase": "0-55",
+        "Creatinine": "0.7-1.2",
+        "e-GFR (Glomerular Filtration Rate)": "> 90 mL/min/1.73m²",
+        "Urea": "17-43",
+        "Blood Urea Nitrogen": "8-20",
+        "Uric Acid": "3.5-7.2",
+        "T3 Total": "0.6-1.81",
+        "T4 Total": "3.2-12.6",
+        "TSH Ultrasensitive": "0.55-4.78",
+        "Vitamin B12": "211-911",
+        "25 (OH) Vitamin D2 (Ergocalciferol)": "20-50",
+        "25 (OH) Vitamin D3 (Cholecalciferol)": "20-50",
+        "Vitamin D Total (D2 + D3)": "30-100",
+        "Iron": "70-180",
+        "Total Iron Binding Capacity": "244-450",
+        "Transferrin Saturation": "18-40"
+    }
+%}
+    {% set units = {
+        "Haemoglobin": "gm/dL",
+        "Total RBC Count": "cells/cumm",
+        "Packed Cell Volume / Hematocrit": "%",
+        "MCV": "fL",
+        "MCH": "pg",
+        "MCHC": "gm/dL",
+        "RDW": "%",
+        "Total Leucocytes Count": "cells/cumm",
+        "Neutrophils": "%",
+        "Lymphocytes": "%",
+        "Eosinophils": "%",
+        "Monocytes": "%",
+        "Basophils": "%",
+        "Absolute Neutrophil Count": "cells/cumm",
+        "Absolute Lymphocyte Count": "cells/cumm",
+        "Absolute Eosinophil Count": "cells/cumm",
+        "Absolute Monocyte Count": "cells/cumm",
+        "Platelet Count": "cells/cumm",
+        "Erythrocyte Sedimentation Rate": "mm/hr",
+        "Fasting Plasma Glucose": "mg/dL",
+        "Glycated Hemoglobin": "%",
+        "Triglycerides": "mg/dL",
+        "Total Cholesterol": "mg/dL",
+        "LDL Cholesterol": "mg/dL",
+        "HDL Cholesterol": "mg/dL",
+        "VLDL Cholesterol": "mg/dL",
+        "Total Cholesterol / HDL Cholesterol Ratio": "ratio",
+        "LDL Cholesterol / HDL Cholesterol Ratio": "ratio",
+        "Total Bilirubin": "mg/dL",
+        "Direct Bilirubin": "mg/dL",
+        "Indirect Bilirubin": "mg/dL",
+        "SGPT/ALT": "U/L",
+        "SGOT/AST": "U/L",
+        "Alkaline Phosphatase": "U/L",
+        "Total Protein": "gm/dL",
+        "Albumin": "gm/dL",
+        "Globulin": "gm/dL",
+        "Protein A/G Ratio": "ratio",
+        "Gamma Glutamyl Transferase": "U/L",
+        "Creatinine": "mg/dL",
+        "e-GFR (Glomerular Filtration Rate)": "mL/min/1.73m²",
+        "Urea": "mg/dL",
+        "Blood Urea Nitrogen": "mg/dL",
+        "Uric Acid": "mg/dL",
+        "T3 Total": "ng/ml",
+        "T4 Total": "µg/dL",
+        "TSH Ultrasensitive": "µIU/mL",
+        "Vitamin B12": "pg/mL",
+        "25 (OH) Vitamin D2 (Ergocalciferol)": "ng/mL",
+        "25 (OH) Vitamin D3 (Cholecalciferol)": "ng/mL",
+        "Vitamin D Total (D2 + D3)": "ng/mL",
+        "Iron": "µg/dL",
+        "Total Iron Binding Capacity": "µg/dL",
+        "Transferrin Saturation": "%"
+    }
+     %}
+    {% set explanations = {
+        "Haemoglobin": "A protein in red blood cells that carries oxygen throughout the body.",
+        "Total RBC Count": "The number of red blood cells in a given volume of blood.",
+        "Packed Cell Volume / Hematocrit": "The percentage of blood volume occupied by red blood cells.",
+        "MCV": "Mean Corpuscular Volume - the average volume of a red blood cell.",
+        "MCH": "Mean Corpuscular Hemoglobin - the average amount of hemoglobin in a single red blood cell.",
+        "MCHC": "Mean Corpuscular Hemoglobin Concentration - the average concentration of hemoglobin in a given volume of red blood cells.",
+        "RDW": "Red Cell Distribution Width - a measure of the variation in the size of red blood cells.",
+        "Total Leucocytes Count": "The total number of white blood cells in a given volume of blood.",
+        "Neutrophils": "A type of white blood cell that helps fight infections.",
+        "Lymphocytes": "A type of white blood cell involved in the immune response.",
+        "Eosinophils": "A type of white blood cell that helps combat parasitic infections and is involved in allergic reactions.",
+        "Monocytes": "A type of white blood cell that helps break down bacteria.",
+        "Basophils": "A type of white blood cell involved in inflammatory responses and allergic reactions.",
+        "Absolute Neutrophil Count": "The absolute number of neutrophils in a given volume of blood.",
+        "Absolute Lymphocyte Count": "The absolute number of lymphocytes in a given volume of blood.",
+        "Absolute Eosinophil Count": "The absolute number of eosinophils in a given volume of blood.",
+        "Absolute Monocyte Count": "The absolute number of monocytes in a given volume of blood.",
+        "Platelet Count": "The number of platelets in a given volume of blood, important for blood clotting.",
+        "Erythrocyte Sedimentation Rate": "A test that measures how quickly red blood cells settle at the bottom of a test tube.",
+        "Fasting Plasma Glucose": "The level of glucose in the blood after fasting for at least 8 hours.",
+        "Glycated Hemoglobin": "Hemoglobin that has glucose attached, indicating average blood sugar levels over the past 2-3 months.",
+        "Triglycerides": "A type of fat found in the blood, used for energy.",
+        "Total Cholesterol": "The total amount of cholesterol in the blood.",
+        "LDL Cholesterol": "Low-Density Lipoprotein - 'bad' cholesterol that can build up in the arteries.",
+        "HDL Cholesterol": "High-Density Lipoprotein - 'good' cholesterol that helps remove LDL cholesterol from the arteries.",
+        "VLDL Cholesterol": "Very Low-Density Lipoprotein - a type of lipoprotein that carries triglycerides in the blood.",
+        "Total Cholesterol / HDL Cholesterol Ratio": "A ratio used to estimate the risk of heart disease.",
+        "LDL Cholesterol / HDL Cholesterol Ratio": "A ratio used to estimate the risk of heart disease.",
+        "Total Bilirubin": "A substance produced by the breakdown of red blood cells.",
+        "Direct Bilirubin": "The form of bilirubin that is processed by the liver and excreted in bile.",
+        "Indirect Bilirubin": "The form of bilirubin that is not processed by the liver.",
+        "SGPT/ALT": "Serum Glutamic Pyruvic Transaminase / Alanine Aminotransferase - enzymes found in the liver, elevated levels may indicate liver damage.",
+        "SGOT/AST": "Serum Glutamic Oxaloacetic Transaminase / Aspartate Aminotransferase - enzymes found in the liver and heart, elevated levels may indicate liver or heart damage.",
+        "Alkaline Phosphatase": "An enzyme found in the liver and bones, elevated levels may indicate liver or bone disease.",
+        "Total Protein": "The total amount of protein in the blood.",
+        "Albumin": "The main protein in blood plasma, important for maintaining blood volume and pressure.",
+        "Globulin": "A group of proteins in the blood, including antibodies.",
+        "Protein A/G Ratio": "The ratio of albumin to globulin in the blood.",
+        "Gamma Glutamyl Transferase": "An enzyme found in the liver, elevated levels may indicate liver disease.",
+        "Creatinine": "A waste product produced by muscles, used to assess kidney function.",
+        "e-GFR (Glomerular Filtration Rate)": "A measure of how well the kidneys filter blood.",
+        "Urea": "A waste product produced by the liver, used to assess kidney function.",
+        "Blood Urea Nitrogen": "A measure of the amount of nitrogen in the blood in the form of urea.",
+        "Uric Acid": "A waste product produced by the breakdown of purines, used to assess kidney function.",
+        "T3 Total": "Total Triiodothyronine - a hormone produced by the thyroid gland, used to assess thyroid function.",
+        "T4 Total": "Total Thyroxine - a hormone produced by the thyroid gland, used to assess thyroid function.",
+        "TSH Ultrasensitive": "Thyroid-Stimulating Hormone - a hormone that stimulates the thyroid gland, used to assess thyroid function.",
+        "Vitamin B12": "A vitamin important for red blood cell production and nerve function.",
+        "25 (OH) Vitamin D2 (Ergocalciferol)": "A form of vitamin D obtained from plant sources and supplements.",
+        "25 (OH) Vitamin D3 (Cholecalciferol)": "A form of vitamin D obtained from animal sources and sunlight exposure.",
+        "Vitamin D Total (D2 + D3)": "The total amount of vitamin D in the blood, including both D2 and D3.",
+        "Iron": "A mineral important for red blood cell production and oxygen transport.",
+        "Total Iron Binding Capacity": "A measure of the blood's ability to bind and transport iron.",
+        "Transferrin Saturation": "The percentage of transferrin (an iron-binding protein) that is saturated with iron."
+    }
+    %}
+
+    <div class="container">
+        <h2>Your Health Report</h2>
+        <form action="http://127.0.0.1:5001/uploads" method="POST">
+            <div class="form-table">  
+                <br>
+                {% for test, value in values.items() %}
+                {% if test == "Haemoglobin" %}
+                <div class="form-row">
+                    <label class="form-label"></label>
+                    <h3 style="text-align: center;">Complete Blood Count</h3>
+                    <br>
+                </div>
+                <div class="form-row">
+                    <label class="form-label">Test</label>
+                    <label class="form-label">Result</label>
+                    <label class="form-label">Unit</label>
+                    <label class="form-label">Biological Reference Interval</label>
+                    <label class="form-label">Info</label>
+                </div>
+                {% elif test == "Fasting Plasma Glucose" %}
+                <div class="form-row">
+                    <label class="form-label"></label>
+                    <h3 style="text-align: center;">Metabolic Panel</h3>
+                    <br>
+                </div>
+                <div class="form-row">
+                    <label class="form-label">Test</label>
+                    <label class="form-label">Result</label>
+                    <label class="form-label">Unit</label>
+                    <label class="form-label">Biological Reference Interval</label>
+                    <label class="form-label">Info</label>
+                </div>
+                {% elif test == "T3 Total" %}
+                <div class="form-row">
+                    <label class="form-label"></label>
+                    <h3 style="text-align: center;">Thyroid Panel</h3>
+                    <br>
+                </div>
+                <div class="form-row">
+                    <label class="form-label">Test</label>
+                    <label class="form-label">Result</label>
+                    <label class="form-label">Unit</label>
+                    <label class="form-label">Biological Reference Interval</label>
+                    <label class="form-label">Info</label>
+                </div>
+                {% elif test == "Vitamin B12" %}
+                <div class="form-row">
+                    <label class="form-label"></label>
+                    <h3 style="text-align: center;">Vitamin and Mineral Panel</h3>
+                    <br>
+                </div>
+                <div class="form-row">
+                    <label class="form-label">Test</label>
+                    <label class="form-label">Result</label>
+                    <label class="form-label">Unit</label>
+                    <label class="form-label">Biological Reference Interval</label>
+                    <label class="form-label">Info</label>
+                </div>
+                {% endif %}
+                <div class="form-row">
+                    <label for="{{ test }}" class="form-label">{{ test }}:</label>
+                    <input type="number" id="{{ test }}" name="{{ test }}" value="{{ value }}" step="0.1" required class="form-input">
+                    <label class="form-unit">{{ units[test] }}</label>
+                    <label class="form-range">{{ reference_ranges[test] }}</label>
+                    <label class="form-label tooltip">ℹ️
+                        <span class="tooltiptext">{{ explanations[test] }}</span>
+                    </label>
+                </div>
+                {% endfor %}
+            </div>
+        </form>
+    </div>
+    
+                <div class="form-row">
+                    <div class="form-label"></div>
+                    <div class="form-label"></div>
+                    <button type="submit" class="form-input">Analyze</button>
+                </div>
+            </div>
+        </form>
+        
+        <h2 class="head">Health Advices based on your Report</h2>
+    <div style="display: flex;justify-content: center;flex-direction: column;align-items: center;">
+        <ul >
+        {% for adv in advice %}
+        <li class="advice-item">
+            <div style="display: flex;justify-content:space-between;">
+            <div class="advice-summary">{{ adv.split('\n')[0] }}</div>
+            <span >💡</span>
+        </div>
+            <div class="advice-details"><p class="preserve-whitespace" >{{ adv }}</p></div>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+    </div>
+    {% endif %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const adviceItems = document.querySelectorAll('.advice-item');
+            adviceItems.forEach(function(item) {
+                item.addEventListener('click', function() {
+                    const details = this.querySelector('.advice-details');
+                    if (details.style.display === 'none' || details.style.display === '') {
+                        details.style.display = 'block';
+                    } else {
+                        details.style.display = 'none';
+                    }
+                    
+                });
+            });
+        });
+    </script>
+</body>
+</html>

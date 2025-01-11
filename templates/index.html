@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LinkedIn Data Analyzer</title>
+    <style>
+        /* General Styling */
+body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    color: #ffffff;
+    background: black;
+    overflow-x: hidden;
+    line-height: 1.6;
+}
+
+h1, h2, h3 {
+    margin: 0;
+    font-weight: 700;
+}
+
+p {
+    margin: 0 0 20px;
+    font-size: 1.1em;
+    color: #dfe4ea;
+}
+
+/* Header */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 40px;
+    background-color: #74b9ff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.logo {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: black;
+}
+
+.nav a {
+    margin: 0 15px;
+    text-decoration: none;
+    color: black;
+    font-size: 1em;
+    transition: color 0.3s ease;
+}
+
+.nav a:hover {
+    color: #74b9ff;
+}
+
+/* Hero Section */
+.hero {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    min-height: 80vh;
+    background: black;
+    padding: 50px;
+    color: #ffffff;
+}
+
+.hero-content {
+    max-width: 800px;
+}
+
+.hero h1 {
+    font-size: 2.5em;
+    margin-bottom: 20px;
+}
+
+.hero p {
+    font-size: 1.2em;
+    margin-bottom: 30px;
+}
+
+.btn-primary {
+    display: inline-block;
+    padding: 15px 30px;
+    background-color: #71B7FB;
+    color: #ffffff;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 1em;
+    transition: background-color 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color: #44bd32;
+}
+
+/* Features Section */
+.features {
+    padding: 60px 20px;
+    text-align: center;
+    background-color: black;
+}
+
+.features h2 {
+    font-size: 2.5em;
+    margin-bottom: 40px;
+    color: #ffffff;
+}
+
+.feature-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 30px;
+}
+
+.feature-card {
+    flex: 1 1 calc(25% - 40px);
+    background: #1a1a1a;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    color: #dfe4ea;
+}
+
+.feature-card h3 {
+    font-size: 1.5em;
+    margin-bottom: 10px;
+    color: #ffffff;
+}
+
+/* Upload Section */
+.upload {
+    padding: 60px 20px;
+    text-align: center;
+    background: #1a1a1a;
+}
+
+.upload h2 {
+    font-size: 2.5em;
+    margin-bottom: 40px;
+    color: #ffffff;
+}
+
+
+
+.upload input[type="file"] {
+    font-size: 1em;
+    padding: 10px;
+    color: #ffffff;
+    background-color: #1e272e;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.upload button {
+    font-size: 1em;
+    padding: 10px 20px;
+    background-color: #71B7FB;
+    color: #ffffff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.upload button:hover {
+    background-color: #27ae60;
+}
+
+.spinner {
+            display: none;
+            border: 6px solid #f3f3f3;
+            border-top: 6px solid #71B7FB;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Show spinner */
+        .loading .spinner {
+            display: block;
+        }
+
+        .loading .upload-form {
+            display: none;
+        }
+
+        .menu-btn {
+            display: none;
+            font-size: 1.5em;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .menu-btn span {
+            display: block;
+            width: 25px;
+            height: 3px;
+            background: black;
+            margin: 5px auto;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .nav-menu {
+            display: flex;
+        }
+
+        @media (max-width: 768px) {
+            .nav {
+                display: none;
+                flex-direction: column;
+                position: absolute;
+                top: 60px;
+                right: 20px;
+                background: #74b9ff;
+                padding: 10px;
+                border-radius: 8px;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            }
+
+            .nav.active {
+                display: flex;
+            }
+
+            .menu-btn {
+                display: block;
+                color: black;
+            }
+        }
+
+
+/* Footer */
+
+
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">🩺 HealthPulse</div>
+        <button class="menu-btn" onclick="toggleMenu()">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+        <nav class="nav" id="nav">
+            <a href="#features">Features</a>
+            <a href="#upload">Upload</a>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Revolutionize Your Health Check</h1>
+            <p>Gain Quick, Accurate and Deeper insights to make informed decisions about your well-being with personalized, real-time health analysis based on your health check reports</p>
+            <a href="#upload" style="font-weight: bold;color: black;" class="btn-primary">Get Started</a>
+        </div>
+    </section>
+
+    <section id="features" class="features">
+        <h2>What We Offer</h2>
+        <div class="feature-list">
+            <div class="feature-card">
+                <h3>Seamless Health Report Extraction</h3>
+                <p>Upload and instantly extract vital test results from your PDF health reports for accurate analysis.</p>
+            </div>
+            <div class="feature-card">
+                <h3>Customizable Test Results</h3>
+                <p>Easily edit extracted values, ensuring accuracy and control over your health data before analysis.</p>
+            </div>
+            <div class="feature-card">
+                <h3>Tailored Health Insights</h3>
+                <p>Receive personalized, actionable health recommendations based on your specific test results to enhance your well-being.</p>
+            </div>
+            <div class="feature-card">
+                <h3>Real-time Health Analysis</h3>
+                <p>Click to analyze your health data, instantly generating insightful advice and guidance for a healthier lifestyle.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="upload" class="upload">
+        <h2>Upload Your Health Report (PDF)</h2>
+        <div class="container">
+            <form action="http://127.0.0.1:5001/uploads" method="POST" enctype="multipart/form-data">
+                <input type="file" id="pdf_file" name="pdf_file" accept="application/pdf" required>
+                <button type="submit">Upload</button>
+            </form>
+        </div>
+        <div class="spinner"></div>
+        <br/><br/>
+        <a style="color:#71B7FB;text-decoration:  none;" target="_blank" href="https://www.linkedin.com/help/linkedin/answer/a566336/exporting-connections-from-linkedin?lang=en">Click here to know how to get your connections data</a>
+    </section>
+    <script>
+         function toggleMenu() {
+            nav.classList.toggle('active');
+        }
+    </script>
+   <br/><br/><br/><br/>
+</body>
+</html>
