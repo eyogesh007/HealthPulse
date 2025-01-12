@@ -5,181 +5,181 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LinkedIn Data Analyzer</title>
     <style>
-        /* General Styling */
-body {
-    margin: 0;
-    font-family: 'Poppins', sans-serif;
-    color: #ffffff;
-    background: black;
-    overflow-x: hidden;
-    line-height: 1.6;
-}
+        body {
+            margin: 0;
+            font-family: 'Roboto', sans-serif;
+            color: #ffffff;
+            background: black;
+            overflow-x: hidden;
+            line-height: 1.5;
+            font-size: 14px;
+        }
 
-h1, h2, h3 {
-    margin: 0;
-    font-weight: 700;
-}
+        h1, h2, h3 {
+            margin: 0;
+            font-weight: 700;
+        }
 
-p {
-    margin: 0 0 20px;
-    font-size: 1.1em;
-    color: #dfe4ea;
-}
+        p {
+            margin: 0 0 15px;
+            font-size: 1em;
+            color: #dfe4ea;
+        }
 
-/* Header */
-.header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px 40px;
-    background-color: #74b9ff;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-}
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 30px;
+            background-color: #74b9ff;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
 
-.logo {
-    font-size: 1.5em;
-    font-weight: bold;
-    color: black;
-}
+        .logo {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: black;
+        }
 
-.nav a {
-    margin: 0 15px;
-    text-decoration: none;
-    color: black;
-    font-size: 1em;
-    transition: color 0.3s ease;
-}
+        .nav a {
+            margin: 0 10px;
+            text-decoration: none;
+            color: black;
+            font-size: 0.9em;
+            transition: color 0.3s ease;
+        }
 
-.nav a:hover {
-    color: #74b9ff;
-}
+        .nav a:hover {
+            color: #ffffff;
+        }
 
-/* Hero Section */
-.hero {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    min-height: 80vh;
-    background: black;
-    padding: 50px;
-    color: #ffffff;
-}
+        .hero {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            min-height: 70vh;
+            background: black;
+            padding: 40px;
+            color: #ffffff;
+        }
 
-.hero-content {
-    max-width: 800px;
-}
+        .hero-content {
+            max-width: 700px;
+        }
 
-.hero h1 {
-    font-size: 2.5em;
-    margin-bottom: 20px;
-}
+        .hero h1 {
+            font-size: 2em;
+            margin-bottom: 15px;
+        }
 
-.hero p {
-    font-size: 1.2em;
-    margin-bottom: 30px;
-}
+        .hero p {
+            font-size: 1em;
+            margin-bottom: 20px;
+        }
 
-.btn-primary {
-    display: inline-block;
-    padding: 15px 30px;
-    background-color: #71B7FB;
-    color: #ffffff;
-    text-decoration: none;
-    border-radius: 5px;
-    font-size: 1em;
-    transition: background-color 0.3s ease;
-}
+        .btn-primary {
+            display: inline-block;
+            padding: 12px 25px;
+            background-color: #71B7FB;
+            color: #ffffff;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 0.9em;
+            transition: background-color 0.3s ease;
+        }
 
-.btn-primary:hover {
-    background-color: #44bd32;
-}
+        .btn-primary:hover {
+            background-color: #44bd32;
+        }
 
-/* Features Section */
-.features {
-    padding: 60px 20px;
-    text-align: center;
-    background-color: black;
-}
+        .features {
+            padding: 50px 20px;
+            text-align: center;
+            background-color: black;
+        }
 
-.features h2 {
-    font-size: 2.5em;
-    margin-bottom: 40px;
-    color: #ffffff;
-}
+        .features h2 {
+            font-size: 2em;
+            margin-bottom: 30px;
+            color: #ffffff;
+        }
 
-.feature-list {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 30px;
-}
+        .feature-list {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
 
-.feature-card {
-    flex: 1 1 calc(25% - 40px);
-    background: #1a1a1a;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    color: #dfe4ea;
-}
+        .feature-card {
+            flex: 1 1 calc(100% - 30px);
+            background: #1a1a1a;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            color: #dfe4ea;
+            max-width: 300px;
+            transition: transform 0.3s ease;
+        }
 
-.feature-card h3 {
-    font-size: 1.5em;
-    margin-bottom: 10px;
-    color: #ffffff;
-}
+        .feature-card:hover {
+            transform: translateY(-10px);
+        }
 
-/* Upload Section */
-.upload {
-    padding: 60px 20px;
-    text-align: center;
-    background: #1a1a1a;
-}
+        .feature-card h3 {
+            font-size: 1.3em;
+            margin-bottom: 10px;
+            color: #ffffff;
+        }
 
-.upload h2 {
-    font-size: 2.5em;
-    margin-bottom: 40px;
-    color: #ffffff;
-}
+        .upload {
+            padding: 50px 20px;
+            text-align: center;
+            background: #1a1a1a;
+        }
 
+        .upload h2 {
+            font-size: 2em;
+            margin-bottom: 30px;
+            color: #ffffff;
+        }
 
+        .upload input[type="file"] {
+            font-size: 0.9em;
+            padding: 8px;
+            color: #ffffff;
+            background-color: #1e272e;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
 
-.upload input[type="file"] {
-    font-size: 1em;
-    padding: 10px;
-    color: #ffffff;
-    background-color: #1e272e;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
+        .upload button {
+            font-size: 0.9em;
+            padding: 8px 15px;
+            background-color: #71B7FB;
+            color: #ffffff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
 
-.upload button {
-    font-size: 1em;
-    padding: 10px 20px;
-    background-color: #71B7FB;
-    color: #ffffff;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
+        .upload button:hover {
+            background-color: #27ae60;
+        }
 
-.upload button:hover {
-    background-color: #27ae60;
-}
-
-.spinner {
+        .spinner {
             display: none;
-            border: 6px solid #f3f3f3;
-            border-top: 6px solid #71B7FB;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #71B7FB;
             border-radius: 50%;
-            width: 50px;
-            height: 50px;
+            width: 40px;
+            height: 40px;
             animation: spin 1s linear infinite;
             margin: 20px auto;
         }
@@ -189,7 +189,6 @@ p {
             100% { transform: rotate(360deg); }
         }
 
-        /* Show spinner */
         .loading .spinner {
             display: block;
         }
@@ -199,38 +198,42 @@ p {
         }
 
         .menu-btn {
-            display: none;
-            font-size: 1.5em;
-            background: none;
-            border: none;
-            cursor: pointer;
-        }
+    display: none;
+    font-size: 1.2em;
+    background: none;
+    border: none;
+    cursor: pointer;
+    position: absolute;
+    right: 20px; /* Ensure it's aligned properly */
+    top: 15px;   /* Ensure it's aligned properly */
+    z-index: 1100; /* Keep it above other elements */
+}
 
-        .menu-btn span {
-            display: block;
-            width: 25px;
-            height: 3px;
-            background: black;
-            margin: 5px auto;
-            transition: all 0.3s ease-in-out;
-        }
+.menu-btn span {
+    display: block;
+    width: 25px; /* Slightly increase size for better visibility */
+    height: 3px;
+    background: black;
+    margin: 4px auto;
+    transition: all 0.3s ease-in-out;
+}
 
-        .nav-menu {
-            display: flex;
-        }
+@media (max-width: 768px) {
+    .menu-btn {
+        display: block; /* Make the menu button visible on smaller screens */
+    }
 
-        @media (max-width: 768px) {
-            .nav {
-                display: none;
-                flex-direction: column;
-                position: absolute;
-                top: 60px;
-                right: 20px;
-                background: #74b9ff;
-                padding: 10px;
-                border-radius: 8px;
-                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            }
+    .nav {
+        display: none;
+        flex-direction: column;
+        position: absolute;
+        top: 40px; /* Position dropdown below header */
+        right: 15px;
+        background: #74b9ff;
+        padding: 8px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
 
             .nav.active {
                 display: flex;
@@ -240,12 +243,69 @@ p {
                 display: block;
                 color: black;
             }
+
+            .hero h1 {
+                font-size: 1.5em;
+            }
+
+            .hero p {
+                font-size: 0.9em;
+            }
+
+            .feature-card {
+                flex: 1 1 100%;
+                max-width: 100%;
+            }
         }
 
+        @media (max-width: 480px) {
+            .header {
+                padding: 10px 20px;
+            }
 
-/* Footer */
+            .logo {
+                font-size: 1em;
+            }
 
+            .hero-content {
+                padding: 20px;
+            }
 
+            .btn-primary {
+                padding: 10px 20px;
+                font-size: 0.8em;
+            }
+
+            .features {
+                padding: 30px 10px;
+            }
+
+            .upload {
+                padding: 30px 10px;
+            }
+
+            .upload input[type="file"],
+            .upload button {
+                font-size: 0.8em;
+            }
+
+            .footer {
+                font-size: 0.8em;
+            }
+        }
+
+        .footer {
+            padding: 20px;
+            text-align: center;
+            background: #1a1a1a;
+            color: #dfe4ea;
+            font-size: 0.9em;
+        }
+
+        .footer a {
+            color: #71B7FB;
+            text-decoration: none;
+        }
     </style>
 </head>
 <body>
@@ -265,7 +325,7 @@ p {
     <section class="hero">
         <div class="hero-content">
             <h1>Revolutionize Your Health Check</h1>
-            <p>Gain Quick, Accurate and Deeper insights to make informed decisions about your well-being with personalized, real-time health analysis based on your health check reports</p>
+            <p>Gain Quick, Accurate and Deeper insights to make informed decisions about your well-being with personalized, real-time health analysis based on your health check reports.</p>
             <a href="#upload" style="font-weight: bold;color: black;" class="btn-primary">Get Started</a>
         </div>
     </section>
@@ -295,20 +355,20 @@ p {
     <section id="upload" class="upload">
         <h2>Upload Your Health Report (PDF)</h2>
         <div class="container">
-            <form action="/uploads" method="POST" enctype="multipart/form-data">
+            <form action="http://127.0.0.1:5001/uploads" method="POST" enctype="multipart/form-data">
                 <input type="file" id="pdf_file" name="pdf_file" accept="application/pdf" required>
                 <button type="submit">Upload</button>
             </form>
         </div>
-        <div class="spinner"></div>
-        <br/><br/>
-        <a style="color:#71B7FB;text-decoration:  none;" target="_blank" href="https://www.linkedin.com/help/linkedin/answer/a566336/exporting-connections-from-linkedin?lang=en">Click here to know how to get your connections data</a>
     </section>
+
+    <footer class="footer">
+        <p>&copy; 2025 HealthPulse. All rights reserved.  </footer>
+
     <script>
-         function toggleMenu() {
+        function toggleMenu() {
             nav.classList.toggle('active');
         }
     </script>
-   <br/><br/><br/><br/>
 </body>
 </html>
