@@ -2,8 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LinkedIn Data Analyzer</title>
+    <title>Health Pulse</title>
     <style>
         body {
             margin: 0;
@@ -93,7 +94,7 @@
         }
 
         .btn-primary:hover {
-            background-color: #44bd32;
+            background-color: #559DDC;
         }
 
         .features {
@@ -139,7 +140,7 @@
         .upload {
             padding: 50px 20px;
             text-align: center;
-            background: #1a1a1a;
+            background: black;
         }
 
         .upload h2 {
@@ -170,7 +171,7 @@
         }
 
         .upload button:hover {
-            background-color: #27ae60;
+            background-color: #559DDC;
         }
 
         .spinner {
@@ -214,9 +215,25 @@
     width: 25px; /* Slightly increase size for better visibility */
     height: 3px;
     background: black;
-    margin: 3px auto;
+    margin: 2px auto;
     transition: all 0.3s ease-in-out;
 }
+
+.upload input[type="file"]::file-selector-button {
+        background-color: #71B7FB;
+        color: #ffffff;
+        border: none;
+        padding: 8px 15px;
+        margin-right: 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 0.9em;
+        transition: background-color 0.3s ease;
+    }
+
+    .upload input[type="file"]::file-selector-button:hover {
+        background-color: #559DDC;
+    }
 
 @media (max-width: 768px) {
     .menu-btn {
@@ -297,7 +314,7 @@
         .footer {
             padding: 20px;
             text-align: center;
-            background: #1a1a1a;
+            background: black;
             color: #dfe4ea;
             font-size: 0.9em;
         }
@@ -358,8 +375,14 @@
             <form action="/uploads" method="POST" enctype="multipart/form-data">
                 <input type="file" id="pdf_file" name="pdf_file" accept="application/pdf" required>
                 <button type="submit">Upload</button>
-            </form>
-        </div>
+            </form><br>
+                
+                <a style="color:#ff4d4d; text-decoration: none; " target="_blank" href="https://www.ilovepdf.com/compress_pdf">
+                    <span style="color: yellow; font-size: 24px; margin-right: 10px;">&#9888;</span>Please compress your PDF files over here before submitting
+                </a>
+            </div>
+            
+                    </div>
     </section>
 
     <footer class="footer">
