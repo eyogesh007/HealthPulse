@@ -12,6 +12,7 @@ def extract_text_from_pdf(pdf_file):
         for page in pdf.pages:
             text += page.extract_text() + "\n"
     return text
+    
 def extract_values(text):
     values = OrderedDict([
             ("Haemoglobin", 0),
@@ -138,7 +139,7 @@ def give_health_advice(values):
     # Haemoglobin (range: 13.0-17.0 g/dL)
     if "Haemoglobin" in values:
         if values["Haemoglobin"] < 13.0:
-            advice.append("""
+            advice.append("""<div>
     <h2>Low Hemoglobin</h2>
     <div>
         <h3>Root Cause:</h3>
@@ -4662,14 +4663,14 @@ def home():
                     values[key] = float(request.form[key])  # Update values
             
             # Save updated values back to session
-            session['values'] = list(values.items())  # Convert back to list of tuples
+            session['values'] = list(values.items()) 
             session.modified = True
             
-            print("Updated Values:", values)  # Debug print after update
+            print("Updated Values:", values)  
             
             advice = give_health_advice(values)
             return render_template("results.html", values=values, advice=advice)
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, port=5001)
