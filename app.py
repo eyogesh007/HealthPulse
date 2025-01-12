@@ -70,7 +70,6 @@ def extract_values(text):
             ("Total Iron Binding Capacity", 0),
             ("Transferrin Saturation", 0)
         ])
-    print(len(values))
     patterns = {
         "Haemoglobin": r"\s*(.*?Haemoglobin\b.*?|Hgb\b.*?)\s*[:\-]?\s*(\d+(\.\d+)?)\s*",
         "Total RBC Count": r"\s*(.*?\bR.?B.?C\b.*?)\s*[:\-]?\s*(\d+(\.\d+)?)\s*",
@@ -131,7 +130,6 @@ def extract_values(text):
         match = re.search(pattern, text, re.IGNORECASE)
         if match:
             values[test] = float(match.group(2))
-    print(values,"I am in function ra")
     return values
 
 def give_health_advice(values):
@@ -4646,7 +4644,6 @@ def home():
             # Store as list of tuples in session
             session['values'] = list(values.items())  # Convert to list of tuples for session
             session.modified = True
-            print("Uploaded Values:", values)  # Debug print
             
             advice = give_health_advice(values)
             return render_template("results.html", values=values, advice=advice)
@@ -4655,7 +4652,6 @@ def home():
             # Reconstruct OrderedDict from session data
             values = OrderedDict(session.get('values', []))  # Restore as OrderedDict
             
-            print("Before Update:", values)  # Debug print before update
             
             # Update values based on form data
             for key in values.keys():
@@ -4666,7 +4662,6 @@ def home():
             session['values'] = list(values.items()) 
             session.modified = True
             
-            print("Updated Values:", values)  
             
             advice = give_health_advice(values)
             return render_template("results.html", values=values, advice=advice)
