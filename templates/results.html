@@ -8,6 +8,7 @@
         body {
             font-family: 'Arial', sans-serif;
             background-color: black;
+            color: whitesmoke;
             margin: 0;
             padding: 0;
             display: flex;
@@ -16,256 +17,167 @@
             flex-direction: column;
         }
 
-        
-
         h2 {
-            color: whitesmoke;
-            font-size: 1.5em; /* Reduced font size */
-            margin-top: 10px;
+            font-size: 1.5em;
+            margin: 20px 0;
             text-align: center;
-            font-weight: 600;
-        }
-        .head {
-            color: whitesmoke;
-            font-size: 1.5em; /* Reduced font size */
-            margin-top: 10px;
-            text-align: center;
-            font-weight: 600;
-        }
-        h3 {
-            color: whitesmoke;
-            font-size: 1.1em; /* Reduced font size */
-            margin-top: 6px;
-            text-align: center;
-            font-weight: 400;
         }
 
-        form {
+        table {
+            width: 90%;
+            max-width: 800px;
+            border-collapse: collapse;
+            margin: 20px 0;
             background-color: #1a1a1a;
-            padding: 20px; /* Reduced padding */
             border-radius: 10px;
+            overflow: hidden;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            width: 70%;
-            margin: 0 auto;
         }
 
-        label {
-            font-size: 1em; /* Reduced font size */
-            color: white;
-            display: block;
-            margin-bottom: 10px;
+        thead {
+            background-color: #2a2a2a;
         }
 
-        input[type="file"] {
-            font-size: 1em;
-            padding: 10px;
-            margin-bottom: 20px;
-            background-color: black;
-            border: 2px solid #ddd;
-            border-radius: 5px;
-            display: block;
-            width: 100%;
-            cursor: pointer;
+        th, td {
+            padding: 15px;
+            text-align: left;
+            font-size: 0.9em;
+        }
+
+        th {
+            color: #71B7FB;
+        }
+
+        tr:nth-child(even) {
+            background-color: #333;
+        }
+
+        tr:nth-child(odd) {
+            background-color: #2a2a2a;
+        }
+
+        td {
+            color: whitesmoke;
         }
 
         input[type="number"] {
-            padding: 10px;
-            font-size: 1em;
-            width: 100%;
-            margin: 10px 0 20px;
+            padding: 5px;
+            font-size: 0.9em;
+            width: 60px;
             border: 2px solid #333;
             border-radius: 5px;
-            box-sizing: border-box;
             background-color: black;
             color: white;
         }
 
         button {
-            background-color: #71B7FB;
-            color: white;
-            padding: 15px;
-            font-size: 1em; /* Reduced font size */
-            width: 100%;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
+    background-color: #71B7FB;
+    color: white;
+    padding: 8px 12px;
+    font-size: 0.875em;
+    width: auto; 
+    border: none;
+    border-radius: 4px; 
+    cursor: pointer;
+    margin: 15px auto; 
+    display: block; 
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
 
-        button:hover {
-            background-color: #45a049;
-        }
+button:hover {
+    background-color: #559DDC; 
+    transform: scale(1.05);
+}
 
-        ul {
-            list-style-type: none;
-            padding: 0;
-            width: 100%;
-        }
+        .info-icon {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    margin-left: 8px;
+    color: #71B7FB;
+    cursor: pointer;
+    font-weight: bold;
+    border: 1px solid #71B7FB;
+    border-radius: 50%;
+    width: 16px;
+    height: 16px;
+    font-size: 12px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
 
-        li {
-            background-color: #1a1a1a;
-            border: 1px solid #333;
-            border-radius: 5px;
-            padding: 10px; /* Reduced padding */
-            margin: 5px 0;
-            font-size: 1em; /* Reduced font size */
-            color: whitesmoke;
-        }
+.info-icon:hover {
+    background-color: #71B7FB;
+    color: #ffffff;
+}
 
-        .container {
-            text-align: center;
-            margin-top: 50px;
-            width: 100%;
-        }
 
-        .success-message {
-            font-size: 1em; /* Reduced font size */
-            color: #4CAF50;
-            margin-top: 20px;
-            font-weight: bold;
-        }
-
-        .error-message {
-            font-size: 1em; /* Reduced font size */
-            color: #f44336;
-            margin-top: 20px;
-            font-weight: bold;
-        }
-
-        .form-table {
-            display: table;
-            width: 100%;
-        }
-
-        .form-row {
-            display: table-row;
-            text-align: left;
-        }
-
-        .form-label, .form-input {
-            display: table-cell;
-            padding: 5px;
-        }
-
-        .preserve-whitespace {
-            white-space: pre-wrap;
-            text-align: left;
-        }
-
-        .tooltip {
-            display: inline;
-            position: relative;
-            margin-left: 10px;
-            color: white;
-        }
-
-        .tooltip .tooltiptext {
-            visibility: hidden;
-            width: 200px;
-            background-color: #1a1a1a;
-            color: #fff;
-            text-align: center;
-            border-radius: 5px;
-            padding: 5px 0;
-            position: absolute;
-            z-index: 1;
-            bottom: 125%; 
-            left: 50%;
-            margin-left: -100px; 
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-
-        .tooltip:hover .tooltiptext {
-            visibility: visible;
-            opacity: 1;
-        }
-
-        .form-label, .form-input, .form-unit, .form-range {
-            display: table-cell;
-            padding: 5px;
-        }
-
-        .advice-item {
-            cursor: pointer;
-            margin: 5px 0;
-            border: 0.2px solid #ccc;
-            padding: 2px;
-            border-radius: 5px;
-            transition: background-color 0.3s;
-        }
-
-        .advice-item:hover {
-            background-color: #1a1a1a;
-        }
-
-        .advice-summary {
-            margin: 10px;
-        }
-
-        .advice-details {
+        .info-popup {
             display: none;
+            position: absolute;
+            background-color: #2a2a2a;
+            color: white;
+            padding: 10px;
+            border: 1px solid #71B7FB;
+            border-radius: 5px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 10;
         }
 
         @media (max-width: 768px) {
-            h1 {
-                font-size: 2em;
+            table {
+                display: block;
+                width: 100%;
             }
 
-            h2 {
-                font-size: 1.2em;
+            thead {
+                display: none;
             }
 
-            form {
-                width: 90%;
-            }
-
-            .form-table {
+            tbody {
                 display: block;
             }
 
-            .form-row {
+            tr {
                 display: block;
                 margin-bottom: 15px;
-            }
-
-            .form-label, .form-input, .form-unit, .form-range {
-                display: block;
-                width: 100%;
-                text-align: left;
-                padding: 5px 0;
-            }
-
-            input[type="number"] {
-                width: 100%;
-            }
-
-            ul {
-                width: 100%;
-            }
-        }
-
-        @media (max-width: 480px) {
-            h1 {
-                font-size: 1.5em;
-            }
-
-            h2 {
-                font-size: 1em;
-            }
-
-            .advice-item {
+                border: 1px solid #333;
+                border-radius: 10px;
+                background-color: #1a1a1a;
                 padding: 10px;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             }
 
-            .advice-summary {
-                margin: 5px;
+            td {
+                display: flex;
+                justify-content: space-between;
+                padding: 10px;
+                font-size: 0.9em;
+                border-bottom: 1px solid #333;
+            }
+
+            td:last-child {
+                border-bottom: none;
+            }
+
+            td::before {
+                content: attr(data-label);
+                font-weight: bold;
+                color: #71B7FB;
             }
         }
     </style>
+    <script>
+        function toggleInfo(test) {
+            const popup = document.getElementById(`info-popup-${test}`);
+            if (popup.style.display === 'block') {
+                popup.style.display = 'none';
+            } else {
+                popup.style.display = 'block';
+            }
+        }
+    </script>
 </head>
 <body>
-    {% if values %}
     {% set reference_ranges = {
         "Haemoglobin": "13-17",
         "Total RBC Count": "4.5-5.5",
@@ -437,119 +349,91 @@
         "Transferrin Saturation": "The percentage of transferrin (an iron-binding protein) that is saturated with iron."
     }
     %}
-
     <div class="container">
         <h2>Your Health Report</h2>
-        <form action="/uploads" method="POST">
-            <div class="form-table">  
-                <br>
-                {% for test, value in values.items() %}
-                {% if test == "Haemoglobin" %}
-                <div class="form-row">
-                    <label class="form-label"></label>
-                    <h3 style="text-align: center;">Complete Blood Count</h3>
-                    <br>
-                </div>
-                <div class="form-row">
-                    <label class="form-label">Test</label>
-                    <label class="form-label">Result</label>
-                    <label class="form-label">Unit</label>
-                    <label class="form-label">Biological Reference Interval</label>
-                    <label class="form-label">Info</label>
-                </div>
-                {% elif test == "Fasting Plasma Glucose" %}
-                <div class="form-row">
-                    <label class="form-label"></label>
-                    <h3 style="text-align: center;">Metabolic Panel</h3>
-                    <br>
-                </div>
-                <div class="form-row">
-                    <label class="form-label">Test</label>
-                    <label class="form-label">Result</label>
-                    <label class="form-label">Unit</label>
-                    <label class="form-label">Biological Reference Interval</label>
-                    <label class="form-label">Info</label>
-                </div>
-                {% elif test == "T3 Total" %}
-                <div class="form-row">
-                    <label class="form-label"></label>
-                    <h3 style="text-align: center;">Thyroid Panel</h3>
-                    <br>
-                </div>
-                <div class="form-row">
-                    <label class="form-label">Test</label>
-                    <label class="form-label">Result</label>
-                    <label class="form-label">Unit</label>
-                    <label class="form-label">Biological Reference Interval</label>
-                    <label class="form-label">Info</label>
-                </div>
-                {% elif test == "Vitamin B12" %}
-                <div class="form-row">
-                    <label class="form-label"></label>
-                    <h3 style="text-align: center;">Vitamin and Mineral Panel</h3>
-                    <br>
-                </div>
-                <div class="form-row">
-                    <label class="form-label">Test</label>
-                    <label class="form-label">Result</label>
-                    <label class="form-label">Unit</label>
-                    <label class="form-label">Biological Reference Interval</label>
-                    <label class="form-label">Info</label>
-                </div>
-                {% endif %}
-                <div class="form-row">
-                    <label for="{{ test }}" class="form-label">{{ test }}:</label>
-                    <input type="number" id="{{ test }}" name="{{ test }}" value="{{ value }}" step="0.1" required class="form-input">
-                    <label class="form-unit">{{ units[test] }}</label>
-                    <label class="form-range">{{ reference_ranges[test] }}</label>
-                    <label class="form-label tooltip">ℹ️
-                        <span class="tooltiptext">{{ explanations[test] }}</span>
-                    </label>
-                </div>
-                {% endfor %}
-            </div>
+        <form action="http://127.0.0.1:5001/uploads" method="POST">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Test</th>
+                        <th>Result</th>
+                        <th>Unit</th>
+                        <th>Reference Interval</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for test, value in values.items() %}
+                    <tr>
+                        <td data-label="Test">
+                            {{ test }}
+                            <span class="info-icon" onclick="toggleInfo('{{ test }}')">i</span>
+                            <div class="info-popup" id="info-popup-{{ test }}">
+                                {{ explanations[test] }}
+                            </div>
+                        </td>
+                        <td data-label="Result"><input type="number" step="any" id="{{ test }}" name="{{ test }}" value="{{ value }}" required></td>
+                        <td data-label="Unit">{{ units[test] }}</td>
+                        <td data-label="Reference Interval">{{ reference_ranges[test] }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <button type="submit">Analyze</button>
         </form>
     </div>
-    
-                <div class="form-row">
-                    <div class="form-label"></div>
-                    <div class="form-label"></div>
-                    <button type="submit" class="form-input">Analyze</button>
-                </div>
-            </div>
-        </form>
-        
-        <h2 class="head">Health Advices based on your Report</h2>
-    <div style="display: flex;justify-content: center;flex-direction: column;align-items: center;">
-        <ul >
+</body>
+</html>
+
+
+
+
+<h2 class="head" style="text-align: center; color: white; font-family: 'Arial', sans-serif; margin-bottom: 20px;">
+    Health Advice Based on Your Report
+</h2>
+<div style="display: flex; justify-content: center; flex-direction: column; align-items: center; width: 100%; padding: 20px; background-color: black; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+    <ul style="list-style-type: none; padding: 0; width: 100%; max-width: 800px;">
         {% for adv in advice %}
-        <li class="advice-item">
-            <div style="display: flex;justify-content:space-between;">
-            <div class="advice-summary">{{ adv.split('\n')[0] }}</div>
-            <span >💡</span>
-        </div>
-            <div class="advice-details"><p class="preserve-whitespace" >{{ adv }}</p></div>
+        <li class="advice-item" style="margin-bottom: 15px; border: 1px solid #ddd; border-radius: 8px; overflow: hidden; background-color: #1a1a1a; cursor: pointer; transition: box-shadow 0.3s ease;">
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 15px; background-color: #2c3e50; color: #ffffff;">
+                <div class="advice-summary" style="font-weight: bold; font-size: 16px;">
+                    {{ adv | extract_h2 | safe }}
+                </div>
+                <span style="font-size: 20px; color: #f1c40f;">💡</span>
+            </div>
+            <div class="advice-details" style="display: none; padding: 15px; font-size: 14px; line-height: 1.6; color: white;">
+                <p class="preserve-whitespace" style="white-space: pre-wrap;">{{ adv | safe }}</p>
+            </div>
         </li>
         {% endfor %}
     </ul>
 </div>
-    </div>
-    {% endif %}
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const adviceItems = document.querySelectorAll('.advice-item');
-            adviceItems.forEach(function(item) {
-                item.addEventListener('click', function() {
-                    const details = this.querySelector('.advice-details');
-                    if (details.style.display === 'none' || details.style.display === '') {
-                        details.style.display = 'block';
-                    } else {
-                        details.style.display = 'none';
-                    }
-                    
-                });
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const adviceItems = document.querySelectorAll('.advice-item');
+        adviceItems.forEach(function (item) {
+            item.addEventListener('click', function () {
+                const details = this.querySelector('.advice-details');
+                if (details.style.display === 'none' || details.style.display === '') {
+                    details.style.display = 'block';
+                    this.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.2)';
+                } else {
+                    details.style.display = 'none';
+                    this.style.boxShadow = 'none';
+                }
+            });
+
+            // Add hover effect
+            item.addEventListener('mouseenter', function () {
+                this.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.1)';
+            });
+            item.addEventListener('mouseleave', function () {
+                if (this.querySelector('.advice-details').style.display !== 'block') {
+                    this.style.boxShadow = 'none';
+                }
             });
         });
-    </script>
+    });
+</script>
+
 </body>
 </html>
