@@ -1,6 +1,7 @@
 import io
 import pdfplumber
 import re
+from collections import OrderedDict
 from flask import Flask, render_template, request, session
 
 app = Flask(__name__)
@@ -10,65 +11,64 @@ def extract_text_from_pdf(pdf_file):
     with pdfplumber.open(io.BytesIO(pdf_file.read())) as pdf:
         for page in pdf.pages:
             text += page.extract_text() + "\n"
-    print(text)
     return text
 def extract_values(text):
-    values = {
-    "Haemoglobin": 0,
-    "Total RBC Count": 0,
-    "Packed Cell Volume / Hematocrit": 0,
-    "MCV": 0,
-    "MCH": 0,
-    "MCHC": 0,
-    "RDW": 0,
-    "Total Leucocytes Count": 0,
-    "Neutrophils": 0,
-    "Lymphocytes": 0,
-    "Eosinophils": 0,
-    "Monocytes": 0,
-    "Basophils": 0,
-    "Absolute Neutrophil Count": 0,
-    "Absolute Lymphocyte Count": 0,
-    "Absolute Eosinophil Count": 0,
-    "Absolute Monocyte Count": 0,
-    "Platelet Count": 0,
-    "Erythrocyte Sedimentation Rate": 0,
-    "Fasting Plasma Glucose": 0,
-    "Glycated Hemoglobin": 0,
-    "Triglycerides": 0,
-    "Total Cholesterol": 0,
-    "LDL Cholesterol": 0,
-    "HDL Cholesterol": 0,
-    "VLDL Cholesterol": 0,
-    "Total Cholesterol / HDL Cholesterol Ratio": 0,
-    "LDL Cholesterol / HDL Cholesterol Ratio": 0,
-    "Total Bilirubin": 0,
-    "Direct Bilirubin": 0,
-    "Indirect Bilirubin": 0,
-    "SGPT/ALT": 0,
-    "SGOT/AST": 0,
-    "Alkaline Phosphatase": 0,
-    "Total Protein": 0,
-    "Albumin": 0,
-    "Globulin": 0,
-    "Protein A/G Ratio": 0,
-    "Gamma Glutamyl Transferase": 0,
-    "Creatinine": 0,
-    "e-GFR (Glomerular Filtration Rate)": 0,
-    "Urea": 0,
-    "Blood Urea Nitrogen": 0,
-    "Uric Acid": 0,
-    "T3 Total": 0,
-    "T4 Total": 0,
-    "TSH Ultrasensitive": 0,
-    "Vitamin B12": 0,
-    "25 (OH) Vitamin D2 (Ergocalciferol)": 0,
-    "25 (OH) Vitamin D3 (Cholecalciferol)": 0,
-    "Vitamin D Total (D2 + D3)": 0,
-    "Iron": 0,
-    "Total Iron Binding Capacity": 0,
-    "Transferrin Saturation": 0
-}
+    values = OrderedDict([
+            ("Haemoglobin", 0),
+            ("Total RBC Count", 0),
+            ("Packed Cell Volume / Hematocrit", 0),
+            ("MCV", 0),
+            ("MCH", 0),
+            ("MCHC", 0),
+            ("RDW", 0),
+            ("Total Leucocytes Count", 0),
+            ("Neutrophils", 0),
+            ("Lymphocytes", 0),
+            ("Eosinophils", 0),
+            ("Monocytes", 0),
+            ("Basophils", 0),
+            ("Absolute Neutrophil Count", 0),
+            ("Absolute Lymphocyte Count", 0),
+            ("Absolute Eosinophil Count", 0),
+            ("Absolute Monocyte Count", 0),
+            ("Platelet Count", 0),
+            ("Erythrocyte Sedimentation Rate", 0),
+            ("Fasting Plasma Glucose", 0),
+            ("Glycated Hemoglobin", 0),
+            ("Triglycerides", 0),
+            ("Total Cholesterol", 0),
+            ("LDL Cholesterol", 0),
+            ("HDL Cholesterol", 0),
+            ("VLDL Cholesterol", 0),
+            ("Total Cholesterol / HDL Cholesterol Ratio", 0),
+            ("LDL Cholesterol / HDL Cholesterol Ratio", 0),
+            ("Total Bilirubin", 0),
+            ("Direct Bilirubin", 0),
+            ("Indirect Bilirubin", 0),
+            ("SGPT/ALT", 0),
+            ("SGOT/AST", 0),
+            ("Alkaline Phosphatase", 0),
+            ("Total Protein", 0),
+            ("Albumin", 0),
+            ("Globulin", 0),
+            ("Protein A/G Ratio", 0),
+            ("Gamma Glutamyl Transferase", 0),
+            ("Creatinine", 0),
+            ("e-GFR (Glomerular Filtration Rate)", 0),
+            ("Urea", 0),
+            ("Blood Urea Nitrogen", 0),
+            ("Uric Acid", 0),
+            ("T3 Total", 0),
+            ("T4 Total", 0),
+            ("TSH Ultrasensitive", 0),
+            ("Vitamin B12", 0),
+            ("25 (OH) Vitamin D2 (Ergocalciferol)", 0),
+            ("25 (OH) Vitamin D3 (Cholecalciferol)", 0),
+            ("Vitamin D Total (D2 + D3)", 0),
+            ("Iron", 0),
+            ("Total Iron Binding Capacity", 0),
+            ("Transferrin Saturation", 0)
+        ])
     print(len(values))
     patterns = {
         "Haemoglobin": r"\s*(.*?Haemoglobin\b.*?|Hgb\b.*?)\s*[:\-]?\s*(\d+(\.\d+)?)\s*",
@@ -130,6 +130,7 @@ def extract_values(text):
         match = re.search(pattern, text, re.IGNORECASE)
         if match:
             values[test] = float(match.group(2))
+    print(values,"I am in function ra")
     return values
 
 def give_health_advice(values):
@@ -137,3252 +138,4368 @@ def give_health_advice(values):
     # Haemoglobin (range: 13.0-17.0 g/dL)
     if "Haemoglobin" in values:
         if values["Haemoglobin"] < 13.0:
-            advice.append("""Low Hemoglobin
-
-   Root Cause: 
-     Iron Deficiency: Lack of sufficient iron for red blood cell production.
-     Vitamin B12 or Folate Deficiency: Both are essential for red blood cell formation and maturation.
-     Blood Loss: Heavy menstruation, gastrointestinal bleeding (e.g., ulcers, hemorrhoids), or surgery.
-     Chronic Diseases: Kidney disease, chronic infections, or inflammation.
-     Genetic Conditions: Thalassemia, sickle cell disease.
-     Poor Diet: Inadequate intake of nutrients that support hemoglobin production.
-
-   Tips: 
-     Increase Iron Intake: Iron is critical for hemoglobin production. Iron supplements may be prescribed, but you should always follow the guidance of a healthcare provider.
-     Address Vitamin B12 and Folate Deficiency: If low levels of vitamin B12 or folate are detected, supplements or dietary changes can help.
-     Treat Underlying Conditions: If blood loss or a chronic disease is the cause, it’s important to address the root cause (e.g., treating ulcers, managing kidney disease).
-     Avoid Tea/Coffee with Meals: Tannins in tea and coffee can inhibit iron absorption. 
-     Consult a Doctor for Diagnosis: Persistent symptoms may require additional tests to diagnose specific causes of anemia.
-   
-   Foods to Eat:
-     Iron-Rich Foods (heme iron from animal sources and non-heme iron from plant sources):
-       Heme Iron: Red meat (beef, lamb), poultry (chicken, turkey), pork, fish, shellfish (clams, oysters, mussels).
-       Non-Heme Iron: Spinach, lentils, beans, tofu, quinoa, chickpeas, fortified cereals, pumpkin seeds, and fortified plant-based milk.
-     Vitamin B12-Rich Foods: Eggs, dairy products (milk, yogurt, cheese), meat, fish (salmon, tuna), shellfish, fortified cereals.
-     Folate-Rich Foods: Leafy greens (spinach, kale), citrus fruits, avocado, beans, peas, lentils, fortified cereals, and pasta.
-     Vitamin C-Rich Foods (to enhance iron absorption):
-       Citrus fruits (oranges, grapefruits), strawberries, bell peppers, broccoli, tomatoes, kiwi, and Brussels sprouts.
-
-   Example Meal Plan to Boost Hemoglobin:
-   Breakfast: Fortified cereal with almond milk, topped with fresh strawberries (rich in vitamin C) and a boiled egg.
-   Lunch: Spinach and lentil salad with citrus dressing (for vitamin C absorption).
-   Snack: A handful of pumpkin seeds and a citrus fruit (orange or kiwi).
-   Dinner: Grilled chicken with quinoa and steamed broccoli (rich in iron and vitamin C).
-
-By focusing on these dietary changes, you can support your body’s ability to increase hemoglobin levels and improve overall health. However, if symptoms persist, it’s crucial to consult with a healthcare provider for further evaluation and potential treatment.""")
+            advice.append("""
+    <h2>Low Hemoglobin</h2>
+    <div>
+        <h3>Root Cause:</h3>
+        <ul>
+            <li><strong>Iron Deficiency:</strong> Lack of sufficient iron for red blood cell production.</li>
+            <li><strong>Vitamin B12 or Folate Deficiency:</strong> Both are essential for red blood cell formation and maturation.</li>
+            <li><strong>Blood Loss:</strong> Heavy menstruation, gastrointestinal bleeding (e.g., ulcers, hemorrhoids), or surgery.</li>
+            <li><strong>Chronic Diseases:</strong> Kidney disease, chronic infections, or inflammation.</li>
+            <li><strong>Genetic Conditions:</strong> Thalassemia, sickle cell disease.</li>
+            <li><strong>Poor Diet:</strong> Inadequate intake of nutrients that support hemoglobin production.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Tips:</h3>
+        <ul>
+            <li>Increase <strong>Iron Intake:</strong> Iron is critical for hemoglobin production. Iron supplements may be prescribed, but always follow the guidance of a healthcare provider.</li>
+            <li>Address <strong>Vitamin B12</strong> and <strong>Folate Deficiency:</strong> If low levels are detected, supplements or dietary changes can help.</li>
+            <li>Treat Underlying Conditions: If blood loss or a chronic disease is the cause, address the root cause (e.g., treating ulcers, managing kidney disease).</li>
+            <li>Avoid <strong>Tea/Coffee with Meals:</strong> Tannins in tea and coffee can inhibit iron absorption.</li>
+            <li>Consult a Doctor for Diagnosis: Persistent symptoms may require additional tests to diagnose specific causes of anemia.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Foods to Eat:</h3>
+        <ul>
+            <li><strong>Iron-Rich Foods</strong> (heme iron from animal sources and non-heme iron from plant sources):
+                <ul>
+                    <li>Heme Iron: Red meat (beef, lamb), poultry (chicken, turkey), pork, fish, shellfish (clams, oysters, mussels).</li>
+                    <li>Non-Heme Iron: Spinach, lentils, beans, tofu, quinoa, chickpeas, fortified cereals, pumpkin seeds, and fortified plant-based milk.</li>
+                </ul>
+            </li>
+            <li><strong>Vitamin B12-Rich Foods:</strong> Eggs, dairy products (milk, yogurt, cheese), meat, fish (salmon, tuna), shellfish, fortified cereals.</li>
+            <li><strong>Folate-Rich Foods:</strong> Leafy greens (spinach, kale), citrus fruits, avocado, beans, peas, lentils, fortified cereals, and pasta.</li>
+            <li><strong>Vitamin C-Rich Foods</strong> (to enhance iron absorption): Citrus fruits (oranges, grapefruits), strawberries, bell peppers, broccoli, tomatoes, kiwi, and Brussels sprouts.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Example Meal Plan to Boost Hemoglobin:</h3>
+        <ul>
+            <li><strong>Breakfast:</strong> Fortified cereal with almond milk, topped with fresh strawberries (rich in vitamin C) and a boiled egg.</li>
+            <li><strong>Lunch:</strong> Spinach and lentil salad with citrus dressing (for vitamin C absorption).</li>
+            <li><strong>Snack:</strong> A handful of pumpkin seeds and a citrus fruit (orange or kiwi).</li>
+            <li><strong>Dinner:</strong> Grilled chicken with quinoa and steamed broccoli (rich in iron and vitamin C).</li>
+        </ul>
+    </div>
+    <p>By focusing on these dietary changes, you can support your body’s ability to increase hemoglobin levels and improve overall health. However, if symptoms persist, it’s crucial to consult with a healthcare provider for further evaluation and potential treatment.</p>
+</div>
+""")
         elif values["Haemoglobin"] > 17.0:
-            advice.append("""High Hemoglobin (Polycythemia)
-
-   Root Cause:
-     Dehydration: When you're dehydrated, the plasma (liquid) component of your blood decreases, making the concentration of red blood cells appear higher.
-     Chronic Lung or Heart Disease: Conditions like chronic obstructive pulmonary disease (COPD) or congenital heart defects can cause low oxygen levels in the blood, leading the body to produce more red blood cells to compensate.
-     Living at High Altitudes: At higher altitudes, the oxygen level in the air is lower, and the body compensates by producing more red blood cells.
-     Polycythemia Vera: A rare bone marrow disorder where the body makes too many red blood cells, often without a known cause.
-     Smoking: Smoking can lead to lower oxygen levels in the blood, prompting the body to produce more red blood cells.
-     Tumors or Hormonal Imbalances: Rarely, some tumors or conditions affecting the kidneys (e.g., renal cell carcinoma) can increase erythropoietin production, leading to more red blood cells being produced.
-
-   Tips:
-     Hydrate Well: Dehydration is a common cause of high hemoglobin levels. Make sure to drink plenty of water to stay hydrated and maintain proper blood volume.
-     Monitor for Underlying Conditions: If you have chronic lung or heart disease, it’s essential to follow your treatment plan. If polycythemia vera is suspected, your healthcare provider will guide you through the necessary diagnostic tests and potential treatments.
-     Quit Smoking: If you smoke, quitting can help reduce the body's need for extra red blood cell production. It also improves overall cardiovascular and lung health.
-     Regular Check-Ups: If you live at high altitudes or have chronic conditions, regular monitoring of hemoglobin and other blood parameters will help manage your health more effectively.
-     Consult a Doctor: If your hemoglobin is significantly high and there are symptoms like headaches, dizziness, or a reddened complexion, see a healthcare professional to rule out conditions like polycythemia vera or other blood disorders.
-
-   Foods to Eat:
-     Iron-Rich Foods: While high hemoglobin can sometimes be linked to excess iron (which is a concern in some cases), you should focus on eating a balanced diet and avoid iron-rich supplements unless advised by your doctor.
-     Foods to Support Hydration: 
-       Water-Rich Foods: Cucumbers, watermelon, celery, oranges, and strawberries can help keep you hydrated.
-       Electrolyte-Rich Foods: Include potassium-rich foods like bananas, sweet potatoes, and leafy greens to maintain fluid balance and hydration.
-     Avoid Excessive Iron: Since the body may already have sufficient iron, avoid excessive consumption of iron-rich foods or supplements unless prescribed. 
-
-   Example Meal Plan for High Hemoglobin (Polycythemia):
-   Breakfast: Oatmeal with almond milk and fresh fruit (e.g., strawberries and blueberries) for antioxidants, paired with a glass of water.
-   Lunch: A salad with mixed greens (for hydration), cucumber, and tomato, with a light dressing. Add a source of lean protein (e.g., chicken or tofu) for balance.
-   Snack: A water-based smoothie with hydrating fruits like watermelon or cucumber and a few spinach leaves for additional hydration.
-   Dinner: Grilled salmon (rich in healthy fats but not iron-loaded) with steamed vegetables like broccoli and zucchini. Drink plenty of water during meals.
-
-Note: While dietary adjustments can help manage some causes of high hemoglobin, underlying medical conditions (e.g., polycythemia vera or chronic lung disease) require specialized care and management by a healthcare provider.""")
+            advice.append("""<div>
+    <h2>High Hemoglobin (Polycythemia)</h2>
+    <div>
+        <h3>Root Cause:</h3>
+        <ul>
+            <li><strong>Dehydration:</strong> When you're dehydrated, the plasma (liquid) component of your blood decreases, making the concentration of red blood cells appear higher.</li>
+            <li><strong>Chronic Lung or Heart Disease:</strong> Conditions like chronic obstructive pulmonary disease (COPD) or congenital heart defects can cause low oxygen levels in the blood, leading the body to produce more red blood cells to compensate.</li>
+            <li><strong>Living at High Altitudes:</strong> At higher altitudes, the oxygen level in the air is lower, and the body compensates by producing more red blood cells.</li>
+            <li><strong>Polycythemia Vera:</strong> A rare bone marrow disorder where the body makes too many red blood cells, often without a known cause.</li>
+            <li><strong>Smoking:</strong> Smoking can lead to lower oxygen levels in the blood, prompting the body to produce more red blood cells.</li>
+            <li><strong>Tumors or Hormonal Imbalances:</strong> Rarely, some tumors or conditions affecting the kidneys (e.g., renal cell carcinoma) can increase erythropoietin production, leading to more red blood cells being produced.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Tips:</h3>
+        <ul>
+            <li><strong>Hydrate Well:</strong> Dehydration is a common cause of high hemoglobin levels. Make sure to drink plenty of water to stay hydrated and maintain proper blood volume.</li>
+            <li><strong>Monitor for Underlying Conditions:</strong> If you have chronic lung or heart disease, follow your treatment plan. If polycythemia vera is suspected, your healthcare provider will guide you through diagnostic tests and treatments.</li>
+            <li><strong>Quit Smoking:</strong> Quitting smoking can help reduce the body's need for extra red blood cell production and improve overall cardiovascular and lung health.</li>
+            <li><strong>Regular Check-Ups:</strong> If you live at high altitudes or have chronic conditions, regular monitoring of hemoglobin and other blood parameters will help manage your health effectively.</li>
+            <li><strong>Consult a Doctor:</strong> If your hemoglobin is significantly high and symptoms like headaches, dizziness, or a reddened complexion occur, see a healthcare professional to rule out polycythemia vera or other blood disorders.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Foods to Eat:</h3>
+        <ul>
+            <li><strong>Iron-Rich Foods:</strong> While high hemoglobin can sometimes be linked to excess iron, focus on eating a balanced diet and avoid iron-rich supplements unless advised by your doctor.</li>
+            <li><strong>Foods to Support Hydration:</strong>
+                <ul>
+                    <li><strong>Water-Rich Foods:</strong> Cucumbers, watermelon, celery, oranges, and strawberries can help keep you hydrated.</li>
+                    <li><strong>Electrolyte-Rich Foods:</strong> Include potassium-rich foods like bananas, sweet potatoes, and leafy greens to maintain fluid balance and hydration.</li>
+                </ul>
+            </li>
+            <li><strong>Avoid Excessive Iron:</strong> Avoid excessive consumption of iron-rich foods or supplements unless prescribed, as the body may already have sufficient iron.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Example Meal Plan for High Hemoglobin (Polycythemia):</h3>
+        <ul>
+            <li><strong>Breakfast:</strong> Oatmeal with almond milk and fresh fruit (e.g., strawberries and blueberries) for antioxidants, paired with a glass of water.</li>
+            <li><strong>Lunch:</strong> A salad with mixed greens (for hydration), cucumber, and tomato, with a light dressing. Add a source of lean protein (e.g., chicken or tofu) for balance.</li>
+            <li><strong>Snack:</strong> A water-based smoothie with hydrating fruits like watermelon or cucumber and a few spinach leaves for additional hydration.</li>
+            <li><strong>Dinner:</strong> Grilled salmon (rich in healthy fats but not iron-loaded) with steamed vegetables like broccoli and zucchini. Drink plenty of water during meals.</li>
+        </ul>
+    </div>
+    <p>Note: While dietary adjustments can help manage some causes of high hemoglobin, underlying medical conditions (e.g., polycythemia vera or chronic lung disease) require specialized care and management by a healthcare provider.</p>
+</div>
+""")
 
     # Total RBC Count (range: 4.5-5.5 million cells/μL)
+
     if "Total RBC Count" in values:
         if values["Total RBC Count"] < 4.5:
-            advice.append(""" Low Total RBC Count (Erythropenia)
-
-Root Cause:
-    Anemia: Low RBC count is often caused by anemia, which can result from iron, vitamin B12, or folate deficiencies, chronic disease, or blood loss.
-    Nutritional Deficiencies: Lack of iron, vitamin B12, or folate can impair RBC production.
-    Chronic Inflammatory Conditions: Chronic infections, autoimmune diseases, or kidney disease can suppress RBC production.
-    Bone Marrow Disorders: Conditions like aplastic anemia or leukemia affect the bone marrow’s ability to produce RBCs.
-    Excessive Blood Loss: Surgery, gastrointestinal bleeding (e.g., ulcers), or heavy menstrual periods.
-    Kidney Disease: Since the kidneys produce erythropoietin (a hormone that stimulates RBC production), kidney dysfunction can result in low RBC count.
-    Genetic Disorders: Conditions like thalassemia, sickle cell anemia, and other hereditary disorders can lead to low RBC production.
-
-Tips:
-    Increase Iron Intake: Iron is crucial for RBC production. Consider iron-rich foods or supplements as advised by your doctor.
-    Supplement with Vitamin B12 and Folate: If these deficiencies are detected, your doctor may recommend supplements to support RBC production.
-    Treat the Underlying Cause: If blood loss or a chronic disease is contributing to low RBC count, addressing the root cause is essential (e.g., treating ulcers, managing kidney disease).
-    Monitor for Symptoms of Anemia: Symptoms like fatigue, pale skin, shortness of breath, and dizziness should be discussed with your healthcare provider.
-
-Foods to Eat:
-    Iron-Rich Foods (Heme and Non-Heme Iron):
-    Heme Iron: Red meat (beef, lamb), poultry (chicken, turkey), fish (salmon, tuna), liver.
-    Non-Heme Iron: Spinach, lentils, chickpeas, beans, quinoa, tofu, fortified cereals, pumpkin seeds.
-    Vitamin B12-Rich Foods: Eggs, dairy (milk, yogurt, cheese), meat, fish (salmon, tuna), shellfish, fortified cereals.
-    Folate-Rich Foods: Leafy greens (spinach, kale), avocado, beans, lentils, citrus fruits, fortified cereals.
-    Vitamin C-Rich Foods (to enhance iron absorption): Citrus fruits, bell peppers, broccoli, strawberries, kiwi, and tomatoes.
-
-Example Meal Plan for Low RBC Count:
-    Breakfast: Fortified cereal with almond milk, topped with fresh strawberries (rich in vitamin C) and a boiled egg.
-    Lunch: Spinach and lentil salad with citrus dressing to enhance iron absorption.
-    Snack: A handful of pumpkin seeds and an orange for extra vitamin C.
-    Dinner: Grilled chicken with quinoa and steamed broccoli.""")
+            advice.append("""
+<div>
+    <h2>Low Total RBC Count (Erythropenia)</h2>
+    <div>
+        <h3>Root Cause:</h3>
+        <ul>
+            <li><strong>Anemia:</strong> Low RBC count is often caused by anemia, which can result from iron, vitamin B12, or folate deficiencies, chronic disease, or blood loss.</li>
+            <li><strong>Nutritional Deficiencies:</strong> Lack of iron, vitamin B12, or folate can impair RBC production.</li>
+            <li><strong>Chronic Inflammatory Conditions:</strong> Chronic infections, autoimmune diseases, or kidney disease can suppress RBC production.</li>
+            <li><strong>Bone Marrow Disorders:</strong> Conditions like aplastic anemia or leukemia affect the bone marrow’s ability to produce RBCs.</li>
+            <li><strong>Excessive Blood Loss:</strong> Surgery, gastrointestinal bleeding (e.g., ulcers), or heavy menstrual periods.</li>
+            <li><strong>Kidney Disease:</strong> Since the kidneys produce erythropoietin (a hormone that stimulates RBC production), kidney dysfunction can result in low RBC count.</li>
+            <li><strong>Genetic Disorders:</strong> Conditions like thalassemia, sickle cell anemia, and other hereditary disorders can lead to low RBC production.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Tips:</h3>
+        <ul>
+            <li><strong>Increase Iron Intake:</strong> Iron is crucial for RBC production. Consider iron-rich foods or supplements as advised by your doctor.</li>
+            <li><strong>Supplement with Vitamin B12 and Folate:</strong> If these deficiencies are detected, your doctor may recommend supplements to support RBC production.</li>
+            <li><strong>Treat the Underlying Cause:</strong> Addressing the root cause is essential (e.g., treating ulcers, managing kidney disease).</li>
+            <li><strong>Monitor for Symptoms of Anemia:</strong> Symptoms like fatigue, pale skin, shortness of breath, and dizziness should be discussed with your healthcare provider.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Foods to Eat:</h3>
+        <ul>
+            <li><strong>Iron-Rich Foods:</strong> Red meat, poultry, fish, liver, spinach, lentils, chickpeas, beans, quinoa, tofu, fortified cereals, pumpkin seeds.</li>
+            <li><strong>Vitamin B12-Rich Foods:</strong> Eggs, dairy, meat, fish, shellfish, fortified cereals.</li>
+            <li><strong>Folate-Rich Foods:</strong> Leafy greens, avocado, beans, lentils, citrus fruits, fortified cereals.</li>
+            <li><strong>Vitamin C-Rich Foods:</strong> Citrus fruits, bell peppers, broccoli, strawberries, kiwi, and tomatoes.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Example Meal Plan:</h3>
+        <ul>
+            <li><strong>Breakfast:</strong> Fortified cereal with almond milk, fresh strawberries, and a boiled egg.</li>
+            <li><strong>Lunch:</strong> Spinach and lentil salad with citrus dressing to enhance iron absorption.</li>
+            <li><strong>Snack:</strong> A handful of pumpkin seeds and an orange.</li>
+            <li><strong>Dinner:</strong> Grilled chicken with quinoa and steamed broccoli.</li>
+        </ul>
+    </div>
+</div>
+""")
         elif values["Total RBC Count"] > 5.5:
-            advice.append("""High Total RBC Count (Polycythemia)
+            advice.append("""
+<div>
+    <h2>High Total RBC Count (Polycythemia)</h2>
+    <div>
+        <h3>Root Cause:</h3>
+        <ul>
+            <li><strong>Dehydration:</strong> When the body is dehydrated, plasma (the liquid part of blood) decreases, making the concentration of RBCs appear higher.</li>
+            <li><strong>Polycythemia Vera:</strong> A rare blood disorder in which the bone marrow produces too many RBCs, often without an identifiable cause.</li>
+            <li><strong>Chronic Low Oxygen Levels:</strong> Conditions like chronic lung disease, heart disease, or living at high altitudes can cause the body to compensate by producing more RBCs.</li>
+            <li><strong>Smoking:</strong> Smoking reduces oxygen levels in the blood, which may lead the body to produce more RBCs.</li>
+            <li><strong>Tumors:</strong> Certain tumors, especially kidney tumors, can secrete erythropoietin, leading to an elevated RBC count.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Tips:</h3>
+        <ul>
+            <li><strong>Hydrate Properly:</strong> Dehydration is a common cause of high RBC counts. Drink plenty of water throughout the day.</li>
+            <li><strong>Quit Smoking:</strong> Smoking can decrease oxygen levels in the blood, prompting the body to produce more RBCs.</li>
+            <li><strong>Follow Up with Your Doctor:</strong> High RBC counts should be evaluated further with necessary tests and treatments.</li>
+            <li><strong>Avoid Excessive Iron:</strong> If diagnosed with polycythemia, reducing iron intake may be necessary.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Foods to Eat:</h3>
+        <ul>
+            <li><strong>Water-Rich Foods:</strong> Cucumbers, watermelon, celery, oranges, strawberries, and bell peppers.</li>
+            <li><strong>Electrolyte-Rich Foods:</strong> Bananas, sweet potatoes, spinach, and avocados.</li>
+            <li><strong>Antioxidant-Rich Foods:</strong> Berries, leafy greens, tomatoes, and nuts.</li>
+            <li><strong>Low-Sodium Foods:</strong> Avoid excessive salt, which can contribute to dehydration.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Example Meal Plan:</h3>
+        <ul>
+            <li><strong>Breakfast:</strong> Watermelon smoothie with spinach and chia seeds.</li>
+            <li><strong>Lunch:</strong> Grilled chicken salad with cucumber, mixed greens, and avocado.</li>
+            <li><strong>Snack:</strong> Fresh strawberries and a handful of nuts.</li>
+            <li><strong>Dinner:</strong> Baked salmon with roasted sweet potatoes and steamed asparagus.</li>
+        </ul>
+    </div>
+</div>
+""")
 
-Root Cause:
-    Dehydration: When the body is dehydrated, plasma (the liquid part of blood) decreases, making the concentration of RBCs appear higher.
-    Polycythemia Vera: A rare blood disorder in which the bone marrow produces too many RBCs, often without an identifiable cause.
-    Chronic Low Oxygen Levels: Conditions like chronic lung disease (COPD), heart disease, or living at high altitudes can cause the body to compensate by producing more RBCs to increase oxygen transport.
-    Smoking: Smoking reduces oxygen levels in the blood, which may lead the body to produce more RBCs.
-    Tumors: Certain tumors, especially kidney tumors, can secrete erythropoietin (a hormone that stimulates RBC production), leading to an elevated RBC count.
-
-Tips:
-    Hydrate Properly: Dehydration is a common cause of high RBC counts. Drink plenty of water throughout the day.
-    Quit Smoking: Smoking can decrease oxygen levels in the blood, prompting the body to produce more RBCs. Quitting smoking can improve overall health.
-    Follow Up with Your Doctor: High RBC counts should be evaluated further. If polycythemia vera or chronic diseases are suspected, your doctor will guide you through the necessary tests and treatments.
-    Avoid Excessive Iron: If you are diagnosed with polycythemia, reducing iron intake may be necessary, as high iron levels could contribute to the overproduction of RBCs.
-
-Foods to Eat:
-    Water-Rich Foods: Cucumbers, watermelon, celery, oranges, strawberries, and bell peppers can help keep you hydrated.
-    Electrolyte-Rich Foods: Bananas, sweet potatoes, spinach, and avocados to maintain hydration and electrolyte balance.
-    Iron-Rich Foods (if advised): In some cases of high RBC count, it may be important to avoid excessive iron intake. However, balanced consumption of iron is fine unless your doctor advises otherwise.
-    Antioxidant-Rich Foods: Foods high in antioxidants, like berries (blueberries, raspberries, blackberries), leafy greens, tomatoes, and nuts, may help reduce oxidative stress and inflammation.
-    Low-Sodium Foods: Since high RBC counts can be associated with dehydration, avoid excessive salt, which can contribute to fluid retention.
-
-Example Meal Plan for High RBC Count:
-    Breakfast: Watermelon smoothie with spinach and chia seeds (rich in antioxidants and hydration).
-    Lunch: Grilled chicken salad with cucumber, mixed greens, and avocado (hydrating and rich in healthy fats).
-    Snack: Fresh strawberries and a handful of nuts.
-    Dinner: Baked salmon with roasted sweet potatoes and steamed asparagus.""")
 
     # Packed Cell Volume / Hematocrit (range: 40-50%)
     if "Packed Cell Volume / Hematocrit" in values:
         if values["Packed Cell Volume / Hematocrit"] < 40:
-            advice.append("""Low Packed Cell Volume (PCV) / Hematocrit (Anemia)
-
-Root Cause:
-    Iron Deficiency: Inadequate iron affects the production of hemoglobin, leading to a low hematocrit.
-    Vitamin B12 or Folate Deficiency: These vitamins are essential for the production and maturation of red blood cells. A deficiency can result in a low hematocrit.
-    Blood Loss: Chronic blood loss due to heavy menstruation, gastrointestinal bleeding (e.g., ulcers), or surgery can decrease the hematocrit.
-    Chronic Diseases: Kidney disease, cancer, and chronic inflammatory conditions can impair RBC production and cause a low hematocrit.
-    Bone Marrow Disorders: Aplastic anemia, leukemia, or other disorders affecting the bone marrow’s ability to produce RBCs can lead to a low hematocrit.
-    Hemorrhage: Sudden blood loss, such as from an injury or surgery, can cause a decrease in hematocrit.
-    Hydration Status: Overhydration (fluid overload) can dilute blood, artificially lowering hematocrit levels.
-
-Tips:
-    Increase Iron Intake: Iron is essential for RBC production. If iron deficiency is the cause, consider taking iron supplements as prescribed by your doctor.
-    Supplement with Vitamin B12 and Folate: Deficiencies in these vitamins can contribute to low hematocrit. You may need supplements if your levels are low.
-    Treat the Underlying Cause: If blood loss or a chronic disease is the cause, treat the underlying condition (e.g., managing ulcers, controlling kidney disease).
-    Avoid Excessive Fluids: If low hematocrit is due to overhydration, limit your fluid intake and consult your doctor for advice on fluid balance.
-    Monitor for Symptoms: Symptoms like fatigue, dizziness, pale skin, or shortness of breath should be reported to your healthcare provider.
-
-Foods to Eat:
-    Iron-Rich Foods
-    Heme Iron (animal sources): Red meat, poultry, fish, shellfish, and liver.
-    Non-Heme Iron (plant-based): Lentils, beans, tofu, quinoa, spinach, pumpkin seeds, and fortified cereals.
-    Vitamin B12-Rich Foods: Eggs, dairy products, fish (salmon, tuna), poultry, fortified cereals.
-    Folate-Rich Foods: Leafy greens (spinach, kale), citrus fruits, beans, peas, lentils, fortified cereals.
-    Vitamin C-Rich Foods: Citrus fruits, bell peppers, broccoli, strawberries, and tomatoes to enhance iron absorption.
-
-Example Meal Plan for Low Hematocrit:
-    Breakfast: Fortified cereal with almond milk, topped with fresh strawberries (rich in vitamin C) and a boiled egg for protein.
-    Lunch: Spinach and lentil salad with a citrus vinaigrette to help with iron absorption.
-    Snack: A handful of pumpkin seeds and an orange.
-    Dinner: Grilled chicken with quinoa and steamed broccoli.""")
-        elif values["Packed Cell Volume / Hematocrit"] > 50:
-            advice.append("""High Packed Cell Volume (PCV) / Hematocrit
-
-Root Cause:
-Dehydration: When the body is dehydrated, the plasma (liquid part of blood) decreases, leading to a relative increase in RBC concentration, causing high hematocrit.
-Polycythemia Vera: A bone marrow disorder where the body overproduces red blood cells, resulting in a high hematocrit.
-Chronic Lung Disease (COPD): Low oxygen levels in the blood can stimulate the bone marrow to produce more RBCs to increase oxygen transport.
-Living at High Altitudes: The body compensates for lower oxygen levels in the air by producing more RBCs to improve oxygen delivery.
-Smoking: Smoking reduces oxygen in the blood, leading to an increase in RBC production.
-Heart Disease: Some heart conditions that result in low oxygen levels can lead to a high hematocrit as the body attempts to compensate for insufficient oxygen.
-Tumors: Some tumors (especially kidney tumors) can secrete erythropoietin (EPO), which stimulates RBC production.
-
-Tips:
-Hydrate Properly: Dehydration is a common cause of high hematocrit. Drinking plenty of fluids can help reduce the concentration of red blood cells in the blood.
-Avoid Smoking: Smoking reduces the amount of oxygen in the blood, stimulating the production of more RBCs. Quitting smoking can help normalize hematocrit levels.
-Manage Underlying Conditions: If high hematocrit is due to chronic lung or heart disease, follow your treatment plan. If polycythemia vera is suspected, your healthcare provider may recommend blood donation or other treatments.
-Consult Your Doctor: High hematocrit can be a sign of serious conditions like polycythemia vera or chronic lung disease. It’s important to consult your healthcare provider for proper diagnosis and management.
-Regular Monitoring: If you live at high altitudes, regular monitoring of hematocrit levels is necessary. You may need to make lifestyle adjustments or take medications to manage high hematocrit.
-
-Foods to Eat:
-Hydrating Foods:
-Water-Rich Foods: Cucumbers, watermelon, celery, oranges, strawberries, bell peppers, and lettuce help maintain hydration.
-Electrolyte-Rich Foods: Bananas, sweet potatoes, spinach, and avocados can help balance fluids and electrolytes in the body.
-Avoid Excessive Iron: If you have a high hematocrit, limit your intake of iron-rich foods unless advised otherwise, as high iron can exacerbate RBC production.
-Anti-Inflammatory Foods: Foods rich in antioxidants and omega-3 fatty acids, like berries, nuts, and fatty fish (e.g., salmon, mackerel), can help manage inflammation and improve blood health.
-Low-Sodium Foods: Since high hematocrit can be related to dehydration, avoid excess salt to prevent fluid retention.
-
-Example Meal Plan for High Hematocrit:
-    Breakfast: Oatmeal with fresh berries and chia seeds, paired with a large glass of water.
-    Lunch: Grilled chicken salad with cucumber, avocado, mixed greens, and a light vinaigrette dressing.
-    Snack: A handful of almonds and a glass of coconut water for hydration.
-    Dinner: Grilled salmon with steamed sweet potatoes and roasted vegetables (zucchini, asparagus, bell peppers).
+            advice.append("""
+<div>
+    <h2>Low Packed Cell Volume (PCV) / Hematocrit (Anemia)</h2>
+    <div>
+        <h3>Root Cause:</h3>
+        <ul>
+            <li><strong>Iron Deficiency:</strong> Inadequate iron affects the production of hemoglobin, leading to a low hematocrit.</li>
+            <li><strong>Vitamin B12 or Folate Deficiency:</strong> These vitamins are essential for the production and maturation of red blood cells. A deficiency can result in a low hematocrit.</li>
+            <li><strong>Blood Loss:</strong> Chronic blood loss due to heavy menstruation, gastrointestinal bleeding (e.g., ulcers), or surgery can decrease the hematocrit.</li>
+            <li><strong>Chronic Diseases:</strong> Kidney disease, cancer, and chronic inflammatory conditions can impair RBC production and cause a low hematocrit.</li>
+            <li><strong>Bone Marrow Disorders:</strong> Aplastic anemia, leukemia, or other disorders affecting the bone marrow’s ability to produce RBCs can lead to a low hematocrit.</li>
+            <li><strong>Hemorrhage:</strong> Sudden blood loss, such as from an injury or surgery, can cause a decrease in hematocrit.</li>
+            <li><strong>Hydration Status:</strong> Overhydration can dilute blood, artificially lowering hematocrit levels.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Tips:</h3>
+        <ul>
+            <li><strong>Increase Iron Intake:</strong> Iron is essential for RBC production. If iron deficiency is the cause, consider taking iron supplements as prescribed by your doctor.</li>
+            <li><strong>Supplement with Vitamin B12 and Folate:</strong> Deficiencies in these vitamins can contribute to low hematocrit. You may need supplements if your levels are low.</li>
+            <li><strong>Treat the Underlying Cause:</strong> If blood loss or a chronic disease is the cause, treat the underlying condition (e.g., managing ulcers, controlling kidney disease).</li>
+            <li><strong>Avoid Excessive Fluids:</strong> If low hematocrit is due to overhydration, limit your fluid intake and consult your doctor for advice on fluid balance.</li>
+            <li><strong>Monitor for Symptoms:</strong> Symptoms like fatigue, dizziness, pale skin, or shortness of breath should be reported to your healthcare provider.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Foods to Eat:</h3>
+        <ul>
+            <li><strong>Iron-Rich Foods:</strong> Heme iron (animal sources): Red meat, poultry, fish, shellfish, and liver. Non-heme iron (plant-based): Lentils, beans, tofu, quinoa, spinach, pumpkin seeds, and fortified cereals.</li>
+            <li><strong>Vitamin B12-Rich Foods:</strong> Eggs, dairy products, fish, poultry, and fortified cereals.</li>
+            <li><strong>Folate-Rich Foods:</strong> Leafy greens, citrus fruits, beans, peas, lentils, and fortified cereals.</li>
+            <li><strong>Vitamin C-Rich Foods:</strong> Citrus fruits, bell peppers, broccoli, strawberries, and tomatoes to enhance iron absorption.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Example Meal Plan for Low Hematocrit:</h3>
+        <ul>
+            <li><strong>Breakfast:</strong> Fortified cereal with almond milk, topped with fresh strawberries and a boiled egg.</li>
+            <li><strong>Lunch:</strong> Spinach and lentil salad with citrus dressing to enhance iron absorption.</li>
+            <li><strong>Snack:</strong> A handful of pumpkin seeds and an orange.</li>
+            <li><strong>Dinner:</strong> Grilled chicken with quinoa and steamed broccoli.</li>
+        </ul>
+    </div>
+</div>
 """)
+        elif values["Packed Cell Volume / Hematocrit"] > 50:
+            advice.append("""
+<div>
+    <h2>High Packed Cell Volume (PCV) / Hematocrit</h2>
+    <div>
+        <h3>Root Cause:</h3>
+        <ul>
+            <li><strong>Dehydration:</strong> When the body is dehydrated, the plasma (liquid part of blood) decreases, leading to a relative increase in RBC concentration.</li>
+            <li><strong>Polycythemia Vera:</strong> A bone marrow disorder where the body overproduces red blood cells, resulting in a high hematocrit.</li>
+            <li><strong>Chronic Lung Disease (COPD):</strong> Low oxygen levels in the blood can stimulate the bone marrow to produce more RBCs to increase oxygen transport.</li>
+            <li><strong>Living at High Altitudes:</strong> The body compensates for lower oxygen levels in the air by producing more RBCs.</li>
+            <li><strong>Smoking:</strong> Smoking reduces oxygen in the blood, leading to an increase in RBC production.</li>
+            <li><strong>Heart Disease:</strong> Some heart conditions that result in low oxygen levels can lead to a high hematocrit as the body attempts to compensate.</li>
+            <li><strong>Tumors:</strong> Certain tumors, especially kidney tumors, can secrete erythropoietin (EPO), which stimulates RBC production.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Tips:</h3>
+        <ul>
+            <li><strong>Hydrate Properly:</strong> Dehydration is a common cause of high hematocrit. Drinking plenty of fluids can help reduce the concentration of RBCs in the blood.</li>
+            <li><strong>Avoid Smoking:</strong> Smoking reduces the amount of oxygen in the blood, stimulating the production of more RBCs. Quitting smoking can help normalize hematocrit levels.</li>
+            <li><strong>Manage Underlying Conditions:</strong> If high hematocrit is due to chronic lung or heart disease, follow your treatment plan.</li>
+            <li><strong>Consult Your Doctor:</strong> High hematocrit can be a sign of serious conditions like polycythemia vera or chronic lung disease. It’s important to consult your healthcare provider for proper diagnosis and management.</li>
+            <li><strong>Regular Monitoring:</strong> If you live at high altitudes, regular monitoring of hematocrit levels is necessary.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Foods to Eat:</h3>
+        <ul>
+            <li><strong>Hydrating Foods:</strong> Water-rich foods: Cucumbers, watermelon, celery, oranges, strawberries, bell peppers, and lettuce.</li>
+            <li><strong>Electrolyte-Rich Foods:</strong> Bananas, sweet potatoes, spinach, and avocados.</li>
+            <li><strong>Avoid Excessive Iron:</strong> Limit your intake of iron-rich foods unless advised otherwise, as high iron can exacerbate RBC production.</li>
+            <li><strong>Anti-Inflammatory Foods:</strong> Foods rich in antioxidants and omega-3 fatty acids, like berries, nuts, and fatty fish.</li>
+            <li><strong>Low-Sodium Foods:</strong> Avoid excess salt to prevent fluid retention.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Example Meal Plan for High Hematocrit:</h3>
+        <ul>
+            <li><strong>Breakfast:</strong> Oatmeal with fresh berries and chia seeds, paired with a large glass of water.</li>
+            <li><strong>Lunch:</strong> Grilled chicken salad with cucumber, avocado, mixed greens, and light vinaigrette.</li>
+            <li><strong>Snack:</strong> A handful of almonds and a glass of coconut water for hydration.</li>
+            <li><strong>Dinner:</strong> Grilled salmon with steamed sweet potatoes and roasted vegetables.</li>
+        </ul>
+    </div>
+</div>
+""")
+
 
     # MCV (range: 83-101 fL)
     if "MCV" in values:
         if values["MCV"] < 83:
-            advice.append("""Low Mean Corpuscular Volume (MCV) / Microcytic Anemia
-
-Root Cause:
-    Iron Deficiency Anemia: The most common cause of low MCV is a lack of iron, which is essential for the production of hemoglobin in red blood cells.
-    Chronic Blood Loss: Conditions like heavy menstruation, gastrointestinal bleeding (e.g., ulcers, hemorrhoids), or surgical blood loss can lead to iron deficiency and microcytic anemia.
-    Thalassemia: A genetic disorder that leads to abnormal hemoglobin production, resulting in smaller-than-normal red blood cells.
-    Sideroblastic Anemia: A condition in which the bone marrow produces ringed sideroblasts instead of healthy red blood cells due to ineffective iron utilization.
-    Lead Poisoning: Lead toxicity can interfere with heme production, leading to microcytic anemia.
-    Chronic Diseases: Some chronic illnesses (e.g., chronic inflammation) may interfere with RBC production, leading to low MCV.
-
-Tips:
-    Increase Iron Intake: Iron deficiency is a common cause of low MCV, so iron-rich foods or supplements may be necessary (follow your doctor's advice).
-    Address Underlying Causes: If blood loss (e.g., ulcers, menstruation) is the cause, managing or treating the condition is crucial.
-    Monitor for Thalassemia: If genetic causes like thalassemia are suspected, your doctor will guide you with appropriate tests and management.
-    Check for Lead Exposure: If lead poisoning is suspected, immediate treatment and addressing the source of exposure are necessary.
-    Ensure Adequate Vitamin C: Vitamin C enhances iron absorption, so consuming foods rich in vitamin C can help in increasing iron levels.
-
-Foods to Eat:
-    Iron-Rich Foods
-    Heme Iron (from animal sources): Red meat (beef, lamb), poultry (chicken, turkey), liver, and fish.
-    Non-Heme Iron (plant-based): Lentils, beans, tofu, quinoa, spinach, pumpkin seeds, and fortified cereals.
-    Vitamin C-Rich Foods: Citrus fruits (oranges, grapefruit), bell peppers, strawberries, tomatoes, and broccoli to enhance iron absorption.
-    Folate-Rich Foods: Leafy greens (spinach, kale), avocado, beans, lentils, citrus fruits, and fortified cereals.
-    Vitamin B12-Rich Foods: Eggs, dairy, and fortified cereals to support overall blood health.
-
-Example Meal Plan for Low MCV:
-    Breakfast: Fortified cereal with almond milk, topped with fresh strawberries (rich in vitamin C) and a boiled egg.
-    Lunch: Spinach and lentil salad with a citrus dressing to aid in iron absorption.
-    Snack: A handful of pumpkin seeds and an orange.
-    Dinner: Grilled chicken with quinoa and steamed broccoli.
+            advice.append("""
+<div>
+    <h2>Low Mean Corpuscular Volume (MCV) / Microcytic Anemia</h2>
+    <div>
+        <h3>Root Cause:</h3>
+        <ul>
+            <li><strong>Iron Deficiency Anemia:</strong> Lack of iron affects hemoglobin production, leading to low MCV.</li>
+            <li><strong>Chronic Blood Loss:</strong> Conditions like heavy menstruation, gastrointestinal bleeding, or surgery can cause iron deficiency and microcytic anemia.</li>
+            <li><strong>Thalassemia:</strong> A genetic disorder causing abnormal hemoglobin production, leading to smaller red blood cells.</li>
+            <li><strong>Sideroblastic Anemia:</strong> Bone marrow produces ringed sideroblasts due to ineffective iron utilization.</li>
+            <li><strong>Lead Poisoning:</strong> Lead toxicity interferes with heme production, causing microcytic anemia.</li>
+            <li><strong>Chronic Diseases:</strong> Chronic illnesses (e.g., inflammation) may impair RBC production, leading to low MCV.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Tips:</h3>
+        <ul>
+            <li><strong>Increase Iron Intake:</strong> Iron-rich foods or supplements may help (consult your doctor).</li>
+            <li><strong>Address Underlying Causes:</strong> Manage or treat conditions causing blood loss.</li>
+            <li><strong>Monitor for Thalassemia:</strong> If genetic causes are suspected, seek medical advice.</li>
+            <li><strong>Check for Lead Exposure:</strong> Address the source of exposure and seek treatment if needed.</li>
+            <li><strong>Ensure Adequate Vitamin C:</strong> Vitamin C enhances iron absorption, aiding in improving MCV.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Foods to Eat:</h3>
+        <ul>
+            <li><strong>Iron-Rich Foods:</strong> Heme iron: Red meat, poultry, liver, and fish. Non-heme iron: Lentils, beans, tofu, spinach, and fortified cereals.</li>
+            <li><strong>Vitamin C-Rich Foods:</strong> Citrus fruits, bell peppers, strawberries, and broccoli to enhance iron absorption.</li>
+            <li><strong>Folate-Rich Foods:</strong> Leafy greens, avocado, beans, lentils, and fortified cereals.</li>
+            <li><strong>Vitamin B12-Rich Foods:</strong> Eggs, dairy, and fortified cereals for overall blood health.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Example Meal Plan for Low MCV:</h3>
+        <ul>
+            <li><strong>Breakfast:</strong> Fortified cereal with almond milk, topped with strawberries and a boiled egg.</li>
+            <li><strong>Lunch:</strong> Spinach and lentil salad with a citrus dressing.</li>
+            <li><strong>Snack:</strong> A handful of pumpkin seeds and an orange.</li>
+            <li><strong>Dinner:</strong> Grilled chicken with quinoa and steamed broccoli.</li>
+        </ul>
+    </div>
+</div>
 """)
         elif values["MCV"] > 101:
-            advice.append("""High Mean Corpuscular Volume (MCV) / Macrocytic Anemia
-
-Root Cause:
-    Vitamin B12 Deficiency: Low levels of vitamin B12 impair the maturation of red blood cells, leading to larger-than-normal cells (macrocytes).
-    Folate Deficiency: Like B12, a deficiency in folate affects RBC production and can result in larger cells.
-    Alcohol Abuse: Chronic alcohol consumption can interfere with the absorption of B12 and folate, leading to macrocytic anemia.
-    Liver Disease: Liver diseases, such as cirrhosis, can lead to an increase in MCV due to changes in RBC production and metabolism.
-    Hypothyroidism: An underactive thyroid can slow down red blood cell production, leading to larger red blood cells.
-    Medications: Certain medications like chemotherapy drugs, antiretrovirals, and anticonvulsants may affect RBC production and lead to high MCV.
-    Bone Marrow Disorders: Conditions like myelodysplastic syndromes can result in abnormal RBC production.
-
-Tips:
-    Increase Vitamin B12 and Folate Intake: If B12 or folate deficiency is the cause, your healthcare provider may recommend supplements or dietary changes.
-    Limit Alcohol Consumption: Alcohol can interfere with nutrient absorption and exacerbate anemia, so reducing intake is recommended.
-    Manage Thyroid Health: If hypothyroidism is the cause, follow the treatment plan prescribed by your doctor to restore normal thyroid function.
-    Monitor for Medications: If your medication is affecting MCV, consult your doctor for alternatives or adjustments.
-    Treat Underlying Conditions: For liver disease or bone marrow disorders, proper medical care is crucial.
-
-Foods to Eat:
-    Vitamin B12-Rich Foods: Eggs, dairy products (milk, yogurt, cheese), fish (salmon, tuna), poultry, shellfish, and fortified cereals.
-    Folate-Rich Foods: Leafy greens (spinach, kale), citrus fruits, beans, peas, lentils, fortified cereals, and pasta.
-    Iron-Rich Foods: While iron is often not a direct cause of high MCV, it’s still important for overall blood health. Sources include lean meat, beans, tofu, and fortified cereals.
-    Healthy Fats and Proteins: Foods like salmon, eggs, nuts, seeds, and avocados support overall health and vitamin absorption.
-    Avoid Alcohol: Alcohol can impair nutrient absorption, so reducing alcohol intake is essential for managing high MCV.
-
-Example Meal Plan for High MCV:
-    Breakfast: Scrambled eggs with spinach and fortified whole-grain toast (to provide B12 and folate).
-    Lunch: Grilled salmon salad with avocado, mixed greens, and citrus dressing.
-    Snack: A handful of almonds and a banana.
-    Dinner: Roasted chicken with quinoa and steamed broccoli. """)
+            advice.append("""
+<div>
+    <h2>High Mean Corpuscular Volume (MCV) / Macrocytic Anemia</h2>
+    <div>
+        <h3>Root Cause:</h3>
+        <ul>
+            <li><strong>Vitamin B12 Deficiency:</strong> Impairs red blood cell maturation, resulting in larger cells (macrocytes).</li>
+            <li><strong>Folate Deficiency:</strong> Affects RBC production, leading to larger cells.</li>
+            <li><strong>Alcohol Abuse:</strong> Chronic alcohol use interferes with absorption of B12 and folate, causing macrocytic anemia.</li>
+            <li><strong>Liver Disease:</strong> Liver disorders can alter RBC production and metabolism, increasing MCV.</li>
+            <li><strong>Hypothyroidism:</strong> An underactive thyroid slows RBC production, leading to larger cells.</li>
+            <li><strong>Medications:</strong> Drugs like chemotherapy agents or anticonvulsants may affect RBC production.</li>
+            <li><strong>Bone Marrow Disorders:</strong> Conditions like myelodysplastic syndromes result in abnormal RBC production.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Tips:</h3>
+        <ul>
+            <li><strong>Increase Vitamin B12 and Folate Intake:</strong> Supplements or dietary changes may be needed.</li>
+            <li><strong>Limit Alcohol Consumption:</strong> Alcohol can impair nutrient absorption, so reducing intake is important.</li>
+            <li><strong>Manage Thyroid Health:</strong> Follow your doctor’s treatment plan to normalize thyroid function.</li>
+            <li><strong>Monitor Medications:</strong> Consult your doctor if medications affect MCV, and discuss alternatives.</li>
+            <li><strong>Treat Underlying Conditions:</strong> Proper medical care for liver disease or bone marrow disorders is crucial.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Foods to Eat:</h3>
+        <ul>
+            <li><strong>Vitamin B12-Rich Foods:</strong> Eggs, dairy, fish (salmon, tuna), poultry, shellfish, and fortified cereals.</li>
+            <li><strong>Folate-Rich Foods:</strong> Leafy greens, beans, lentils, citrus fruits, and fortified cereals.</li>
+            <li><strong>Iron-Rich Foods:</strong> Lean meat, beans, tofu, and fortified cereals for overall blood health.</li>
+            <li><strong>Healthy Fats and Proteins:</strong> Foods like salmon, eggs, nuts, seeds, and avocados support vitamin absorption.</li>
+            <li><strong>Avoid Alcohol:</strong> Reducing alcohol intake is essential for managing high MCV.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Example Meal Plan for High MCV:</h3>
+        <ul>
+            <li><strong>Breakfast:</strong> Scrambled eggs with spinach and fortified whole-grain toast.</li>
+            <li><strong>Lunch:</strong> Grilled salmon salad with avocado, mixed greens, and citrus dressing.</li>
+            <li><strong>Snack:</strong> A handful of almonds and a banana.</li>
+            <li><strong>Dinner:</strong> Roasted chicken with quinoa and steamed broccoli.</li>
+        </ul>
+    </div>
+</div>
+""")
 
     # MCH (range: 27-33 pg)
     if "MCH" in values:
         if values["MCH"] < 27:
-            advice.append("""Low Mean Corpuscular Hemoglobin (MCH) / Hypochromic Anemia
-
-Root Cause:
-    Iron Deficiency Anemia: Low iron levels result in a decrease in hemoglobin production, which leads to smaller and less hemoglobin-rich red blood cells, causing low MCH.
-    Thalassemia: A genetic disorder that leads to defective hemoglobin production, resulting in smaller RBCs and low MCH.
-    Chronic Blood Loss: Conditions like gastrointestinal bleeding, heavy menstruation, or surgery can result in iron loss, leading to low MCH.
-    Vitamin B6 Deficiency: A deficiency in vitamin B6 can lead to impaired hemoglobin synthesis, affecting MCH levels.
-    Lead Poisoning: Lead toxicity can interfere with heme production, leading to hypochromic (low MCH) anemia.
-    Sideroblastic Anemia: A condition where the bone marrow produces abnormal red blood cells with insufficient hemoglobin.
-
-Tips:
-    Increase Iron Intake: Iron deficiency is the most common cause of low MCH, so iron supplements or iron-rich foods can help improve levels.
-    Address Underlying Conditions: If chronic blood loss (e.g., from ulcers or heavy menstruation) is the cause, addressing the source of the blood loss is key.
-    Increase Vitamin B6: Vitamin B6 is important for hemoglobin production, so ensure adequate intake of foods rich in B6, such as poultry, potatoes, and bananas.
-    Check for Lead Exposure: If lead poisoning is suspected, immediate medical treatment and avoiding exposure to lead sources are essential.
-    Genetic Counseling: If thalassemia is suspected, genetic counseling and further testing may be required for proper management.
-
-Foods to Eat:
-    Iron-Rich Foods
-    Heme Iron: Red meat (beef, lamb), poultry (chicken, turkey), fish (salmon, tuna), liver.
-    Non-Heme Iron: Lentils, beans, quinoa, tofu, spinach, pumpkin seeds, and fortified cereals.
-    Vitamin B6-Rich Foods: Poultry (chicken, turkey), fish, potatoes, bananas, fortified cereals, and chickpeas.
-    Vitamin C-Rich Foods: Citrus fruits, bell peppers, tomatoes, broccoli, and strawberries, as vitamin C enhances iron absorption.
-    Folate-Rich Foods: Leafy greens (spinach, kale), citrus fruits, beans, lentils, and fortified cereals.
-Example Meal Plan for Low MCH:
-    Breakfast: Fortified cereal with almond milk, topped with strawberries (rich in vitamin C) and a boiled egg.
-    Lunch: Spinach and lentil salad with a citrus dressing to improve iron absorption.
-    Snack: A handful of pumpkin seeds and an orange.
-    Dinner: Grilled chicken with quinoa and steamed broccoli.""")
-        elif values["MCH"] > 32:
-            advice.append("""High Mean Corpuscular Hemoglobin (MCH) / Hyperchromic Anemia
-
-Root Cause:
-    Vitamin B12 Deficiency: A deficiency in vitamin B12 can impair red blood cell maturation, leading to the production of large, hyperchromic cells with more hemoglobin content.
-    Folate Deficiency: Like B12, folate is essential for RBC production, and its deficiency can result in the formation of larger RBCs with a higher concentration of hemoglobin.
-    Alcohol Abuse: Chronic alcohol consumption can interfere with the absorption of B12 and folate, leading to the production of larger RBCs with more hemoglobin.
-    Liver Disease: Liver conditions like cirrhosis can lead to macrocytic RBCs, which often have a higher hemoglobin content.
-    Hypothyroidism: An underactive thyroid can cause larger RBCs with increased hemoglobin, often leading to high MCH.
-    Bone Marrow Disorders: Some bone marrow disorders like myelodysplastic syndromes result in the production of RBCs with abnormal characteristics, including high MCH.
-
-Tips:
-    Increase Folate and Vitamin B12 Intake: If a deficiency is causing high MCH, supplementation with B12 and folate-rich foods may help. Your healthcare provider may recommend supplements.
-    Limit Alcohol Consumption: Alcohol interferes with nutrient absorption, so cutting back or eliminating alcohol may help normalize MCH levels.
-    Treat Thyroid Dysfunction: If hypothyroidism is the cause, proper management with thyroid hormone replacement will help normalize MCH levels.
-    Monitor Medications: If certain medications are affecting MCH, speak with your doctor about alternatives or adjustments.
-    Manage Liver Disease: If liver disease is the cause, working with your healthcare provider to manage the condition is essential.
-
-Foods to Eat:
-    Vitamin B12-Rich Foods: Eggs, dairy (milk, yogurt, cheese), fish (salmon, tuna), poultry, shellfish, and fortified cereals.
-    Folate-Rich Foods: Leafy greens (spinach, kale), citrus fruits, beans, peas, lentils, and fortified cereals.
-    Iron-Rich Foods: Iron is still essential for overall blood health, so sources like lean meats, beans, tofu, and fortified cereals should be included.
-    Healthy Fats: Omega-3 fatty acids from fish (salmon, sardines), flaxseeds, chia seeds, and walnuts can support overall health and vitamin absorption.
-    Antioxidant-Rich Foods: Foods like berries (blueberries, raspberries), nuts, and leafy greens can reduce oxidative stress and support overall blood health.
-
-Example Meal Plan for High MCH:
-    Breakfast: Scrambled eggs with spinach and fortified whole-grain toast (rich in vitamin B12 and folate).
-    Lunch: Grilled salmon salad with avocado, mixed greens, and citrus dressing.
-    Snack: A handful of almonds and a banana.
-    Dinner: Roasted chicken with quinoa and steamed broccoli.
+            advice.append("""
+<div>
+    <h2>Low Mean Corpuscular Hemoglobin (MCH) / Hypochromic Anemia</h2>
+    <div>
+        <h3>Root Cause:</h3>
+        <ul>
+            <li><strong>Iron Deficiency Anemia:</strong> Low iron levels reduce hemoglobin production, causing smaller RBCs with less hemoglobin.</li>
+            <li><strong>Thalassemia:</strong> A genetic disorder that causes defective hemoglobin production, leading to smaller RBCs and low MCH.</li>
+            <li><strong>Chronic Blood Loss:</strong> Gastrointestinal bleeding, heavy menstruation, or surgery can lead to iron loss, causing low MCH.</li>
+            <li><strong>Vitamin B6 Deficiency:</strong> Impairs hemoglobin synthesis, affecting MCH levels.</li>
+            <li><strong>Lead Poisoning:</strong> Lead toxicity interferes with heme production, resulting in hypochromic anemia.</li>
+            <li><strong>Sideroblastic Anemia:</strong> A condition in which the bone marrow produces abnormal RBCs with insufficient hemoglobin.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Tips:</h3>
+        <ul>
+            <li><strong>Increase Iron Intake:</strong> Iron-rich foods or supplements can help improve low MCH.</li>
+            <li><strong>Address Underlying Conditions:</strong> Treat conditions like chronic blood loss to address low MCH.</li>
+            <li><strong>Increase Vitamin B6:</strong> Consume foods rich in vitamin B6 such as poultry, potatoes, and bananas.</li>
+            <li><strong>Check for Lead Exposure:</strong> Seek medical treatment and eliminate exposure if lead poisoning is suspected.</li>
+            <li><strong>Genetic Counseling:</strong> For suspected thalassemia, consult with a specialist for further evaluation and management.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Foods to Eat:</h3>
+        <ul>
+            <li><strong>Iron-Rich Foods:</strong> Heme iron: Red meat, poultry, fish, and liver. Non-heme iron: Lentils, beans, tofu, quinoa, and fortified cereals.</li>
+            <li><strong>Vitamin B6-Rich Foods:</strong> Poultry, fish, potatoes, bananas, fortified cereals, and chickpeas.</li>
+            <li><strong>Vitamin C-Rich Foods:</strong> Citrus fruits, bell peppers, tomatoes, broccoli, and strawberries to enhance iron absorption.</li>
+            <li><strong>Folate-Rich Foods:</strong> Leafy greens, citrus fruits, beans, lentils, and fortified cereals.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Example Meal Plan for Low MCH:</h3>
+        <ul>
+            <li><strong>Breakfast:</strong> Fortified cereal with almond milk, strawberries, and a boiled egg.</li>
+            <li><strong>Lunch:</strong> Spinach and lentil salad with a citrus dressing.</li>
+            <li><strong>Snack:</strong> Pumpkin seeds and an orange.</li>
+            <li><strong>Dinner:</strong> Grilled chicken with quinoa and steamed broccoli.</li>
+        </ul>
+    </div>
+</div>
 """)
+        elif values["MCH"] > 32:
+            advice.append("""
+<div>
+    <h2>High Mean Corpuscular Hemoglobin (MCH) / Hyperchromic Anemia</h2>
+    <div>
+        <h3>Root Cause:</h3>
+        <ul>
+            <li><strong>Vitamin B12 Deficiency:</strong> Causes larger, hyperchromic RBCs with more hemoglobin content.</li>
+            <li><strong>Folate Deficiency:</strong> Impairs RBC production, resulting in larger RBCs with higher hemoglobin levels.</li>
+            <li><strong>Alcohol Abuse:</strong> Interferes with B12 and folate absorption, leading to high MCH.</li>
+            <li><strong>Liver Disease:</strong> Liver conditions may lead to macrocytic RBCs with increased hemoglobin content.</li>
+            <li><strong>Hypothyroidism:</strong> An underactive thyroid can result in larger RBCs with increased hemoglobin.</li>
+            <li><strong>Bone Marrow Disorders:</strong> Conditions like myelodysplastic syndromes can cause abnormal RBC characteristics, including high MCH.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Tips:</h3>
+        <ul>
+            <li><strong>Increase Folate and Vitamin B12 Intake:</strong> Include B12 and folate-rich foods in your diet or take supplements.</li>
+            <li><strong>Limit Alcohol Consumption:</strong> Reducing or eliminating alcohol intake may help normalize MCH levels.</li>
+            <li><strong>Treat Thyroid Dysfunction:</strong> Follow your doctor's treatment plan for hypothyroidism.</li>
+            <li><strong>Monitor Medications:</strong> Consult your doctor if medications are contributing to high MCH.</li>
+            <li><strong>Manage Liver Disease:</strong> Work with your healthcare provider to address liver conditions.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Foods to Eat:</h3>
+        <ul>
+            <li><strong>Vitamin B12-Rich Foods:</strong> Eggs, dairy, fish, poultry, shellfish, and fortified cereals.</li>
+            <li><strong>Folate-Rich Foods:</strong> Leafy greens, citrus fruits, beans, peas, lentils, and fortified cereals.</li>
+            <li><strong>Iron-Rich Foods:</strong> Lean meats, beans, tofu, and fortified cereals for overall blood health.</li>
+            <li><strong>Healthy Fats:</strong> Omega-3-rich foods like salmon, flaxseeds, and walnuts to support nutrient absorption.</li>
+            <li><strong>Antioxidant-Rich Foods:</strong> Berries, nuts, and leafy greens to reduce oxidative stress.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Example Meal Plan for High MCH:</h3>
+        <ul>
+            <li><strong>Breakfast:</strong> Scrambled eggs with spinach and fortified whole-grain toast.</li>
+            <li><strong>Lunch:</strong> Grilled salmon salad with avocado, mixed greens, and citrus dressing.</li>
+            <li><strong>Snack:</strong> Almonds and a banana.</li>
+            <li><strong>Dinner:</strong> Roasted chicken with quinoa and steamed broccoli.</li>
+        </ul>
+    </div>
+</div>
+""")
+
 
     # MCHC (range: 320-360 g/dL)
     if "MCHC" in values:
         if values["MCHC"] < 31.5:
-            advice.append("""Low Mean Corpuscular Hemoglobin Concentration (MCHC) / Hypochromic Anemia
-
-Root Cause:
-    Iron Deficiency Anemia: Iron is essential for the production of hemoglobin in red blood cells. In iron deficiency, RBCs have reduced hemoglobin concentration, causing low MCHC.
-    Hereditary Spherocytosis: A genetic condition where RBCs are abnormally shaped (spherical) and have a lower hemoglobin concentration, leading to low MCHC.
-    Thalassemia: In thalassemia, defective hemoglobin production leads to a reduced MCHC, with red blood cells having less hemoglobin than normal.
-    Chronic Blood Loss: Blood loss due to gastrointestinal bleeding, heavy menstruation, or surgery can lead to iron deficiency and lower hemoglobin levels, which reduces MCHC.
-    Sideroblastic Anemia: A type of anemia where the body is unable to incorporate iron into hemoglobin properly, resulting in low MCHC.
-    Lead Poisoning: Lead toxicity interferes with heme production, reducing the concentration of hemoglobin in red blood cells.
-
-Tips:
-    Increase Iron Intake: Iron is vital for hemoglobin production. Iron supplements or iron-rich foods (under the guidance of your doctor) can help normalize MCHC.
-    Address Underlying Blood Loss: If chronic blood loss is the issue (e.g., from ulcers or menstruation), addressing and treating the source of blood loss is critical.
-    Monitor for Sideroblastic Anemia or Thalassemia: If a genetic condition is suspected, further tests and appropriate management should be followed.
-    Check for Lead Exposure: If lead exposure is the cause, seek medical treatment for lead poisoning and avoid further exposure.
-    Ensure Adequate Vitamin C: Vitamin C enhances iron absorption, so it is important to consume vitamin C-rich foods alongside iron-rich meals.
-
-Foods to Eat:
-    Iron-Rich Foods:
-    Heme Iron: Red meat (beef, lamb), poultry (chicken, turkey), fish (salmon, tuna), liver.
-    Non-Heme Iron: Lentils, beans, tofu, quinoa, spinach, pumpkin seeds, and fortified cereals.
-    Vitamin C-Rich Foods: Citrus fruits (oranges, grapefruit), bell peppers, tomatoes, broccoli, and strawberries to enhance iron absorption.
-    Folate-Rich Foods: Leafy greens (spinach, kale), avocado, beans, lentils, citrus fruits, and fortified cereals.
-    Vitamin B12-Rich Foods: Eggs, dairy products, fortified cereals, and fish to support overall blood health.
-
-Example Meal Plan for Low MCHC:
-    Breakfast: Fortified cereal with almond milk, topped with strawberries (rich in vitamin C) and a boiled egg.
-    Lunch: Spinach and lentil salad with a citrus dressing to improve iron absorption.
-    Snack: A handful of pumpkin seeds and an orange.
-    Dinner: Grilled chicken with quinoa and steamed broccoli.
+            advice.append("""
+<div>
+    <h2>Low Mean Corpuscular Hemoglobin Concentration (MCHC) / Hypochromic Anemia</h2>
+    <div>
+        <h3>Root Cause:</h3>
+        <ul>
+            <li><strong>Iron Deficiency Anemia:</strong> Essential for hemoglobin production, low iron causes reduced hemoglobin concentration.</li>
+            <li><strong>Hereditary Spherocytosis:</strong> Genetic condition causing abnormally shaped RBCs with lower hemoglobin concentration.</li>
+            <li><strong>Thalassemia:</strong> Defective hemoglobin production leading to reduced MCHC.</li>
+            <li><strong>Chronic Blood Loss:</strong> Conditions like gastrointestinal bleeding or heavy menstruation cause iron deficiency and lower MCHC.</li>
+            <li><strong>Sideroblastic Anemia:</strong> Inability to incorporate iron into hemoglobin, leading to low MCHC.</li>
+            <li><strong>Lead Poisoning:</strong> Lead toxicity interferes with heme production, reducing hemoglobin concentration.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Tips:</h3>
+        <ul>
+            <li><strong>Increase Iron Intake:</strong> Iron supplements or iron-rich foods can help normalize MCHC.</li>
+            <li><strong>Address Underlying Blood Loss:</strong> Treat the source of chronic blood loss.</li>
+            <li><strong>Monitor for Genetic Conditions:</strong> Proper management for conditions like thalassemia or hereditary spherocytosis.</li>
+            <li><strong>Check for Lead Exposure:</strong> Seek treatment for lead poisoning and avoid further exposure.</li>
+            <li><strong>Enhance Iron Absorption:</strong> Consume vitamin C-rich foods with iron-rich meals.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Foods to Eat:</h3>
+        <ul>
+            <li><strong>Iron-Rich Foods:</strong> Heme iron: Red meat, poultry, fish, liver. Non-heme iron: Lentils, beans, tofu, spinach, pumpkin seeds, fortified cereals.</li>
+            <li><strong>Vitamin C-Rich Foods:</strong> Citrus fruits, bell peppers, tomatoes, broccoli, and strawberries.</li>
+            <li><strong>Folate-Rich Foods:</strong> Leafy greens, avocado, beans, lentils, and fortified cereals.</li>
+            <li><strong>Vitamin B12-Rich Foods:</strong> Eggs, dairy products, fortified cereals, and fish.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Example Meal Plan for Low MCHC:</h3>
+        <ul>
+            <li><strong>Breakfast:</strong> Fortified cereal with almond milk, strawberries, and a boiled egg.</li>
+            <li><strong>Lunch:</strong> Spinach and lentil salad with a citrus dressing.</li>
+            <li><strong>Snack:</strong> A handful of pumpkin seeds and an orange.</li>
+            <li><strong>Dinner:</strong> Grilled chicken with quinoa and steamed broccoli.</li>
+        </ul>
+    </div>
+</div>
 """)
         elif values["MCHC"] > 34.5:
-            advice.append("""High Mean Corpuscular Hemoglobin Concentration (MCHC) / Hyperchromic Anemia
-
-Root Cause:
-    Hereditary Spherocytosis: A genetic condition causing red blood cells to be spherical and more concentrated with hemoglobin, leading to high MCHC.
-    Dehydration: Dehydration reduces plasma volume, concentrating red blood cells and resulting in high MCHC values, though this is typically a relative increase.
-    Cold Agglutinin Disease: A rare condition where cold temperatures cause the clumping of red blood cells, which can increase MCHC.
-    Autoimmune Hemolytic Anemia: The immune system mistakenly attacks and destroys RBCs, leading to an increase in hemoglobin concentration in remaining cells.
-    Burns or Severe Trauma: Severe injury or burns can cause fluid loss and hemoconcentration, which can elevate MCHC values.
-
-Tips:
-    Hydrate Properly: Dehydration is a common cause of high MCHC. Drink plenty of water throughout the day to maintain proper hydration levels.
-    Address Underlying Conditions: If an autoimmune or hemolytic condition is present, work with your doctor to manage the disorder with appropriate medications or treatments.
-    Monitor for Hereditary Spherocytosis: If you have a family history or symptoms of hereditary spherocytosis, discuss genetic counseling and management options with your doctor.
-    Treat Dehydration: Proper fluid management is crucial to avoid falsely high MCHC due to dehydration. Ensure adequate fluid intake, especially during illness or physical activity.
-    Consult for Cold Agglutinin Disease: If suspected, discuss the need for special tests to diagnose and manage cold agglutinin disease.
-
-Foods to Eat:
-    Hydrating Foods: Water-rich foods such as cucumbers, watermelon, oranges, and bell peppers can help maintain hydration.
-    Electrolyte-Rich Foods: Bananas, sweet potatoes, spinach, and avocados can help balance fluids and electrolytes in the body.
-    Anti-inflammatory Foods: To manage autoimmune conditions, include foods rich in omega-3 fatty acids and antioxidants, such as fatty fish (salmon, mackerel), berries, and leafy greens.
-    Protein-Rich Foods: Protein supports overall recovery and immune function, so include lean meats, poultry, fish, eggs, and legumes in your diet.
-    Avoid Excessive Salt: In cases of dehydration, limiting salt intake can help maintain a proper fluid balance.
-
-Example Meal Plan for High MCHC:
-    Breakfast: Oatmeal with chia seeds, blueberries, and almond butter for a hydrating, antioxidant-rich start.
-    Lunch: Grilled chicken salad with mixed greens, cucumber, avocado, and a light vinaigrette.
-    Snack: A handful of almonds and a banana.
-    Dinner: Grilled salmon with quinoa and steamed asparagus.
+            advice.append("""
+<div>
+    <h2>High Mean Corpuscular Hemoglobin Concentration (MCHC) / Hyperchromic Anemia</h2>
+    <div>
+        <h3>Root Cause:</h3>
+        <ul>
+            <li><strong>Hereditary Spherocytosis:</strong> Genetic condition causing spherical RBCs with higher hemoglobin concentration.</li>
+            <li><strong>Dehydration:</strong> Reduces plasma volume, concentrating red blood cells and increasing MCHC.</li>
+            <li><strong>Cold Agglutinin Disease:</strong> A rare condition where cold temperatures cause RBC clumping, elevating MCHC.</li>
+            <li><strong>Autoimmune Hemolytic Anemia:</strong> The immune system attacks RBCs, increasing hemoglobin concentration in remaining cells.</li>
+            <li><strong>Burns or Severe Trauma:</strong> Fluid loss from injuries can elevate MCHC values.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Tips:</h3>
+        <ul>
+            <li><strong>Hydrate Properly:</strong> Maintain adequate hydration to prevent falsely elevated MCHC.</li>
+            <li><strong>Address Underlying Conditions:</strong> Work with your doctor to manage autoimmune or hemolytic disorders.</li>
+            <li><strong>Monitor Genetic Conditions:</strong> Consult your doctor about hereditary spherocytosis management.</li>
+            <li><strong>Treat Dehydration:</strong> Ensure proper fluid intake, especially during physical activity or illness.</li>
+            <li><strong>Consult for Rare Conditions:</strong> Discuss potential diagnosis and management of cold agglutinin disease with your doctor.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Foods to Eat:</h3>
+        <ul>
+            <li><strong>Hydrating Foods:</strong> Cucumbers, watermelon, oranges, and bell peppers.</li>
+            <li><strong>Electrolyte-Rich Foods:</strong> Bananas, sweet potatoes, spinach, and avocados.</li>
+            <li><strong>Anti-inflammatory Foods:</strong> Fatty fish (salmon, mackerel), berries, and leafy greens.</li>
+            <li><strong>Protein-Rich Foods:</strong> Lean meats, poultry, fish, eggs, and legumes.</li>
+            <li><strong>Avoid Excess Salt:</strong> Reduce salt intake to maintain fluid balance.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Example Meal Plan for High MCHC:</h3>
+        <ul>
+            <li><strong>Breakfast:</strong> Oatmeal with chia seeds, blueberries, and almond butter.</li>
+            <li><strong>Lunch:</strong> Grilled chicken salad with mixed greens, cucumber, avocado, and a light vinaigrette.</li>
+            <li><strong>Snack:</strong> A handful of almonds and a banana.</li>
+            <li><strong>Dinner:</strong> Grilled salmon with quinoa and steamed asparagus.</li>
+        </ul>
+    </div>
+</div>
 """)
+
 
     # RDW (range: 11.5-14.5%)
     if "RDW" in values:
         if values["RDW"] < 11.6:
-            advice.append("""Low Red Cell Distribution Width (RDW)
-
-Root Cause:
-    Normal Variation: A low RDW is often not concerning and may simply reflect uniformity in the size of red blood cells (RBCs), which is typically seen in healthy individuals.
-    Recent Blood Transfusion: After a blood transfusion, the RDW may temporarily decrease because the transfused red blood cells are of similar size, reducing the overall variation in RBC size.
-    Bone Marrow Disorders: Some bone marrow conditions might lead to uniform production of red blood cells, resulting in low RDW values.
-    Chronic Diseases: Certain chronic conditions, like some liver diseases, can lead to uniformity in RBC size and, thus, a lower RDW.
-    Nutritional Deficiencies (rare): In some cases, low RDW can be associated with mild deficiencies that don't significantly affect RBC production.
-
-Tips:
-    No Special Action Needed: In many cases, a low RDW is not a cause for concern and doesn't require treatment unless it is linked to a specific condition.
-    Monitor for Transfusion Effects: If you've recently received a blood transfusion, the low RDW may be temporary and will normalize over time.
-    Ensure Adequate Nutrition: Maintaining a balanced diet rich in vitamins and minerals supports overall red blood cell health.
-    Consult Your Doctor: If low RDW is persistent or associated with other abnormal blood test results, it may warrant further evaluation by a healthcare professional.
-
-Foods to Eat:
-    Balanced Diet: Ensure you're getting adequate amounts of vitamins and minerals to support overall health, including B vitamins (B12, folate), iron, and vitamin C.
-
-Example Meal Plan for Low RDW:
-    Breakfast: Whole grain toast with avocado, a poached egg, and a side of orange slices for vitamin C.
-    Lunch: Grilled chicken salad with mixed greens, tomatoes, carrots, and olive oil dressing for a balanced intake of nutrients.
-    Snack: A handful of almonds and a small apple.
-    Dinner: Baked salmon with quinoa and steamed broccoli for protein and micronutrients.""")
+            advice.append("""
+<div>
+    <h2>Low Red Cell Distribution Width (RDW)</h2>
+    <div>
+        <h3>Root Cause:</h3>
+        <ul>
+            <li><strong>Normal Variation:</strong> Often not concerning and reflects uniformity in red blood cell (RBC) size.</li>
+            <li><strong>Recent Blood Transfusion:</strong> Temporary decrease due to transfused RBCs being of similar size.</li>
+            <li><strong>Bone Marrow Disorders:</strong> Certain conditions may lead to uniform RBC production.</li>
+            <li><strong>Chronic Diseases:</strong> Conditions like liver diseases can lead to uniform RBC size, lowering RDW.</li>
+            <li><strong>Nutritional Deficiencies (rare):</strong> Mild deficiencies that don’t significantly affect RBC production.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Tips:</h3>
+        <ul>
+            <li><strong>No Special Action Needed:</strong> Often not a concern unless linked to a specific condition.</li>
+            <li><strong>Monitor Transfusion Effects:</strong> Low RDW after transfusion will normalize over time.</li>
+            <li><strong>Maintain Adequate Nutrition:</strong> Balanced diet rich in vitamins and minerals supports RBC health.</li>
+            <li><strong>Consult Your Doctor:</strong> Persistent low RDW or association with abnormal results may require further evaluation.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Foods to Eat:</h3>
+        <ul>
+            <li><strong>Balanced Diet:</strong> Include vitamins like B12, folate, iron, and vitamin C to support overall health.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Example Meal Plan for Low RDW:</h3>
+        <ul>
+            <li><strong>Breakfast:</strong> Whole grain toast with avocado, a poached egg, and orange slices.</li>
+            <li><strong>Lunch:</strong> Grilled chicken salad with mixed greens, tomatoes, carrots, and olive oil dressing.</li>
+            <li><strong>Snack:</strong> A handful of almonds and a small apple.</li>
+            <li><strong>Dinner:</strong> Baked salmon with quinoa and steamed broccoli.</li>
+        </ul>
+    </div>
+</div>
+""")
         elif values["RDW"] > 14:
-            advice.append("""High Red Cell Distribution Width (RDW)
-
-Root Cause:
-    Iron Deficiency Anemia: One of the most common causes of high RDW is iron deficiency, which leads to the production of both small and large red blood cells, increasing RDW.
-    Vitamin B12 or Folate Deficiency: Both B12 and folate are essential for RBC maturation. A deficiency can cause the production of larger-than-normal RBCs, contributing to high RDW.
-    Anemia of Chronic Disease: Chronic diseases (such as kidney disease, cancer, or autoimmune disorders) can lead to a mixed population of small and large RBCs, resulting in increased RDW.
-    Hemolytic Anemia: Conditions where RBCs are prematurely destroyed (hemolysis) can lead to an increased RDW due to the body producing new RBCs of different sizes.
-    Liver Disease: Some liver conditions can cause changes in red blood cell production and lead to increased RDW.
-    Bone Marrow Disorders: Conditions like myelodysplastic syndromes can result in abnormal RBC production with variability in cell size, causing high RDW.
-
-Tips:
-    Address Nutritional Deficiencies: If the high RDW is due to iron, vitamin B12, or folate deficiencies, work with your doctor to correct the deficiency through supplements or diet.
-    Manage Chronic Conditions: If high RDW is associated with chronic diseases (e.g., kidney disease, cancer), proper management of the underlying condition is essential to normalize RDW.
-    Monitor for Hemolytic or Bone Marrow Disorders: If hemolytic anemia or bone marrow problems are suspected, further diagnostic tests and treatments may be necessary.
-    Hydration: Ensuring proper hydration is important, as dehydration can also affect RDW.
-
-Foods to Eat:
-    Iron-Rich Foods:
-    Heme Iron: Red meat (beef, lamb), poultry (chicken, turkey), fish (salmon, tuna), liver.
-    Non-Heme Iron: Lentils, beans, tofu, spinach, quinoa, fortified cereals, and pumpkin seeds.
-    Vitamin B12-Rich Foods: Eggs, dairy (milk, yogurt, cheese), fish (salmon, tuna), and fortified cereals.
-    Folate-Rich Foods: Leafy greens (spinach, kale), citrus fruits, beans, peas, lentils, and fortified cereals.
-    Vitamin C-Rich Foods: Citrus fruits, bell peppers, tomatoes, broccoli, and strawberries to enhance iron absorption.
-    Healthy Fats: Foods like fatty fish (salmon, sardines), flaxseeds, chia seeds, and walnuts can support overall health and help manage inflammation in chronic diseases.
-
-Example Meal Plan for High RDW:
-    Breakfast: Scrambled eggs with spinach and fortified whole-grain toast (to provide vitamin B12 and folate).
-    Lunch: Grilled chicken salad with avocado, mixed greens, citrus dressing, and quinoa for a balanced nutrient profile.
-    Snack: A handful of pumpkin seeds and a small orange.
-    Dinner: Baked salmon with steamed broccoli and a side of quinoa or brown rice.
+            advice.append("""
+<div>
+    <h2>High Red Cell Distribution Width (RDW)</h2>
+    <div>
+        <h3>Root Cause:</h3>
+        <ul>
+            <li><strong>Iron Deficiency Anemia:</strong> Produces both small and large RBCs, increasing RDW.</li>
+            <li><strong>Vitamin B12 or Folate Deficiency:</strong> Essential for RBC maturation, deficiencies cause larger RBCs.</li>
+            <li><strong>Anemia of Chronic Disease:</strong> Mixed RBC sizes due to chronic conditions like kidney disease or cancer.</li>
+            <li><strong>Hemolytic Anemia:</strong> Premature RBC destruction leads to new RBCs of varying sizes.</li>
+            <li><strong>Liver Disease:</strong> Affects RBC production, increasing RDW.</li>
+            <li><strong>Bone Marrow Disorders:</strong> Abnormal RBC production in conditions like myelodysplastic syndromes.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Tips:</h3>
+        <ul>
+            <li><strong>Address Nutritional Deficiencies:</strong> Correct iron, B12, or folate deficiencies through diet or supplements.</li>
+            <li><strong>Manage Chronic Conditions:</strong> Properly manage chronic diseases associated with high RDW.</li>
+            <li><strong>Monitor for Hemolytic or Bone Marrow Disorders:</strong> Further tests and treatments may be needed.</li>
+            <li><strong>Hydration:</strong> Proper hydration can help maintain normal RDW levels.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Foods to Eat:</h3>
+        <ul>
+            <li><strong>Iron-Rich Foods:</strong> Heme iron: Red meat, poultry, fish, liver. Non-heme iron: Lentils, beans, tofu, spinach, fortified cereals.</li>
+            <li><strong>Vitamin B12-Rich Foods:</strong> Eggs, dairy, fish, and fortified cereals.</li>
+            <li><strong>Folate-Rich Foods:</strong> Leafy greens, citrus fruits, beans, peas, lentils, and fortified cereals.</li>
+            <li><strong>Vitamin C-Rich Foods:</strong> Citrus fruits, bell peppers, tomatoes, broccoli, and strawberries to enhance iron absorption.</li>
+            <li><strong>Healthy Fats:</strong> Fatty fish, flaxseeds, chia seeds, and walnuts to support overall health and manage inflammation.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Example Meal Plan for High RDW:</h3>
+        <ul>
+            <li><strong>Breakfast:</strong> Scrambled eggs with spinach and fortified whole-grain toast (providing B12 and folate).</li>
+            <li><strong>Lunch:</strong> Grilled chicken salad with avocado, mixed greens, citrus dressing, and quinoa.</li>
+            <li><strong>Snack:</strong> A handful of pumpkin seeds and a small orange.</li>
+            <li><strong>Dinner:</strong> Baked salmon with steamed broccoli and a side of quinoa or brown rice.</li>
+        </ul>
+    </div>
+</div>
 """)
 
     # Total Leucocytes Count (range: 4.0-11.0 x10⁹/L)
     if "Total Leucocytes Count" in values:
         if values["Total Leucocytes Count"] < 4000:
-            advice.append("""Low Total Leucocyte Count (Leukopenia)
-
-Root Cause:
-    Viral Infections: Certain viral infections, such as HIV, influenza, and hepatitis, can suppress bone marrow function and lead to a decrease in white blood cell (WBC) count.
-    Autoimmune Disorders: Conditions like lupus or rheumatoid arthritis can cause the immune system to attack the bone marrow, reducing WBC production.
-    Bone Marrow Disorders: Disorders like aplastic anemia or myelodysplastic syndromes can affect the bone marrow’s ability to produce WBCs, leading to leukopenia.
-    Medications: Some medications, such as chemotherapy, certain antibiotics, antipsychotics, and immunosuppressants, can cause bone marrow suppression, resulting in low WBC count.
-    Severe Infections: In some severe or chronic infections, the body’s WBC count may initially rise, but eventually, the bone marrow can become overwhelmed and unable to produce sufficient white blood cells, leading to a drop.
-    Nutritional Deficiencies: Deficiencies in essential nutrients like vitamin B12, folate, and copper can impair WBC production and cause low leucocyte counts.
-    Radiation Exposure: Exposure to high levels of radiation can damage bone marrow and lead to leukopenia.
-
-Tips:
-    Increase Nutrient Intake: Ensure adequate intake of vitamin B12, folate, and zinc, as these are essential for healthy white blood cell production.
-    Review Medications: If medications are causing leukopenia, consult with your doctor to adjust or find alternatives.
-    Treat Underlying Infections or Conditions: Managing any underlying infections (bacterial or viral) or autoimmune conditions that are causing leukopenia is crucial.
-    Avoid Exposure to Infections: A low WBC count increases susceptibility to infections, so take extra precautions to avoid exposure to illness.
-    Monitor Bone Marrow Health: If bone marrow disorders are suspected, your doctor may recommend specific tests or treatments to support its function.
-
-Foods to Eat:
-    Vitamin B12-Rich Foods: Meat, fish, poultry, eggs, and dairy products to support WBC production.
-    Folate-Rich Foods: Leafy greens (spinach, kale), citrus fruits, beans, peas, lentils, and fortified cereals to promote healthy red and white blood cells.
-    Zinc-Rich Foods: Shellfish (oysters, crab), lean meats (beef, lamb), pumpkin seeds, and beans to support immune function.
-    Copper-Rich Foods: Shellfish, seeds, nuts, whole grains, and legumes to assist in the production of white blood cells.
-    Protein-Rich Foods: Chicken, turkey, lean beef, eggs, and legumes to support overall immune health.
-
-Example Meal Plan for Low Leucocytes:
-    Breakfast: Scrambled eggs with spinach and whole-grain toast (rich in folate).
-    Lunch: Grilled chicken with quinoa and a side of leafy greens, including kale and avocado (rich in B12 and folate).
-    Snack: A handful of pumpkin seeds and a banana.
-    Dinner: Salmon with roasted sweet potatoes and steamed broccoli (rich in zinc and B12).
+            advice.append("""
+<div>
+    <h2>Low Total Leucocyte Count (Leukopenia)</h2>
+    <div>
+        <h3>Root Cause:</h3>
+        <ul>
+            <li><strong>Viral Infections:</strong> Infections like HIV, influenza, and hepatitis can suppress bone marrow function and reduce WBC count.</li>
+            <li><strong>Autoimmune Disorders:</strong> Conditions like lupus or rheumatoid arthritis may attack the bone marrow, decreasing WBC production.</li>
+            <li><strong>Bone Marrow Disorders:</strong> Disorders like aplastic anemia or myelodysplastic syndromes impair WBC production.</li>
+            <li><strong>Medications:</strong> Chemotherapy, certain antibiotics, antipsychotics, and immunosuppressants can cause bone marrow suppression.</li>
+            <li><strong>Severe Infections:</strong> Chronic infections may overwhelm the bone marrow, leading to decreased WBC production.</li>
+            <li><strong>Nutritional Deficiencies:</strong> Lack of essential nutrients like vitamin B12, folate, and copper can reduce WBC production.</li>
+            <li><strong>Radiation Exposure:</strong> High radiation levels damage bone marrow, resulting in leukopenia.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Tips:</h3>
+        <ul>
+            <li><strong>Increase Nutrient Intake:</strong> Ensure adequate intake of vitamin B12, folate, and zinc for healthy WBC production.</li>
+            <li><strong>Review Medications:</strong> Consult your doctor if medications are causing leukopenia.</li>
+            <li><strong>Treat Underlying Infections or Conditions:</strong> Manage infections or autoimmune conditions causing leukopenia.</li>
+            <li><strong>Avoid Exposure to Infections:</strong> Take precautions to prevent infections due to a weakened immune system.</li>
+            <li><strong>Monitor Bone Marrow Health:</strong> If disorders are suspected, further tests or treatments may be necessary.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Foods to Eat:</h3>
+        <ul>
+            <li><strong>Vitamin B12-Rich Foods:</strong> Meat, fish, poultry, eggs, and dairy products.</li>
+            <li><strong>Folate-Rich Foods:</strong> Leafy greens (spinach, kale), citrus fruits, beans, peas, lentils, and fortified cereals.</li>
+            <li><strong>Zinc-Rich Foods:</strong> Shellfish (oysters, crab), lean meats, pumpkin seeds, and beans.</li>
+            <li><strong>Copper-Rich Foods:</strong> Shellfish, seeds, nuts, whole grains, and legumes.</li>
+            <li><strong>Protein-Rich Foods:</strong> Chicken, turkey, lean beef, eggs, and legumes to support overall immune health.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Example Meal Plan for Low Leucocytes:</h3>
+        <ul>
+            <li><strong>Breakfast:</strong> Scrambled eggs with spinach and whole-grain toast (rich in folate).</li>
+            <li><strong>Lunch:</strong> Grilled chicken with quinoa and a side of leafy greens like kale and avocado (rich in B12 and folate).</li>
+            <li><strong>Snack:</strong> A handful of pumpkin seeds and a banana.</li>
+            <li><strong>Dinner:</strong> Salmon with roasted sweet potatoes and steamed broccoli (rich in zinc and B12).</li>
+        </ul>
+    </div>
+</div>
 """)
         elif values["Total Leucocytes Count"] > 10000:
-            advice.append("""High Total Leucocyte Count (Leukocytosis)
-
-Root Cause:
-    Infections: Bacterial, fungal, or viral infections often trigger an increase in WBC production as the body fights the infection.
-    Inflammatory Disorders: Conditions such as rheumatoid arthritis, inflammatory bowel disease, or vasculitis can lead to chronic inflammation and an elevated WBC count.
-    Stress Responses: Physical or emotional stress (e.g., trauma, surgery, extreme temperatures) can cause a temporary increase in WBC count.
-    Leukemia: Leukemias are cancers of the bone marrow and blood that lead to an overproduction of white blood cells, often causing extremely high WBC counts.
-    Allergic Reactions: Severe allergic responses can elevate WBC counts, particularly eosinophils.
-    Medications: Corticosteroids, epinephrine, or lithium can lead to increased WBC production.
-    Smoking: Smoking can lead to a sustained elevation in white blood cell count, especially neutrophils.
-
-Tips:
-    Identify and Treat Infections: If an infection is the cause, appropriate treatment (antibiotics, antivirals, antifungals) should be administered.
-    Manage Chronic Inflammatory Conditions: If chronic inflammation or autoimmune disorders are causing leukocytosis, medications to control inflammation may be required.
-    Reduce Stress: Practicing stress-reducing techniques, such as meditation, yoga, or regular physical activity, can help lower WBC counts related to stress.
-    Consult for Leukemia or Blood Disorders: If leukemia or another hematological disorder is suspected, further diagnostic tests such as bone marrow biopsy may be needed.
-    Quit Smoking: Smoking cessation is important, as smoking can lead to long-term increases in WBC counts and worsen inflammation.
-
-Foods to Eat:
-    Anti-Inflammatory Foods: Foods like fatty fish (salmon, mackerel), olive oil, nuts (walnuts, almonds), and turmeric help reduce chronic inflammation.
-    Vitamin C-Rich Foods: Citrus fruits, bell peppers, strawberries, and broccoli help support the immune system and reduce inflammation.
-    Antioxidant-Rich Foods: Blueberries, spinach, kale, and other berries help fight oxidative stress and inflammation.
-    Whole Grains: Brown rice, quinoa, oats, and barley are rich in fiber, which supports the immune system and reduces inflammation.
-    Lean Proteins: Chicken, turkey, tofu, and legumes to maintain immune function without contributing to inflammation.
-
-Example Meal Plan for High Leucocytes:
-    Breakfast: Oatmeal with chia seeds, walnuts, and berries (rich in antioxidants and fiber).
-    Lunch: Grilled salmon with quinoa, a side of steamed broccoli, and olive oil dressing (anti-inflammatory foods).
-    Snack: A handful of almonds and an apple.
-    Dinner: Chicken stir-fry with kale, bell peppers, and carrots (rich in vitamin C and fiber).""")
+            advice.append("""
+<div>
+    <h2>High Total Leucocyte Count (Leukocytosis)</h2>
+    <div>
+        <h3>Root Cause:</h3>
+        <ul>
+            <li><strong>Infections:</strong> Bacterial, fungal, or viral infections trigger increased WBC production to fight infection.</li>
+            <li><strong>Inflammatory Disorders:</strong> Conditions like rheumatoid arthritis or inflammatory bowel disease cause chronic inflammation and elevated WBC counts.</li>
+            <li><strong>Stress Responses:</strong> Physical or emotional stress, trauma, or extreme temperatures can temporarily increase WBC counts.</li>
+            <li><strong>Leukemia:</strong> Cancers of the bone marrow and blood cause overproduction of WBCs.</li>
+            <li><strong>Allergic Reactions:</strong> Severe allergies can elevate WBC counts, especially eosinophils.</li>
+            <li><strong>Medications:</strong> Corticosteroids, epinephrine, or lithium can increase WBC production.</li>
+            <li><strong>Smoking:</strong> Smoking causes a sustained increase in WBC counts, especially neutrophils.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Tips:</h3>
+        <ul>
+            <li><strong>Identify and Treat Infections:</strong> Use appropriate treatments (antibiotics, antivirals, antifungals) for infections.</li>
+            <li><strong>Manage Chronic Inflammatory Conditions:</strong> Medications to control inflammation may be required.</li>
+            <li><strong>Reduce Stress:</strong> Practice stress-reducing techniques such as meditation, yoga, or regular physical activity.</li>
+            <li><strong>Consult for Leukemia or Blood Disorders:</strong> Further diagnostic tests like bone marrow biopsy may be needed.</li>
+            <li><strong>Quit Smoking:</strong> Smoking cessation is essential for reducing long-term WBC elevation and inflammation.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Foods to Eat:</h3>
+        <ul>
+            <li><strong>Anti-Inflammatory Foods:</strong> Fatty fish, olive oil, nuts, and turmeric to reduce chronic inflammation.</li>
+            <li><strong>Vitamin C-Rich Foods:</strong> Citrus fruits, bell peppers, strawberries, and broccoli to support the immune system and reduce inflammation.</li>
+            <li><strong>Antioxidant-Rich Foods:</strong> Blueberries, spinach, kale, and other berries to combat oxidative stress.</li>
+            <li><strong>Whole Grains:</strong> Brown rice, quinoa, oats, and barley for fiber and immune support.</li>
+            <li><strong>Lean Proteins:</strong> Chicken, turkey, tofu, and legumes to maintain immune function.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Example Meal Plan for High Leucocytes:</h3>
+        <ul>
+            <li><strong>Breakfast:</strong> Oatmeal with chia seeds, walnuts, and berries (rich in antioxidants and fiber).</li>
+            <li><strong>Lunch:</strong> Grilled salmon with quinoa, steamed broccoli, and olive oil dressing (anti-inflammatory foods).</li>
+            <li><strong>Snack:</strong> A handful of almonds and an apple.</li>
+            <li><strong>Dinner:</strong> Chicken stir-fry with kale, bell peppers, and carrots (rich in vitamin C and fiber).</li>
+        </ul>
+    </div>
+</div>
+""")
 
     # Neutrophils (range: 40-70%)
     if "Neutrophils" in values:
         if values["Neutrophils"] < 40:
-            advice.append("""Low Neutrophils (Neutropenia)
-
-Root Cause:
-    Infections: Viral infections like HIV, hepatitis, influenza, or the Epstein-Barr virus can suppress neutrophil production or lead to their destruction, resulting in neutropenia.
-    Bone Marrow Disorders: Conditions such as aplastic anemia, myelodysplastic syndromes, or leukemia can impair bone marrow function, leading to a decrease in neutrophils.
-    Autoimmune Diseases: Conditions like systemic lupus erythematosus (SLE) or rheumatoid arthritis can cause the body’s immune system to attack neutrophils, lowering their count.
-    Medications: Certain drugs, including chemotherapy, immunosuppressive drugs, or antibiotics (e.g., penicillin), can suppress neutrophil production.
-    Nutritional Deficiencies: Deficiencies in vitamin B12, folate, or copper can affect neutrophil production, leading to a low count.
-    Severe Infections or Sepsis: In some severe or long-standing infections, the body may lose neutrophils faster than it can produce them, resulting in neutropenia.
-    Congenital Disorders: Genetic conditions like cyclic neutropenia or Kostmann syndrome can cause chronic low neutrophil levels.
-
-Tips:
-    Increase Nutrient Intake: Ensure adequate intake of vitamin B12, folate, copper, and zinc, which are important for neutrophil production.
-    Avoid Infections: With a low neutrophil count, your body’s ability to fight infections is reduced, so take extra precautions to avoid exposure to illness, including frequent hand washing and avoiding large crowds.
-    Consult Your Doctor for Medication Adjustments: If medications are the cause of neutropenia, your doctor may suggest alternatives or modify dosages.
-    Monitor Bone Marrow Health: If the cause is related to bone marrow disorders, your doctor may recommend further tests or treatments to manage the condition.
-    Neutrophil-Stimulating Drugs: In some cases, medications like G-CSF (granulocyte-colony stimulating factor) can be prescribed to stimulate neutrophil production.
-
-Foods to Eat:
-    Vitamin B12-Rich Foods: Animal products such as meat, poultry, fish, eggs, and dairy.
-    Folate-Rich Foods: Leafy greens (spinach, kale), citrus fruits, beans, peas, lentils, and fortified cereals.
-    Zinc-Rich Foods: Shellfish (oysters, crab), lean meats (beef, lamb), nuts (almonds), and seeds.
-    Copper-Rich Foods: Shellfish, nuts, seeds, whole grains, and legumes to support neutrophil production.
-    Protein-Rich Foods: Chicken, turkey, tofu, and legumes to maintain overall immune health.
-
-Example Meal Plan for Low Neutrophils:
-    Breakfast: Scrambled eggs with spinach and whole-grain toast.
-    Lunch: Grilled chicken with quinoa and a side of leafy greens (rich in B12 and folate).
-    Snack: A handful of pumpkin seeds and a small apple.
-    Dinner: Baked salmon with roasted sweet potatoes and steamed broccoli.
+            advice.append("""
+<div>
+    <h2>Low Neutrophils (Neutropenia)</h2>
+    <div>
+        <h3>Root Cause:</h3>
+        <ul>
+            <li><strong>Infections:</strong> Viral infections like HIV, hepatitis, influenza, or Epstein-Barr virus can suppress neutrophil production.</li>
+            <li><strong>Bone Marrow Disorders:</strong> Conditions like aplastic anemia, myelodysplastic syndromes, or leukemia impair neutrophil production.</li>
+            <li><strong>Autoimmune Diseases:</strong> Conditions like systemic lupus erythematosus (SLE) or rheumatoid arthritis may attack neutrophils, lowering their count.</li>
+            <li><strong>Medications:</strong> Drugs like chemotherapy, immunosuppressants, or certain antibiotics can reduce neutrophil production.</li>
+            <li><strong>Nutritional Deficiencies:</strong> Lack of vitamin B12, folate, or copper can impair neutrophil production.</li>
+            <li><strong>Severe Infections or Sepsis:</strong> Chronic or severe infections may deplete neutrophils faster than they are produced.</li>
+            <li><strong>Congenital Disorders:</strong> Genetic conditions such as cyclic neutropenia or Kostmann syndrome can cause chronic low neutrophil levels.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Tips:</h3>
+        <ul>
+            <li><strong>Increase Nutrient Intake:</strong> Consume foods rich in vitamin B12, folate, copper, and zinc to support neutrophil production.</li>
+            <li><strong>Avoid Infections:</strong> Practice good hygiene and avoid crowded areas to reduce the risk of infections.</li>
+            <li><strong>Consult Your Doctor for Medication Adjustments:</strong> If medications are causing neutropenia, discuss alternatives with your doctor.</li>
+            <li><strong>Monitor Bone Marrow Health:</strong> If bone marrow disorders are suspected, further diagnostic tests may be required.</li>
+            <li><strong>Consider Neutrophil-Stimulating Drugs:</strong> Medications like G-CSF (granulocyte-colony stimulating factor) can help stimulate neutrophil production if needed.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Foods to Eat:</h3>
+        <ul>
+            <li><strong>Vitamin B12-Rich Foods:</strong> Meat, poultry, fish, eggs, and dairy products.</li>
+            <li><strong>Folate-Rich Foods:</strong> Leafy greens (spinach, kale), citrus fruits, beans, peas, lentils, and fortified cereals.</li>
+            <li><strong>Zinc-Rich Foods:</strong> Shellfish, lean meats, nuts, and seeds.</li>
+            <li><strong>Copper-Rich Foods:</strong> Shellfish, nuts, seeds, whole grains, and legumes.</li>
+            <li><strong>Protein-Rich Foods:</strong> Chicken, turkey, tofu, and legumes to maintain immune health.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Example Meal Plan for Low Neutrophils:</h3>
+        <ul>
+            <li><strong>Breakfast:</strong> Scrambled eggs with spinach and whole-grain toast.</li>
+            <li><strong>Lunch:</strong> Grilled chicken with quinoa and a side of leafy greens.</li>
+            <li><strong>Snack:</strong> A handful of pumpkin seeds and a small apple.</li>
+            <li><strong>Dinner:</strong> Baked salmon with roasted sweet potatoes and steamed broccoli.</li>
+        </ul>
+    </div>
+</div>
 """)
         elif values["Neutrophils"] > 80:
-            advice.append("""High Neutrophils (Neutrophilia)
-
-Root Cause:
-    Infections: Bacterial infections (e.g., pneumonia, appendicitis, sepsis) are a common cause of an elevated neutrophil count, as the body produces more neutrophils to fight the infection.
-    Inflammatory Conditions: Chronic inflammation caused by conditions like rheumatoid arthritis, inflammatory bowel disease, or vasculitis can cause neutrophilia.
-    Stress Responses: Physical or emotional stress (e.g., surgery, trauma, extreme temperatures) can cause a temporary rise in neutrophils.
-    Leukemia: Chronic myelogenous leukemia (CML) and other forms of leukemia can cause an excessive production of neutrophils.
-    Smoking: Smoking can increase neutrophil count, particularly neutrophils related to lung inflammation.
-    Medications: Medications like corticosteroids, lithium, or epinephrine can stimulate neutrophil production.
-    Tissue Damage: Conditions like burns or major trauma can lead to neutrophil production as part of the body’s response to tissue injury.
-
-Tips:
-    Treat Infections: If an infection is the underlying cause, work with your doctor to manage it with antibiotics or antiviral medications, as appropriate.
-    Control Inflammation: If chronic inflammation is the cause, your doctor may recommend medications like corticosteroids or biologics to reduce inflammation.
-    Address Stress: Engage in stress-reducing activities such as meditation, deep breathing exercises, or regular physical activity.
-    Avoid Smoking: Smoking cessation can help normalize neutrophil counts and reduce inflammation.
-    Monitor for Leukemia or Blood Disorders: If leukemia or other hematological disorders are suspected, your doctor may perform tests such as a bone marrow biopsy to determine the cause.
-
-Foods to Eat:
-    Anti-Inflammatory Foods: Omega-3-rich foods such as fatty fish (salmon, mackerel), olive oil, walnuts, and flaxseeds can help reduce inflammation.
-    Antioxidant-Rich Foods: Berries (blueberries, strawberries), leafy greens (spinach, kale), and nuts (almonds, walnuts) are high in antioxidants and can help combat oxidative stress.
-    Fiber-Rich Foods: Whole grains (brown rice, oats, quinoa) and vegetables help regulate the immune system and reduce systemic inflammation.
-    Vitamin C-Rich Foods: Citrus fruits, bell peppers, broccoli, and strawberries can help reduce inflammation and support immune function.
-    Lean Proteins: Chicken, turkey, tofu, and legumes provide the building blocks for immune cells without contributing to inflammation.
-
-Example Meal Plan for High Neutrophils:
-    Breakfast: Oatmeal with chia seeds, walnuts, and blueberries (rich in antioxidants).
-    Lunch: Grilled salmon with quinoa, a side of steamed broccoli, and a salad with olive oil dressing (anti-inflammatory foods).
-    Snack: A handful of almonds and an orange.
-    Dinner: Grilled chicken stir-fry with spinach, bell peppers, and carrots (rich in vitamin C and fiber).""")
+            advice.append("""
+<div>
+    <h2>High Neutrophils (Neutrophilia)</h2>
+    <div>
+        <h3>Root Cause:</h3>
+        <ul>
+            <li><strong>Infections:</strong> Bacterial infections like pneumonia, appendicitis, or sepsis trigger an elevated neutrophil count.</li>
+            <li><strong>Inflammatory Conditions:</strong> Chronic inflammation from rheumatoid arthritis, inflammatory bowel disease, or vasculitis can cause neutrophilia.</li>
+            <li><strong>Stress Responses:</strong> Physical or emotional stress from surgery, trauma, or extreme conditions can temporarily elevate neutrophil levels.</li>
+            <li><strong>Leukemia:</strong> Chronic myelogenous leukemia (CML) or other leukemias can lead to excessive neutrophil production.</li>
+            <li><strong>Smoking:</strong> Smoking can increase neutrophil counts, especially those related to lung inflammation.</li>
+            <li><strong>Medications:</strong> Corticosteroids, lithium, or epinephrine can stimulate neutrophil production.</li>
+            <li><strong>Tissue Damage:</strong> Burns or major trauma can trigger neutrophil production as part of the healing process.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Tips:</h3>
+        <ul>
+            <li><strong>Treat Infections:</strong> Work with your doctor to manage infections with antibiotics or antivirals.</li>
+            <li><strong>Control Inflammation:</strong> Medications like corticosteroids or biologics can reduce inflammation.</li>
+            <li><strong>Address Stress:</strong> Practice stress-reducing techniques such as meditation or physical activity.</li>
+            <li><strong>Avoid Smoking:</strong> Quitting smoking can normalize neutrophil counts and reduce inflammation.</li>
+            <li><strong>Monitor for Leukemia or Blood Disorders:</strong> If blood disorders are suspected, diagnostic tests such as bone marrow biopsies may be needed.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Foods to Eat:</h3>
+        <ul>
+            <li><strong>Anti-Inflammatory Foods:</strong> Fatty fish, olive oil, walnuts, and flaxseeds help reduce chronic inflammation.</li>
+            <li><strong>Antioxidant-Rich Foods:</strong> Blueberries, spinach, kale, and strawberries combat oxidative stress.</li>
+            <li><strong>Fiber-Rich Foods:</strong> Whole grains, vegetables, and legumes regulate the immune system and reduce inflammation.</li>
+            <li><strong>Vitamin C-Rich Foods:</strong> Citrus fruits, bell peppers, and broccoli support immune function.</li>
+            <li><strong>Lean Proteins:</strong> Chicken, turkey, tofu, and legumes support overall health without adding inflammation.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Example Meal Plan for High Neutrophils:</h3>
+        <ul>
+            <li><strong>Breakfast:</strong> Oatmeal with chia seeds, walnuts, and blueberries.</li>
+            <li><strong>Lunch:</strong> Grilled salmon with quinoa, steamed broccoli, and a salad with olive oil dressing.</li>
+            <li><strong>Snack:</strong> A handful of almonds and an orange.</li>
+            <li><strong>Dinner:</strong> Grilled chicken stir-fry with spinach, bell peppers, and carrots.</li>
+        </ul>
+    </div>
+</div>
+""")
 
     # Lymphocytes (range: 20-40%)
     if "Lymphocytes" in values:
         if values["Lymphocytes"] < 20:
-            advice.append("""Low Lymphocytes (Lymphocytopenia)
-
-Root Cause:
-    Viral Infections: Certain viral infections, such as HIV, hepatitis, influenza, and measles, can cause a reduction in lymphocyte count as they directly affect the immune system.
-    Autoimmune Diseases: Conditions like systemic lupus erythematosus (SLE) or rheumatoid arthritis can result in low lymphocytes due to the immune system attacking the body's own tissues, including lymphocytes.
-    Bone Marrow Disorders: Diseases such as aplastic anemia, leukemia, or myelodysplastic syndromes can affect the bone marrow, reducing the production of lymphocytes.
-    Medications: Immunosuppressive drugs, chemotherapy, or corticosteroids can lower lymphocyte count by suppressing immune function.
-    Malnutrition: Deficiencies in essential nutrients like protein, zinc, vitamin B12, and folate can impair lymphocyte production.
-    Radiation Exposure: High levels of radiation can damage lymphocytes, resulting in a low count.
-    Chronic Illnesses: Long-term diseases like chronic kidney disease, liver disease, or other chronic conditions can sometimes lead to a decrease in lymphocytes.
-
-Tips:
-    Boost Immune System with Nutrition: Ensure sufficient intake of vitamins and minerals, including vitamin B12, zinc, folate, and protein, to support lymphocyte production.
-    Consult Your Doctor about Medications: If immunosuppressive drugs or chemotherapy are the cause, your doctor may adjust dosages or suggest alternatives.
-    Treat Underlying Conditions: Effective management of autoimmune diseases, viral infections, or bone marrow disorders may help improve lymphocyte levels.
-    Improve Lifestyle: Adequate sleep, regular exercise, and reducing stress can support immune health.
-    Prevent Infections: With a low lymphocyte count, your body’s ability to fight infections is weakened, so take extra precautions to avoid exposure to illness, such as frequent hand washing and avoiding crowded places.
-
-Foods to Eat:
-    Protein-Rich Foods: Chicken, turkey, tofu, fish, and legumes to support the immune system.
-    Vitamin B12 and Folate: Meat, eggs, dairy products, leafy greens (spinach, kale), beans, and lentils to enhance lymphocyte production.
-    Zinc-Rich Foods: Shellfish (oysters), lean meats, seeds (pumpkin, sunflower), and nuts (cashews) to improve immune function.
-    Vitamin C-Rich Foods: Citrus fruits (oranges, lemons), strawberries, bell peppers, and broccoli to enhance immune health.
-
-Example Meal Plan for Low Lymphocytes:
-    Breakfast: Scrambled eggs with spinach and whole-grain toast (rich in folate and B12).
-    Lunch: Grilled chicken with quinoa and a side of leafy greens (rich in protein, B12, and folate).
-    Snack: A handful of almonds and an orange (rich in vitamin C).
-    Dinner: Baked salmon with roasted sweet potatoes and steamed broccoli (rich in zinc and vitamin B12).""")
+            advice.append("""
+<div>
+    <h2>Low Lymphocytes (Lymphocytopenia)</h2>
+    <div>
+        <h3>Root Cause:</h3>
+        <ul>
+            <li><strong>Viral Infections:</strong> Certain viral infections like HIV, hepatitis, influenza, and measles can reduce lymphocyte count by directly affecting the immune system.</li>
+            <li><strong>Autoimmune Diseases:</strong> Conditions such as systemic lupus erythematosus (SLE) or rheumatoid arthritis can lower lymphocytes due to the immune system attacking its own tissues.</li>
+            <li><strong>Bone Marrow Disorders:</strong> Diseases like aplastic anemia, leukemia, or myelodysplastic syndromes impair lymphocyte production.</li>
+            <li><strong>Medications:</strong> Immunosuppressive drugs, chemotherapy, or corticosteroids can suppress immune function, reducing lymphocyte count.</li>
+            <li><strong>Malnutrition:</strong> Deficiencies in protein, zinc, vitamin B12, and folate can impair lymphocyte production.</li>
+            <li><strong>Radiation Exposure:</strong> High levels of radiation can damage lymphocytes, resulting in a low count.</li>
+            <li><strong>Chronic Illnesses:</strong> Conditions such as chronic kidney or liver disease can contribute to lymphocyte reduction.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Tips:</h3>
+        <ul>
+            <li><strong>Boost Immune System with Nutrition:</strong> Consume sufficient vitamins and minerals like B12, zinc, folate, and protein to support lymphocyte production.</li>
+            <li><strong>Consult Your Doctor about Medications:</strong> Discuss dosage adjustments or alternatives for drugs affecting lymphocyte levels.</li>
+            <li><strong>Treat Underlying Conditions:</strong> Effective management of autoimmune diseases, infections, or bone marrow disorders can improve lymphocyte counts.</li>
+            <li><strong>Improve Lifestyle:</strong> Ensure adequate sleep, regular exercise, and reduced stress for better immune health.</li>
+            <li><strong>Prevent Infections:</strong> Practice good hygiene and avoid crowded places to reduce exposure to illness.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Foods to Eat:</h3>
+        <ul>
+            <li><strong>Protein-Rich Foods:</strong> Chicken, turkey, tofu, fish, and legumes.</li>
+            <li><strong>Vitamin B12 and Folate:</strong> Meat, eggs, dairy, leafy greens (spinach, kale), beans, and lentils.</li>
+            <li><strong>Zinc-Rich Foods:</strong> Shellfish, lean meats, seeds (pumpkin, sunflower), and nuts (cashews).</li>
+            <li><strong>Vitamin C-Rich Foods:</strong> Citrus fruits, strawberries, bell peppers, and broccoli.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Example Meal Plan for Low Lymphocytes:</h3>
+        <ul>
+            <li><strong>Breakfast:</strong> Scrambled eggs with spinach and whole-grain toast (rich in folate and B12).</li>
+            <li><strong>Lunch:</strong> Grilled chicken with quinoa and a side of leafy greens.</li>
+            <li><strong>Snack:</strong> A handful of almonds and an orange (rich in vitamin C).</li>
+            <li><strong>Dinner:</strong> Baked salmon with roasted sweet potatoes and steamed broccoli.</li>
+        </ul>
+    </div>
+</div>
+""")
         elif values["Lymphocytes"] > 40:
-            advice.append("""High Lymphocytes (Lymphocytosis)
-
-Root Cause:
-    Viral Infections: Lymphocytosis is often a result of viral infections, especially those like mononucleosis (Epstein-Barr virus), cytomegalovirus (CMV), and hepatitis, where the body increases lymphocyte production to fight the virus.
-    Chronic Inflammatory Conditions: Chronic inflammation or autoimmune diseases, such as rheumatoid arthritis or Crohn's disease, may cause an elevated lymphocyte count as the immune system is activated.
-    Leukemia or Lymphoma: Certain types of cancer, such as chronic lymphocytic leukemia (CLL) or lymphoma, can cause a significant increase in lymphocyte count due to uncontrolled production of abnormal lymphocytes.
-    Stress Responses: Physical or emotional stress, such as after trauma or surgery, can lead to a temporary increase in lymphocytes.
-    Smoking: Smoking has been linked to higher levels of lymphocytes, likely due to inflammation or the body’s response to harmful chemicals in tobacco.
-    Medications: Medications like corticosteroids, lithium, or theophylline can occasionally cause lymphocytosis.
-
-Tips:
-    Treat Infections: If an infection is identified as the cause, managing the infection with appropriate antiviral or antibiotic treatments is essential.
-    Control Inflammation: For autoimmune diseases or chronic inflammatory conditions, medications like immunosuppressants or corticosteroids may be required.
-    Monitor for Leukemia or Blood Disorders: If leukemia or lymphoma is suspected, your doctor may perform additional tests such as bone marrow biopsy, flow cytometry, or imaging.
-    Manage Stress: Practice stress reduction techniques like meditation, yoga, or deep breathing exercises to help regulate lymphocyte levels.
-    Quit Smoking: Smoking cessation can help lower lymphocyte count over time and reduce inflammation.
-
-Foods to Eat:
-    Anti-Inflammatory Foods: Omega-3-rich foods such as fatty fish (salmon, mackerel), olive oil, walnuts, and flaxseeds help reduce inflammation.
-    Vitamin C-Rich Foods: Citrus fruits, bell peppers, broccoli, and strawberries can help manage inflammation and support immune function.
-    Fiber-Rich Foods: Whole grains (brown rice, oats, quinoa) and vegetables like spinach and kale can help regulate the immune system and reduce inflammation.
-    Lean Proteins: Chicken, turkey, tofu, and legumes provide the building blocks for immune cells without contributing to inflammation.
-    Antioxidant-Rich Foods: Berries (blueberries, strawberries), green tea, and dark chocolate help combat oxidative stress and inflammation.
-
-Example Meal Plan for High Lymphocytes:
-    Breakfast: Oatmeal with chia seeds, walnuts, and blueberries (rich in antioxidants and fiber).
-    Lunch: Grilled salmon with quinoa, a side of steamed broccoli, and a salad with olive oil dressing (anti-inflammatory foods).
-    Snack: A handful of almonds and an orange (rich in vitamin C).
-    Dinner: Grilled chicken stir-fry with spinach, bell peppers, and carrots (rich in vitamin C and fiber).""")
+            advice.append("""
+<div>
+    <h2>High Lymphocytes (Lymphocytosis)</h2>
+    <div>
+        <h3>Root Cause:</h3>
+        <ul>
+            <li><strong>Viral Infections:</strong> Infections like mononucleosis, cytomegalovirus (CMV), and hepatitis often cause lymphocytosis as the immune system fights the virus.</li>
+            <li><strong>Chronic Inflammatory Conditions:</strong> Autoimmune diseases such as rheumatoid arthritis or Crohn's disease may increase lymphocytes due to prolonged immune activation.</li>
+            <li><strong>Leukemia or Lymphoma:</strong> Certain cancers, including chronic lymphocytic leukemia (CLL) or lymphoma, can lead to uncontrolled lymphocyte production.</li>
+            <li><strong>Stress Responses:</strong> Physical or emotional stress, such as after surgery or trauma, can temporarily elevate lymphocyte levels.</li>
+            <li><strong>Smoking:</strong> Smoking may increase lymphocyte count due to inflammation or the body's response to tobacco chemicals.</li>
+            <li><strong>Medications:</strong> Drugs such as corticosteroids, lithium, or theophylline can occasionally cause lymphocytosis.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Tips:</h3>
+        <ul>
+            <li><strong>Treat Infections:</strong> Manage infections with appropriate antiviral or antibiotic treatments.</li>
+            <li><strong>Control Inflammation:</strong> For autoimmune diseases or chronic inflammatory conditions, medications like immunosuppressants or corticosteroids may be prescribed.</li>
+            <li><strong>Monitor for Leukemia or Blood Disorders:</strong> If suspected, further tests such as bone marrow biopsy or flow cytometry may be recommended.</li>
+            <li><strong>Manage Stress:</strong> Engage in stress-reduction techniques like meditation or yoga.</li>
+            <li><strong>Quit Smoking:</strong> Smoking cessation can help normalize lymphocyte counts and reduce inflammation.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Foods to Eat:</h3>
+        <ul>
+            <li><strong>Anti-Inflammatory Foods:</strong> Fatty fish, olive oil, walnuts, and flaxseeds.</li>
+            <li><strong>Vitamin C-Rich Foods:</strong> Citrus fruits, bell peppers, broccoli, and strawberries.</li>
+            <li><strong>Fiber-Rich Foods:</strong> Whole grains (brown rice, oats, quinoa) and vegetables like spinach and kale.</li>
+            <li><strong>Lean Proteins:</strong> Chicken, turkey, tofu, and legumes.</li>
+            <li><strong>Antioxidant-Rich Foods:</strong> Berries, green tea, and dark chocolate.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Example Meal Plan for High Lymphocytes:</h3>
+        <ul>
+            <li><strong>Breakfast:</strong> Oatmeal with chia seeds, walnuts, and blueberries.</li>
+            <li><strong>Lunch:</strong> Grilled salmon with quinoa, steamed broccoli, and a salad with olive oil dressing.</li>
+            <li><strong>Snack:</strong> A handful of almonds and an orange.</li>
+            <li><strong>Dinner:</strong> Grilled chicken stir-fry with spinach, bell peppers, and carrots.</li>
+        </ul>
+    </div>
+</div>
+""")
 
         # Eosinophils (range: 1-4%)
     if "Eosinophils" in values:
         if values["Eosinophils"] < 1:
-            advice.append("""Low Eosinophils (Eosinopenia)
-
-Root Cause:
-    Acute Infections: During acute bacterial or viral infections, the body’s immune system may redirect resources to fight the infection, resulting in a temporary reduction of eosinophils.
-    Corticosteroid Medications: Use of corticosteroids or other immunosuppressive drugs can reduce eosinophil counts, as they inhibit the immune response.
-    Cushing’s Syndrome: A disorder caused by high levels of cortisol in the body, which may lead to eosinopenia due to cortisol’s suppressive effect on the immune system.
-    Stress Responses: Both physical and emotional stress can result in lower eosinophil levels, as stress hormones like cortisol can suppress immune functions.
-    Bone Marrow Disorders: Disorders that affect the bone marrow’s ability to produce blood cells, such as aplastic anemia, can lead to low eosinophil counts.
-    Hematologic Diseases: Conditions like leukemia or myelodysplastic syndromes may suppress the production of eosinophils in the bone marrow.
-    Hypercortisolism: Conditions associated with an excess of cortisol, including tumors of the adrenal gland, can lead to lower eosinophil levels.
-
-Tips:
-    Review Medications: If corticosteroids or immunosuppressive drugs are causing eosinopenia, discuss with your doctor about adjusting doses or switching to alternative treatments.
-    Manage Stress: Practice stress-reducing activities such as yoga, meditation, or deep breathing exercises to help balance cortisol levels.
-    Treat Underlying Conditions: If eosinopenia is caused by a hormonal imbalance or bone marrow issue, specific treatments will be required to address the root cause.
-    Avoid Infections: A lower eosinophil count can lead to a reduced immune defense against parasites and other infections, so take extra precautions to avoid illness.
-
-Foods to Eat:
-    Protein-Rich Foods: Lean meats, poultry, tofu, and legumes to support overall immune function.
-    Vitamin C-Rich Foods: Citrus fruits, bell peppers, strawberries, and broccoli to support immune health.
-    Magnesium-Rich Foods: Nuts, seeds, spinach, and whole grains to reduce stress and support cellular function.
-    Zinc-Rich Foods: Shellfish (oysters, crab), lean meats, seeds, and legumes to support immune response.
-
-Example Meal Plan for Low Eosinophils:
-    Breakfast: Scrambled eggs with spinach and whole-grain toast.
-    Lunch: Grilled chicken with quinoa and a side of leafy greens (rich in protein and vitamin C).
-    Snack: A handful of almonds and an orange (rich in vitamin C).
-    Dinner: Grilled salmon with roasted sweet potatoes and steamed broccoli (rich in zinc and magnesium).""")
+            advice.append("""
+<div>
+    <h2>Low Eosinophils (Eosinopenia)</h2>
+    <div>
+        <h3>Root Cause:</h3>
+        <ul>
+            <li><strong>Acute Infections:</strong> The immune system may redirect resources to fight bacterial or viral infections, leading to reduced eosinophils.</li>
+            <li><strong>Corticosteroid Medications:</strong> These drugs suppress the immune response, reducing eosinophil counts.</li>
+            <li><strong>Cushing’s Syndrome:</strong> High cortisol levels suppress immune functions, including eosinophil production.</li>
+            <li><strong>Stress Responses:</strong> Both physical and emotional stress lower eosinophils due to the effects of cortisol.</li>
+            <li><strong>Bone Marrow Disorders:</strong> Conditions like aplastic anemia affect blood cell production, including eosinophils.</li>
+            <li><strong>Hematologic Diseases:</strong> Disorders such as leukemia or myelodysplastic syndromes can suppress eosinophil production.</li>
+            <li><strong>Hypercortisolism:</strong> Excess cortisol, including adrenal gland tumors, can lead to eosinopenia.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Tips:</h3>
+        <ul>
+            <li><strong>Review Medications:</strong> Consult with your doctor about alternative treatments if corticosteroids are causing eosinopenia.</li>
+            <li><strong>Manage Stress:</strong> Practice relaxation techniques like meditation, yoga, or deep breathing exercises.</li>
+            <li><strong>Treat Underlying Conditions:</strong> Hormonal imbalances or bone marrow issues should be addressed by a healthcare provider.</li>
+            <li><strong>Avoid Infections:</strong> Strengthen your immune defenses to prevent illness when eosinophils are low.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Foods to Eat:</h3>
+        <ul>
+            <li><strong>Protein-Rich Foods:</strong> Lean meats, poultry, tofu, and legumes to support immune function.</li>
+            <li><strong>Vitamin C-Rich Foods:</strong> Citrus fruits, bell peppers, strawberries, and broccoli to boost immunity.</li>
+            <li><strong>Magnesium-Rich Foods:</strong> Nuts, seeds, spinach, and whole grains to reduce stress and support cellular health.</li>
+            <li><strong>Zinc-Rich Foods:</strong> Shellfish, lean meats, seeds, and legumes to enhance immune response.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Example Meal Plan for Low Eosinophils:</h3>
+        <ul>
+            <li><strong>Breakfast:</strong> Scrambled eggs with spinach and whole-grain toast.</li>
+            <li><strong>Lunch:</strong> Grilled chicken with quinoa and a side of leafy greens.</li>
+            <li><strong>Snack:</strong> A handful of almonds and an orange.</li>
+            <li><strong>Dinner:</strong> Grilled salmon with roasted sweet potatoes and steamed broccoli.</li>
+        </ul>
+    </div>
+</div>
+""")
         elif values["Eosinophils"] > 6:
-            advice.append("""High Eosinophils (Eosinophilia)
-
-Root Cause:
-    Allergic Reactions: Eosinophils are involved in allergic responses. Conditions like asthma, hay fever, or allergic rhinitis often cause an increase in eosinophil count.
-    Parasitic Infections: Eosinophils play a key role in fighting parasitic infections, such as hookworm, roundworm, or giardia. An increase in eosinophils can be a response to these infections.
-    Autoimmune Disorders: Conditions like eosinophilic esophagitis or eosinophilic granulomatosis with polyangiitis (EGPA) can cause chronic eosinophil elevation.
-    Skin Disorders: Diseases like eczema or dermatitis can result in elevated eosinophils, as they are involved in the inflammatory response.
-    Drug Reactions: Certain drugs, such as antibiotics, nonsteroidal anti-inflammatory drugs (NSAIDs), or antihistamines, can lead to drug-induced eosinophilia.
-    Hematologic Diseases: Blood disorders such as chronic eosinophilic leukemia or myeloproliferative diseases can cause high eosinophil counts due to abnormal production in the bone marrow.
-    Chronic Inflammatory Conditions: Chronic conditions like vasculitis, inflammatory bowel disease (IBD), or chronic rhinosinusitis with nasal polyps can increase eosinophil production.
-
-Tips:
-    Identify and Treat Allergies: If an allergy is the cause, managing the allergic response with antihistamines or other medications can help normalize eosinophil levels.
-    Treat Parasitic Infections: If a parasitic infection is present, appropriate anti-parasitic treatments such as antiparasitic medications or deworming treatments should be administered.
-    Control Inflammation: For autoimmune or inflammatory conditions, corticosteroids, immunosuppressants, or biologic therapies may be used to control eosinophil production.
-    Monitor Drug Reactions: If a medication is causing eosinophilia, it may need to be replaced or adjusted by your doctor.
-    Manage Underlying Conditions: If blood disorders like chronic eosinophilic leukemia are the cause, specialized treatments like chemotherapy or targeted therapies may be necessary.
-
-Foods to Eat:
-    Anti-Inflammatory Foods: Omega-3-rich foods like fatty fish (salmon, mackerel), walnuts, and flaxseeds to reduce inflammation.
-    Vitamin C-Rich Foods: Citrus fruits (oranges, lemons), bell peppers, strawberries, and broccoli to support immune function and reduce allergic responses.
-    Antioxidant-Rich Foods: Berries (blueberries, strawberries), leafy greens (spinach, kale), and nuts to combat oxidative stress.
-    Fiber-Rich Foods: Whole grains, vegetables (broccoli, cauliflower), and legumes to support gut health and manage inflammatory bowel diseases.
-    Probiotics: Foods like yogurt, kefir, and kimchi to help balance gut bacteria, which can influence inflammatory responses.
-
-Example Meal Plan for High Eosinophils:
-    Breakfast: Oatmeal with chia seeds, walnuts, and blueberries (rich in antioxidants and fiber).
-    Lunch: Grilled salmon with quinoa, steamed broccoli, and a side salad with olive oil dressing (anti-inflammatory foods).
-    Snack: A handful of almonds and an orange (rich in vitamin C).
-    Dinner: Grilled chicken stir-fry with spinach, bell peppers, and carrots (rich in vitamin C and fiber).
+            advice.append("""
+<div>
+    <h2>High Eosinophils (Eosinophilia)</h2>
+    <div>
+        <h3>Root Cause:</h3>
+        <ul>
+            <li><strong>Allergic Reactions:</strong> Eosinophils are involved in allergic responses like asthma, hay fever, or rhinitis.</li>
+            <li><strong>Parasitic Infections:</strong> Eosinophils increase in response to parasitic infections such as hookworm or roundworm.</li>
+            <li><strong>Autoimmune Disorders:</strong> Conditions like eosinophilic esophagitis or granulomatosis can elevate eosinophil levels.</li>
+            <li><strong>Skin Disorders:</strong> Diseases like eczema or dermatitis often involve eosinophil-driven inflammation.</li>
+            <li><strong>Drug Reactions:</strong> Certain medications, such as antibiotics or NSAIDs, can induce eosinophilia.</li>
+            <li><strong>Hematologic Diseases:</strong> Disorders like chronic eosinophilic leukemia can increase eosinophil counts due to abnormal production.</li>
+            <li><strong>Chronic Inflammatory Conditions:</strong> Conditions like vasculitis or inflammatory bowel disease can elevate eosinophil levels.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Tips:</h3>
+        <ul>
+            <li><strong>Identify and Treat Allergies:</strong> Use antihistamines or other medications to manage allergic reactions.</li>
+            <li><strong>Treat Parasitic Infections:</strong> Anti-parasitic treatments can address the root cause of eosinophilia.</li>
+            <li><strong>Control Inflammation:</strong> Corticosteroids or biologic therapies may be needed for autoimmune or inflammatory conditions.</li>
+            <li><strong>Monitor Drug Reactions:</strong> Discuss medication adjustments with your doctor if drug-induced eosinophilia is suspected.</li>
+            <li><strong>Manage Underlying Conditions:</strong> Specialized treatments may be required for blood disorders like chronic eosinophilic leukemia.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Foods to Eat:</h3>
+        <ul>
+            <li><strong>Anti-Inflammatory Foods:</strong> Fatty fish, walnuts, flaxseeds, and olive oil to reduce inflammation.</li>
+            <li><strong>Vitamin C-Rich Foods:</strong> Citrus fruits, bell peppers, strawberries, and broccoli to support immunity.</li>
+            <li><strong>Antioxidant-Rich Foods:</strong> Berries, leafy greens, and nuts to combat oxidative stress.</li>
+            <li><strong>Fiber-Rich Foods:</strong> Whole grains, vegetables, and legumes to improve gut health and reduce inflammation.</li>
+            <li><strong>Probiotics:</strong> Yogurt, kefir, and kimchi to balance gut bacteria and influence immune responses.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Example Meal Plan for High Eosinophils:</h3>
+        <ul>
+            <li><strong>Breakfast:</strong> Oatmeal with chia seeds, walnuts, and blueberries.</li>
+            <li><strong>Lunch:</strong> Grilled salmon with quinoa, steamed broccoli, and a side salad with olive oil dressing.</li>
+            <li><strong>Snack:</strong> A handful of almonds and an orange.</li>
+            <li><strong>Dinner:</strong> Grilled chicken stir-fry with spinach, bell peppers, and carrots.</li>
+        </ul>
+    </div>
+</div>
 """)
 
     # Monocytes (range: 2-8%)
     if "Monocytes" in values:
         if values["Monocytes"] < 2:
-            advice.append("""Low Monocytes (Monocytopenia)
-
-Root Cause:
-    Bone Marrow Disorders: Conditions such as aplastic anemia, myelodysplastic syndromes, or leukemia can affect the bone marrow’s ability to produce monocytes.
-    Acute Infections: Infections, especially viral infections (e.g., HIV, influenza, hepatitis), can lead to a decrease in monocytes as the immune system redirects resources to combat the infection.
-    Immunosuppressive Drugs: Medications like corticosteroids, chemotherapy, or immunosuppressive drugs can reduce the production of monocytes.
-    Corticosteroid Use: Long-term use of corticosteroids can decrease the number of monocytes in the bloodstream.
-    Nutritional Deficiencies: Deficiencies in nutrients like folate, vitamin B12, or iron can result in a low monocyte count, as these are crucial for immune cell production.
-    Severe Stress: Physical or emotional stress may suppress the production of monocytes, contributing to monocytopenia.
-    Genetic Disorders: Rare genetic conditions like congenital neutropenia or other hematological disorders can affect monocyte production.
-
-Tips:
-    Consult with Your Doctor: If medications are the cause of monocytopenia, your healthcare provider may adjust dosages or recommend alternatives.
-    Address Nutritional Deficiencies: Ensure adequate intake of vitamin B12, folate, and iron, which are essential for the production of monocytes.
-    Treat Underlying Conditions: Conditions such as bone marrow disorders or infections may require specific treatments to boost monocyte levels.
-    Reduce Stress: Engaging in stress-reduction techniques like meditation, yoga, and regular exercise can help maintain a balanced immune system.
-
-Foods to Eat:
-    Iron-Rich Foods: Lean meats, liver, spinach, beans, lentils, and fortified cereals help support blood cell production.
-    Vitamin B12-Rich Foods: Animal products such as meat, poultry, fish, eggs, and dairy.
-    Folate-Rich Foods: Leafy greens (spinach, kale), citrus fruits, beans, peas, lentils, and fortified cereals.
-    Zinc-Rich Foods: Shellfish, lean meats, seeds, nuts, and legumes to support immune function.
-    Protein-Rich Foods: Chicken, fish, tofu, and legumes to support overall immune system function.
-
-Example Meal Plan for Low Monocytes:
-    Breakfast: Scrambled eggs with spinach and whole-grain toast (rich in folate and vitamin B12).
-    Lunch: Grilled chicken with quinoa and a side of leafy greens (rich in protein, vitamin B12, and folate).
-    Snack: A handful of almonds and an orange (rich in vitamin C).
-    Dinner: Baked salmon with roasted sweet potatoes and steamed broccoli (rich in iron, zinc, and vitamin B12).
+            advice.append("""
+<div>
+    <h2>Low Monocytes (Monocytopenia)</h2>
+    <div>
+        <h3>Root Cause:</h3>
+        <ul>
+            <li><strong>Bone Marrow Disorders:</strong> Conditions like aplastic anemia, myelodysplastic syndromes, or leukemia affect monocyte production.</li>
+            <li><strong>Acute Infections:</strong> Viral infections (e.g., HIV, influenza, hepatitis) can decrease monocytes as the immune system redirects resources.</li>
+            <li><strong>Immunosuppressive Drugs:</strong> Medications like corticosteroids, chemotherapy, or immunosuppressive drugs reduce monocyte production.</li>
+            <li><strong>Corticosteroid Use:</strong> Long-term corticosteroid use decreases monocyte levels.</li>
+            <li><strong>Nutritional Deficiencies:</strong> Deficiencies in folate, vitamin B12, or iron can result in low monocyte counts.</li>
+            <li><strong>Severe Stress:</strong> Physical or emotional stress may suppress monocyte production.</li>
+            <li><strong>Genetic Disorders:</strong> Rare genetic conditions like congenital neutropenia affect monocyte production.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Tips:</h3>
+        <ul>
+            <li><strong>Consult with Your Doctor:</strong> Adjust medication dosages or consider alternatives if medications cause monocytopenia.</li>
+            <li><strong>Address Nutritional Deficiencies:</strong> Ensure adequate intake of vitamin B12, folate, and iron to support monocyte production.</li>
+            <li><strong>Treat Underlying Conditions:</strong> Address bone marrow disorders or infections to improve monocyte levels.</li>
+            <li><strong>Reduce Stress:</strong> Engage in relaxation techniques like yoga, meditation, or regular exercise.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Foods to Eat:</h3>
+        <ul>
+            <li><strong>Iron-Rich Foods:</strong> Lean meats, liver, spinach, beans, lentils, and fortified cereals.</li>
+            <li><strong>Vitamin B12-Rich Foods:</strong> Meat, poultry, fish, eggs, and dairy.</li>
+            <li><strong>Folate-Rich Foods:</strong> Leafy greens, citrus fruits, beans, peas, lentils, and fortified cereals.</li>
+            <li><strong>Zinc-Rich Foods:</strong> Shellfish, lean meats, seeds, nuts, and legumes.</li>
+            <li><strong>Protein-Rich Foods:</strong> Chicken, fish, tofu, and legumes.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Example Meal Plan for Low Monocytes:</h3>
+        <ul>
+            <li><strong>Breakfast:</strong> Scrambled eggs with spinach and whole-grain toast.</li>
+            <li><strong>Lunch:</strong> Grilled chicken with quinoa and leafy greens.</li>
+            <li><strong>Snack:</strong> A handful of almonds and an orange.</li>
+            <li><strong>Dinner:</strong> Baked salmon with roasted sweet potatoes and steamed broccoli.</li>
+        </ul>
+    </div>
+</div>
 """)
         elif values["Monocytes"] > 10:
-            advice.append("""High Monocytes (Monocytosis)
-
-Root Cause:
-    Chronic Infections: Long-standing infections, especially bacterial infections like tuberculosis, subacute bacterial endocarditis, or brucellosis, can lead to an increase in monocytes.
-    Autoimmune Disorders: Conditions such as rheumatoid arthritis, lupus, or inflammatory bowel disease (IBD) can cause chronic inflammation, leading to monocytosis.
-    Hematological Disorders: Blood disorders like chronic myelomonocytic leukemia (CMML) or monocytic leukemia can result in elevated monocyte levels due to excessive production in the bone marrow.
-    Cancer: Some cancers, including lymphoma and leukemia, can lead to monocytosis as part of the body's response to the malignancy.
-    Inflammatory Conditions: Conditions such as vasculitis, sarcoidosis, or inflammatory bowel diseases can elevate monocyte levels.
-    Recovery from Acute Infections: Following an acute infection, as the body recovers, monocyte levels may temporarily increase to aid tissue repair and immune system function.
-    Stress or Trauma: Physical or emotional stress, major surgeries, or trauma can lead to an elevated monocyte count as part of the body’s immune response.
-
-Tips:
-    Identify and Treat Chronic Infections: If a bacterial or parasitic infection is present, antibiotics or other appropriate treatments can help lower monocyte levels.
-    Control Autoimmune Diseases: Inflammatory conditions like rheumatoid arthritis or lupus may require corticosteroids or immunosuppressive drugs to reduce inflammation and normalize monocyte levels.
-    Address Cancer or Blood Disorders: If cancer or a hematological disorder is the cause, your doctor will prescribe specific treatments, such as chemotherapy or targeted therapy.
-    Manage Inflammation: For inflammatory conditions like IBD or vasculitis, anti-inflammatory drugs, including corticosteroids or biologics, can help control elevated monocyte counts.
-    Monitor for Recovery from Infections: If monocytosis is a sign of recovery from an infection, regular monitoring of your blood counts can help track the progress.
-
-Foods to Eat:
-    Anti-Inflammatory Foods: Omega-3-rich foods like fatty fish (salmon, mackerel), olive oil, and flaxseeds can help reduce chronic inflammation.
-    Antioxidant-Rich Foods: Berries (blueberries, strawberries), leafy greens (spinach, kale), and nuts can help combat oxidative stress and inflammation.
-    Fiber-Rich Foods: Whole grains (oats, brown rice), vegetables (broccoli, cauliflower), and legumes to help reduce systemic inflammation.
-    Vitamin C-Rich Foods: Citrus fruits (oranges, lemons), bell peppers, and broccoli to enhance immune function and reduce inflammation.
-    Lean Proteins: Chicken, turkey, tofu, and legumes to provide necessary nutrients for immune health without promoting excessive inflammation.
-
-Example Meal Plan for High Monocytes:
-    Breakfast: Oatmeal with chia seeds, walnuts, and blueberries (rich in antioxidants and fiber).
-    Lunch: Grilled salmon with quinoa, a side of steamed broccoli, and a salad with olive oil dressing (anti-inflammatory foods).
-    Snack: A handful of almonds and an orange (rich in vitamin C).
-    Dinner: Grilled chicken stir-fry with spinach, bell peppers, and carrots (rich in vitamin C and fiber).
+            advice.append("""
+<div>
+    <h2>High Monocytes (Monocytosis)</h2>
+    <div>
+        <h3>Root Cause:</h3>
+        <ul>
+            <li><strong>Chronic Infections:</strong> Infections like tuberculosis, endocarditis, or brucellosis can increase monocytes.</li>
+            <li><strong>Autoimmune Disorders:</strong> Conditions like rheumatoid arthritis, lupus, or IBD cause chronic inflammation, leading to monocytosis.</li>
+            <li><strong>Hematological Disorders:</strong> Disorders like chronic myelomonocytic leukemia or monocytic leukemia increase monocyte production.</li>
+            <li><strong>Cancer:</strong> Some cancers, like lymphoma and leukemia, elevate monocyte levels.</li>
+            <li><strong>Inflammatory Conditions:</strong> Conditions like vasculitis or sarcoidosis can raise monocyte levels.</li>
+            <li><strong>Recovery from Acute Infections:</strong> Monocyte levels may increase temporarily during recovery.</li>
+            <li><strong>Stress or Trauma:</strong> Major surgeries or trauma can elevate monocyte counts as part of the immune response.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Tips:</h3>
+        <ul>
+            <li><strong>Identify and Treat Chronic Infections:</strong> Use antibiotics or appropriate treatments for infections.</li>
+            <li><strong>Control Autoimmune Diseases:</strong> Corticosteroids or immunosuppressive drugs can reduce inflammation and normalize monocyte levels.</li>
+            <li><strong>Address Cancer or Blood Disorders:</strong> Specialized treatments like chemotherapy or targeted therapy may be required.</li>
+            <li><strong>Manage Inflammation:</strong> Anti-inflammatory drugs or biologics can help for conditions like IBD or vasculitis.</li>
+            <li><strong>Monitor for Recovery from Infections:</strong> Regularly check blood counts during recovery.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Foods to Eat:</h3>
+        <ul>
+            <li><strong>Anti-Inflammatory Foods:</strong> Fatty fish, olive oil, flaxseeds, and walnuts.</li>
+            <li><strong>Antioxidant-Rich Foods:</strong> Berries, leafy greens, and nuts.</li>
+            <li><strong>Fiber-Rich Foods:</strong> Whole grains, vegetables, and legumes.</li>
+            <li><strong>Vitamin C-Rich Foods:</strong> Citrus fruits, bell peppers, and broccoli.</li>
+            <li><strong>Lean Proteins:</strong> Chicken, turkey, tofu, and legumes.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Example Meal Plan for High Monocytes:</h3>
+        <ul>
+            <li><strong>Breakfast:</strong> Oatmeal with chia seeds, walnuts, and blueberries.</li>
+            <li><strong>Lunch:</strong> Grilled salmon with quinoa, steamed broccoli, and a salad with olive oil dressing.</li>
+            <li><strong>Snack:</strong> A handful of almonds and an orange.</li>
+            <li><strong>Dinner:</strong> Grilled chicken stir-fry with spinach, bell peppers, and carrots.</li>
+        </ul>
+    </div>
+</div>
 """)
 
     # Basophils (range: 0.5-1%)
     if "Basophils" in values:
         if values["Basophils"] < 0.5:
-            advice.append("""Low Basophils (Basopenia)
-
-Root Cause:
-    Acute Infections: During acute bacterial infections or viral infections (e.g., influenza), the body may divert resources toward combating the infection, leading to a temporary decrease in basophils.
-    Corticosteroid Use: The use of corticosteroids or other immunosuppressive medications can suppress basophil production, causing a low count.
-    Allergic Reactions: Basophils are involved in allergic responses, and during an active allergic reaction, they may migrate to the site of inflammation, leading to a temporary decrease in circulation.
-    Severe Stress: Physical or emotional stress may increase the release of stress hormones like cortisol, which can lower basophil counts.
-    Hyperthyroidism: An overactive thyroid can lead to changes in the immune system, sometimes reducing basophil levels.
-    Bone Marrow Disorders: Conditions affecting the bone marrow's ability to produce cells, such as aplastic anemia or leukemia, can cause a low basophil count.
-    Pregnancy: During the later stages of pregnancy, there may be a decrease in basophil count due to hormonal changes.
-
-Tips:
-    Review Medications: If corticosteroids or immunosuppressive drugs are causing basopenia, consult with your doctor about adjusting the dosage or finding alternative treatments.
-    Manage Stress: Engage in stress-reducing activities such as meditation, yoga, or deep breathing exercises to help normalize cortisol levels.
-    Address Thyroid Disorders: If hyperthyroidism is causing basopenia, proper treatment to manage thyroid function is essential.
-    Monitor for Infections: During active infections, basophil counts can be temporarily low. Proper treatment of infections with antibiotics or antivirals can restore normal basophil levels.
-    Nutritional Support: Ensure you’re consuming a balanced diet to support immune function, including adequate vitamins and minerals.
-
-Foods to Eat:
-    Vitamin C-Rich Foods: Citrus fruits (oranges, lemons), strawberries, bell peppers, and broccoli can support the immune system.
-    Protein-Rich Foods: Lean meats, fish, tofu, and legumes help support overall immune function.
-    Zinc-Rich Foods: Shellfish (oysters), lean meats, nuts, and seeds for immune support.
-    Magnesium-Rich Foods: Nuts, seeds, spinach, and whole grains to support immune system health and reduce stress.
-
-Example Meal Plan for Low Basophils:
-    Breakfast: Scrambled eggs with spinach and whole-grain toast (rich in vitamins and minerals).
-    Lunch: Grilled chicken with quinoa and a side of steamed broccoli (rich in protein and vitamin C).
-    Snack: A handful of almonds and an orange (rich in vitamin C).
-    Dinner: Grilled salmon with roasted sweet potatoes and steamed broccoli (rich in zinc and omega-3).
+            advice.append("""
+<div>
+    <h2>Low Basophils (Basopenia)</h2>
+    <div>
+        <h3>Root Cause:</h3>
+        <ul>
+            <li><strong>Acute Infections:</strong> Bacterial or viral infections like influenza can temporarily decrease basophils.</li>
+            <li><strong>Corticosteroid Use:</strong> Immunosuppressive medications suppress basophil production.</li>
+            <li><strong>Allergic Reactions:</strong> Basophils migrate to sites of inflammation, temporarily lowering circulation levels.</li>
+            <li><strong>Severe Stress:</strong> Stress increases cortisol, which can reduce basophil counts.</li>
+            <li><strong>Hyperthyroidism:</strong> An overactive thyroid alters immune system function, reducing basophil levels.</li>
+            <li><strong>Bone Marrow Disorders:</strong> Conditions like aplastic anemia or leukemia affect basophil production.</li>
+            <li><strong>Pregnancy:</strong> Hormonal changes in later pregnancy stages may decrease basophil counts.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Tips:</h3>
+        <ul>
+            <li><strong>Review Medications:</strong> Consult your doctor about adjusting corticosteroids or immunosuppressants.</li>
+            <li><strong>Manage Stress:</strong> Practice relaxation techniques such as yoga, meditation, or deep breathing exercises.</li>
+            <li><strong>Address Thyroid Disorders:</strong> Treat hyperthyroidism to restore normal basophil levels.</li>
+            <li><strong>Monitor for Infections:</strong> Properly treat active infections to help restore basophil levels.</li>
+            <li><strong>Nutritional Support:</strong> Consume a balanced diet rich in vitamins and minerals to support immune function.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Foods to Eat:</h3>
+        <ul>
+            <li><strong>Vitamin C-Rich Foods:</strong> Citrus fruits, strawberries, bell peppers, and broccoli.</li>
+            <li><strong>Protein-Rich Foods:</strong> Lean meats, fish, tofu, and legumes.</li>
+            <li><strong>Zinc-Rich Foods:</strong> Shellfish, nuts, seeds, and lean meats.</li>
+            <li><strong>Magnesium-Rich Foods:</strong> Nuts, seeds, spinach, and whole grains.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Example Meal Plan for Low Basophils:</h3>
+        <ul>
+            <li><strong>Breakfast:</strong> Scrambled eggs with spinach and whole-grain toast.</li>
+            <li><strong>Lunch:</strong> Grilled chicken with quinoa and steamed broccoli.</li>
+            <li><strong>Snack:</strong> A handful of almonds and an orange.</li>
+            <li><strong>Dinner:</strong> Grilled salmon with roasted sweet potatoes and steamed broccoli.</li>
+        </ul>
+    </div>
+</div>
 """)
         elif values["Basophils"] > 2:
-            advice.append("""High Basophils (Basophilia)
-
-Root Cause:
-    Allergic Reactions: Basophils are heavily involved in allergic responses. Conditions like asthma, hay fever, food allergies, or anaphylaxis often cause an increase in basophil counts.
-    Chronic Inflammatory Diseases: Conditions such as rheumatoid arthritis, ulcerative colitis, or Crohn’s disease may cause elevated basophils due to chronic inflammation.
-    Myeloproliferative Disorders: Disorders such as chronic myelogenous leukemia (CML) or other bone marrow disorders can lead to an excessive production of basophils.
-    Hypothyroidism: An underactive thyroid can contribute to an increase in basophils as part of the body’s immune response to hormonal imbalance.
-    Infections: Some chronic infections, such as tuberculosis, may cause elevated basophils as part of the body’s immune response.
-    Chronic Urticaria: A condition that causes hives, where basophils may be elevated due to ongoing allergic reactions.
-    Pregnancy: Basophils may be slightly elevated during pregnancy due to hormonal changes.
-
-Tips:
-    Identify and Treat Allergies: If allergies are the cause of high basophils, managing the allergic response with antihistamines, corticosteroids, or other allergy medications can help lower basophil levels.
-    Treat Chronic Inflammatory Diseases: If the cause is an inflammatory condition, your doctor may recommend medications such as immunosuppressants, corticosteroids, or biologics.
-    Monitor for Myeloproliferative Disorders: If a hematological disorder like chronic myelogenous leukemia (CML) is suspected, further investigation and targeted therapies (e.g., tyrosine kinase inhibitors) will be needed.
-    Thyroid Management: If hypothyroidism is the underlying cause, thyroid hormone replacement therapy will help normalize basophil levels.
-    Manage Infections: If chronic infections such as tuberculosis are causing elevated basophils, appropriate antimicrobial therapy can help resolve the infection and bring basophil levels back to normal.
-
-Foods to Eat:
-    Anti-Inflammatory Foods: Omega-3-rich foods like fatty fish (salmon, mackerel), olive oil, walnuts, and flaxseeds to reduce inflammation.
-    Antioxidant-Rich Foods: Berries (blueberries, strawberries), leafy greens (spinach, kale), and nuts to combat oxidative stress.
-    Fiber-Rich Foods: Whole grains (oats, brown rice), vegetables (broccoli, cauliflower), and legumes to help reduce systemic inflammation.
-    Vitamin C-Rich Foods: Citrus fruits (oranges, lemons), bell peppers, strawberries, and broccoli to help reduce inflammation and support immune function.
-    Lean Proteins: Chicken, turkey, tofu, and legumes to provide necessary nutrients for immune health without promoting excessive inflammation.
-
-Example Meal Plan for High Basophils:
-    Breakfast: Oatmeal with chia seeds, walnuts, and blueberries (rich in antioxidants and fiber).
-    Lunch: Grilled salmon with quinoa, steamed broccoli, and a salad with olive oil dressing (anti-inflammatory foods).
-    Snack: A handful of almonds and an orange (rich in vitamin C).
-    Dinner: Grilled chicken stir-fry with spinach, bell peppers, and carrots (rich in vitamin C and fiber).
+            advice.append("""
+<div>
+    <h2>High Basophils (Basophilia)</h2>
+    <div>
+        <h3>Root Cause:</h3>
+        <ul>
+            <li><strong>Allergic Reactions:</strong> Conditions like asthma, hay fever, or food allergies can elevate basophils.</li>
+            <li><strong>Chronic Inflammatory Diseases:</strong> Rheumatoid arthritis, ulcerative colitis, or Crohn's disease can cause chronic inflammation.</li>
+            <li><strong>Myeloproliferative Disorders:</strong> Conditions like chronic myelogenous leukemia (CML) increase basophil production.</li>
+            <li><strong>Hypothyroidism:</strong> An underactive thyroid can elevate basophils as part of immune response dysregulation.</li>
+            <li><strong>Infections:</strong> Chronic infections like tuberculosis may cause elevated basophils.</li>
+            <li><strong>Chronic Urticaria:</strong> Persistent hives elevate basophils due to ongoing allergic reactions.</li>
+            <li><strong>Pregnancy:</strong> Hormonal changes may lead to slightly elevated basophils.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Tips:</h3>
+        <ul>
+            <li><strong>Identify and Treat Allergies:</strong> Manage allergies with antihistamines or corticosteroids.</li>
+            <li><strong>Treat Chronic Inflammatory Diseases:</strong> Use immunosuppressants, corticosteroids, or biologics as recommended by your doctor.</li>
+            <li><strong>Monitor for Myeloproliferative Disorders:</strong> If suspected, further tests and targeted therapies are necessary.</li>
+            <li><strong>Thyroid Management:</strong> Thyroid hormone replacement therapy can normalize basophil levels.</li>
+            <li><strong>Manage Infections:</strong> Treat chronic infections like tuberculosis with appropriate antimicrobial therapy.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Foods to Eat:</h3>
+        <ul>
+            <li><strong>Anti-Inflammatory Foods:</strong> Fatty fish, olive oil, flaxseeds, and walnuts.</li>
+            <li><strong>Antioxidant-Rich Foods:</strong> Berries, leafy greens, and nuts.</li>
+            <li><strong>Fiber-Rich Foods:</strong> Whole grains, vegetables, and legumes.</li>
+            <li><strong>Vitamin C-Rich Foods:</strong> Citrus fruits, bell peppers, and broccoli.</li>
+            <li><strong>Lean Proteins:</strong> Chicken, turkey, tofu, and legumes.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Example Meal Plan for High Basophils:</h3>
+        <ul>
+            <li><strong>Breakfast:</strong> Oatmeal with chia seeds, walnuts, and blueberries.</li>
+            <li><strong>Lunch:</strong> Grilled salmon with quinoa, steamed broccoli, and a salad with olive oil dressing.</li>
+            <li><strong>Snack:</strong> A handful of almonds and an orange.</li>
+            <li><strong>Dinner:</strong> Grilled chicken stir-fry with spinach, bell peppers, and carrots.</li>
+        </ul>
+    </div>
+</div>
 """)
+
 
     # Absolute Neutrophil Count (range: 1.5-8.0 x10⁹/L) cells/cumm
     if "Absolute Neutrophil Count" in values:
         if values["Absolute Neutrophil Count"] < 2000:
-            advice.append("""Low Absolute Neutrophil Count (Neutropenia)
-
-Root Cause:
-    Bone Marrow Disorders: Conditions such as aplastic anemia, myelodysplastic syndromes, leukemia, or other bone marrow diseases can impair the production of neutrophils, resulting in neutropenia.
-    Autoimmune Disorders: Autoimmune diseases like lupus or rheumatoid arthritis may cause the immune system to attack neutrophils, reducing their count.
-    Infections: Certain viral infections (e.g., HIV, hepatitis, influenza) can suppress neutrophil production, leading to low counts.
-    Chemotherapy or Radiation: Cancer treatments like chemotherapy and radiation therapy can significantly suppress bone marrow function, resulting in neutropenia.
-    Medications: Certain drugs, such as antibiotics, antipsychotics, anticonvulsants, or immunosuppressive medications, can lower neutrophil levels.
-    Vitamin Deficiencies: Deficiencies in folate, vitamin B12, or copper can impair the production of neutrophils.
-    Severe Infections or Sepsis: In some severe infections, neutrophils are quickly used up, leading to temporarily low neutrophil levels.
-    Congenital Conditions: Some inherited conditions, like cyclic neutropenia or congenital neutropenia, can result in chronically low neutrophil counts.
-
-Tips:
-    Infection Precautions: Since neutrophils are vital for fighting infections, take extra precautions to avoid infections (e.g., frequent hand washing, avoiding sick individuals, and wearing masks if necessary).
-    Monitor for Infections: Regular monitoring of your health and seeking immediate medical attention for any symptoms of infection, such as fever, chills, or sore throat, is important.
-    Avoid Certain Medications: If medications are causing neutropenia, your doctor may adjust the dosage or prescribe alternatives.
-    Support Bone Marrow Health: A healthy diet rich in essential nutrients, including folate, vitamin B12, and copper, can support bone marrow function.
-    Use of Growth Factors: In some cases, doctors may prescribe granulocyte-colony stimulating factors (G-CSF) to stimulate neutrophil production.
-
-Foods to Eat:
-    Folate-Rich Foods: Leafy greens (spinach, kale), citrus fruits, beans, peas, lentils, and fortified cereals.
-    Vitamin B12-Rich Foods: Animal products such as meat, poultry, fish, eggs, and dairy.
-    Copper-Rich Foods: Shellfish (oysters, crab), nuts, seeds, whole grains, and legumes.
-    Protein-Rich Foods: Lean meats, fish, tofu, and legumes to support overall immune health.
-
-Example Meal Plan for Low Absolute Neutrophil Count:
-    Breakfast: Scrambled eggs with spinach and whole-grain toast (rich in vitamin B12 and folate).
-    Lunch: Grilled chicken with quinoa and a side of leafy greens (rich in protein, vitamin B12, and folate).
-    Snack: A handful of almonds and an orange (rich in vitamin C).
-    Dinner: Baked salmon with roasted sweet potatoes and steamed broccoli (rich in vitamin B12, copper, and protein).""")
+            advice.append("""
+<div>
+    <h2>Low Absolute Neutrophil Count (Neutropenia)</h2>
+    <div>
+        <h3>Root Cause:</h3>
+        <ul>
+            <li><strong>Bone Marrow Disorders:</strong> Aplastic anemia, myelodysplastic syndromes, leukemia, or other conditions affecting bone marrow production.</li>
+            <li><strong>Autoimmune Disorders:</strong> Diseases like lupus or rheumatoid arthritis where the immune system attacks neutrophils.</li>
+            <li><strong>Infections:</strong> Viral infections like HIV, hepatitis, or influenza suppress neutrophil production.</li>
+            <li><strong>Chemotherapy or Radiation:</strong> Cancer treatments suppress bone marrow function.</li>
+            <li><strong>Medications:</strong> Drugs like antibiotics, antipsychotics, anticonvulsants, or immunosuppressants may lower neutrophil levels.</li>
+            <li><strong>Vitamin Deficiencies:</strong> Deficiencies in folate, vitamin B12, or copper impair neutrophil production.</li>
+            <li><strong>Severe Infections or Sepsis:</strong> Infections can rapidly deplete neutrophils.</li>
+            <li><strong>Congenital Conditions:</strong> Conditions like cyclic or congenital neutropenia result in low counts.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Tips:</h3>
+        <ul>
+            <li><strong>Infection Precautions:</strong> Practice frequent hand washing, avoid sick individuals, and wear masks if needed.</li>
+            <li><strong>Monitor for Infections:</strong> Seek immediate medical attention for symptoms of infection like fever or sore throat.</li>
+            <li><strong>Avoid Certain Medications:</strong> If drugs are causing neutropenia, consult your doctor about alternatives.</li>
+            <li><strong>Support Bone Marrow Health:</strong> Consume a diet rich in folate, vitamin B12, and copper.</li>
+            <li><strong>Use of Growth Factors:</strong> In some cases, granulocyte-colony stimulating factors (G-CSF) may be prescribed to boost neutrophil production.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Foods to Eat:</h3>
+        <ul>
+            <li><strong>Folate-Rich Foods:</strong> Leafy greens, citrus fruits, beans, peas, lentils, and fortified cereals.</li>
+            <li><strong>Vitamin B12-Rich Foods:</strong> Meat, poultry, fish, eggs, and dairy.</li>
+            <li><strong>Copper-Rich Foods:</strong> Shellfish, nuts, seeds, whole grains, and legumes.</li>
+            <li><strong>Protein-Rich Foods:</strong> Lean meats, fish, tofu, and legumes to support immune health.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Example Meal Plan for Low ANC:</h3>
+        <ul>
+            <li><strong>Breakfast:</strong> Scrambled eggs with spinach and whole-grain toast (rich in vitamin B12 and folate).</li>
+            <li><strong>Lunch:</strong> Grilled chicken with quinoa and leafy greens (rich in protein, vitamin B12, and folate).</li>
+            <li><strong>Snack:</strong> A handful of almonds and an orange (rich in vitamin C).</li>
+            <li><strong>Dinner:</strong> Baked salmon with roasted sweet potatoes and steamed broccoli (rich in vitamin B12, copper, and protein).</li>
+        </ul>
+    </div>
+</div>
+""")
         elif values["Absolute Neutrophil Count"] > 7000:
-            advice.append("""High Absolute Neutrophil Count (Neutrophilia)
-
-Root Cause:
-    Infections: Acute bacterial infections, such as pneumonia, appendicitis, or urinary tract infections, often lead to an increase in neutrophil count as the body’s immune response activates to fight the infection.
-    Inflammatory Conditions: Chronic inflammatory diseases like rheumatoid arthritis, inflammatory bowel disease (IBD), or vasculitis can lead to an elevated neutrophil count.
-    Stress or Trauma: Physical or emotional stress, surgery, or trauma can temporarily elevate neutrophil levels due to the release of stress hormones like cortisol.
-    Medications: Drugs like corticosteroids, epinephrine, or lithium can stimulate neutrophil production, causing neutrophilia.
-    Smoking: Chronic smoking can elevate neutrophil levels, particularly in the lungs, as part of the body’s inflammatory response.
-    Leukemia or Myeloproliferative Disorders: Certain cancers like chronic myelogenous leukemia (CML) or myeloproliferative disorders can cause the bone marrow to produce excessive neutrophils.
-    Tissue Damage: Any form of tissue damage, including burns, heart attacks, or extensive trauma, can cause neutrophil counts to rise as part of the body’s healing process.
-
-Tips:
-    Identify and Treat Infections: If an infection is the cause of neutrophilia, appropriate antibiotics or antiviral medications may be required to treat the infection and normalize neutrophil counts.
-    Manage Inflammatory Conditions: Medications such as corticosteroids, immunosuppressants, or biologics may be prescribed to reduce inflammation and lower neutrophil counts in conditions like rheumatoid arthritis or IBD.
-    Minimize Stress: Engage in stress-reducing activities, such as yoga, meditation, or relaxation exercises, to help reduce the impact of stress on neutrophil production.
-    Avoid Smoking: If smoking is the cause of elevated neutrophils, quitting smoking will help reduce the inflammatory response and normalize neutrophil levels.
-    Monitor for Hematologic Conditions: If a blood disorder like leukemia is suspected, further diagnostic testing and treatments, such as chemotherapy or targeted therapies, may be necessary.
-
-Foods to Eat:
-    Anti-Inflammatory Foods: Omega-3-rich foods like fatty fish (salmon, mackerel), olive oil, walnuts, and flaxseeds to reduce inflammation.
-    Antioxidant-Rich Foods: Berries (blueberries, strawberries), leafy greens (spinach, kale), and nuts to combat oxidative stress and inflammation.
-    Fiber-Rich Foods: Whole grains (oats, brown rice), vegetables (broccoli, cauliflower), and legumes to support gut health and reduce systemic inflammation.
-    Vitamin C-Rich Foods: Citrus fruits (oranges, lemons), bell peppers, and broccoli to support immune health and reduce inflammation.
-
-Example Meal Plan for High Absolute Neutrophil Count:
-    Breakfast: Oatmeal with chia seeds, walnuts, and blueberries (rich in antioxidants and fiber).
-    Lunch: Grilled salmon with quinoa, steamed broccoli, and a side salad with olive oil dressing (anti-inflammatory foods).
-    Snack: A handful of almonds and an orange (rich in vitamin C).
-    Dinner: Grilled chicken stir-fry with spinach, bell peppers, and carrots (rich in vitamin C and fiber).
+            advice.append("""
+<div>
+    <h2>High Absolute Neutrophil Count (Neutrophilia)</h2>
+    <div>
+        <h3>Root Cause:</h3>
+        <ul>
+            <li><strong>Infections:</strong> Acute bacterial infections like pneumonia, appendicitis, or urinary tract infections can elevate neutrophil counts.</li>
+            <li><strong>Inflammatory Conditions:</strong> Chronic diseases like rheumatoid arthritis or inflammatory bowel disease (IBD).</li>
+            <li><strong>Stress or Trauma:</strong> Physical or emotional stress, surgery, or trauma can elevate neutrophils via cortisol release.</li>
+            <li><strong>Medications:</strong> Drugs like corticosteroids, epinephrine, or lithium can stimulate neutrophil production.</li>
+            <li><strong>Smoking:</strong> Chronic smoking induces an inflammatory response, raising neutrophil counts.</li>
+            <li><strong>Leukemia or Myeloproliferative Disorders:</strong> Disorders like chronic myelogenous leukemia (CML) cause excessive neutrophil production.</li>
+            <li><strong>Tissue Damage:</strong> Burns, heart attacks, or trauma can cause elevated neutrophils as part of healing.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Tips:</h3>
+        <ul>
+            <li><strong>Identify and Treat Infections:</strong> Use antibiotics or antivirals as needed to treat infections.</li>
+            <li><strong>Manage Inflammatory Conditions:</strong> Use corticosteroids, immunosuppressants, or biologics to reduce inflammation.</li>
+            <li><strong>Minimize Stress:</strong> Practice stress-reduction techniques like yoga, meditation, or relaxation exercises.</li>
+            <li><strong>Avoid Smoking:</strong> Quitting smoking reduces inflammation and normalizes neutrophil levels.</li>
+            <li><strong>Monitor for Hematologic Conditions:</strong> Suspected blood disorders may require diagnostic tests and targeted therapies.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Foods to Eat:</h3>
+        <ul>
+            <li><strong>Anti-Inflammatory Foods:</strong> Fatty fish, olive oil, walnuts, and flaxseeds to reduce inflammation.</li>
+            <li><strong>Antioxidant-Rich Foods:</strong> Berries, leafy greens, and nuts to combat oxidative stress.</li>
+            <li><strong>Fiber-Rich Foods:</strong> Whole grains, vegetables, and legumes to support gut health.</li>
+            <li><strong>Vitamin C-Rich Foods:</strong> Citrus fruits, bell peppers, and broccoli to boost immunity.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Example Meal Plan for High ANC:</h3>
+        <ul>
+            <li><strong>Breakfast:</strong> Oatmeal with chia seeds, walnuts, and blueberries (rich in antioxidants and fiber).</li>
+            <li><strong>Lunch:</strong> Grilled salmon with quinoa, steamed broccoli, and a side salad with olive oil dressing (anti-inflammatory foods).</li>
+            <li><strong>Snack:</strong> A handful of almonds and an orange (rich in vitamin C).</li>
+            <li><strong>Dinner:</strong> Grilled chicken stir-fry with spinach, bell peppers, and carrots (rich in vitamin C and fiber).</li>
+        </ul>
+    </div>
+</div>
 """)
 
     # Absolute Lymphocyte Count (range: 1.0-4.0 x10⁹/L)
     if "Absolute Lymphocyte Count" in values:
         if values["Absolute Lymphocyte Count"] < 1000:
-            advice.append("""Low Absolute Lymphocyte Count (Lymphocytopenia)
-
-Root Cause:
-    Infections: Certain viral infections, such as HIV, hepatitis, influenza, and measles, can cause lymphocytes to be temporarily or chronically low as the body focuses its immune resources elsewhere.
-    Autoimmune Disorders: Conditions like lupus, rheumatoid arthritis, or Sjogren's syndrome can lead to the destruction of lymphocytes, resulting in lymphocytopenia.
-    Bone Marrow Disorders: Disorders such as aplastic anemia, leukemia, or myelodysplastic syndromes can affect the production of lymphocytes in the bone marrow.
-    Immunosuppressive Medications: Drugs like corticosteroids, chemotherapy, or immunosuppressive medications can reduce lymphocyte production, leading to a low count.
-    Malnutrition: Severe deficiencies in nutrients, particularly protein, zinc, folate, and vitamin B12, can impair immune function and lead to low lymphocyte levels.
-    Radiation Therapy: Exposure to radiation, either through cancer treatments or environmental factors, can reduce the production of lymphocytes in the bone marrow.
-    Chronic Stress: Prolonged stress can elevate cortisol levels, which in turn can suppress lymphocyte production.
-    Congenital Immunodeficiencies: Genetic disorders, such as DiGeorge syndrome, can result in lymphocytopenia by affecting the immune system’s development.
-
-Tips:
-    Monitor for Infections: Individuals with low lymphocyte counts should be extra cautious to avoid infections. If infections occur, they should be treated promptly.
-    Boost Immune Function: Support the immune system by managing underlying conditions, taking prescribed medications, and avoiding immunosuppressive drugs when possible.
-    Address Nutritional Deficiencies: Ensure a well-balanced diet rich in essential vitamins and minerals, especially those involved in immune function, such as zinc, folate, and vitamin B12.
-    Stress Management: Engage in relaxation techniques such as meditation, yoga, or deep breathing exercises to manage stress and reduce its impact on the immune system.
-    Regular Monitoring: Periodic blood tests to monitor lymphocyte counts can help track progress and adjust treatment accordingly.
-
-Foods to Eat:
-    Vitamin C-Rich Foods: Citrus fruits (oranges, lemons), strawberries, bell peppers, and broccoli to support immune function.
-    Zinc-Rich Foods: Shellfish (oysters), lean meats, legumes, nuts, and seeds to support immune health.
-    Folate-Rich Foods: Leafy greens (spinach, kale), citrus fruits, beans, peas, lentils, and fortified cereals.
-    Protein-Rich Foods: Lean meats, poultry, fish, tofu, and legumes to support immune cell production.
-    Vitamin B12-Rich Foods: Animal products such as meat, poultry, fish, eggs, and dairy for immune support.
-
-Example Meal Plan for Low Absolute Lymphocyte Count:
-    Breakfast: Scrambled eggs with spinach and whole-grain toast (rich in vitamin B12 and folate).
-    Lunch: Grilled chicken with quinoa and a side of leafy greens (rich in protein, vitamin B12, and folate).
-    Snack: A handful of almonds and an orange (rich in vitamin C).
-    Dinner: Baked salmon with roasted sweet potatoes and steamed broccoli (rich in vitamin B12, protein, and zinc).""")
+            advice.append("""
+<div>
+    <h2>Low Absolute Lymphocyte Count (Lymphocytopenia)</h2>
+    <div>
+        <h3>Root Cause:</h3>
+        <ul>
+            <li><strong>Infections:</strong> Viral infections like HIV, hepatitis, influenza, and measles can cause low lymphocyte counts.</li>
+            <li><strong>Autoimmune Disorders:</strong> Conditions such as lupus, rheumatoid arthritis, or Sjogren's syndrome can lead to lymphocyte destruction.</li>
+            <li><strong>Bone Marrow Disorders:</strong> Aplastic anemia, leukemia, or myelodysplastic syndromes can impair lymphocyte production.</li>
+            <li><strong>Immunosuppressive Medications:</strong> Drugs such as corticosteroids, chemotherapy, or immunosuppressants can reduce lymphocyte production.</li>
+            <li><strong>Malnutrition:</strong> Severe deficiencies in protein, zinc, folate, or vitamin B12 impair immune function.</li>
+            <li><strong>Radiation Therapy:</strong> Radiation exposure reduces lymphocyte production in the bone marrow.</li>
+            <li><strong>Chronic Stress:</strong> Prolonged stress elevates cortisol, suppressing lymphocyte production.</li>
+            <li><strong>Congenital Immunodeficiencies:</strong> Genetic disorders, such as DiGeorge syndrome, can cause lymphocytopenia.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Tips:</h3>
+        <ul>
+            <li><strong>Monitor for Infections:</strong> Avoid exposure to sick individuals and seek prompt treatment for infections.</li>
+            <li><strong>Boost Immune Function:</strong> Support the immune system by addressing underlying conditions and avoiding immunosuppressive drugs if possible.</li>
+            <li><strong>Address Nutritional Deficiencies:</strong> Maintain a diet rich in zinc, folate, and vitamin B12.</li>
+            <li><strong>Stress Management:</strong> Use relaxation techniques such as yoga, meditation, or deep breathing exercises.</li>
+            <li><strong>Regular Monitoring:</strong> Periodic blood tests can help track lymphocyte levels and guide treatment adjustments.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Foods to Eat:</h3>
+        <ul>
+            <li><strong>Vitamin C-Rich Foods:</strong> Citrus fruits, strawberries, bell peppers, and broccoli.</li>
+            <li><strong>Zinc-Rich Foods:</strong> Shellfish, lean meats, legumes, nuts, and seeds.</li>
+            <li><strong>Folate-Rich Foods:</strong> Leafy greens, citrus fruits, beans, peas, and lentils.</li>
+            <li><strong>Protein-Rich Foods:</strong> Lean meats, poultry, fish, tofu, and legumes.</li>
+            <li><strong>Vitamin B12-Rich Foods:</strong> Meat, poultry, fish, eggs, and dairy.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Example Meal Plan for Low Absolute Lymphocyte Count:</h3>
+        <ul>
+            <li><strong>Breakfast:</strong> Scrambled eggs with spinach and whole-grain toast (rich in vitamin B12 and folate).</li>
+            <li><strong>Lunch:</strong> Grilled chicken with quinoa and leafy greens (rich in protein, vitamin B12, and folate).</li>
+            <li><strong>Snack:</strong> A handful of almonds and an orange (rich in vitamin C).</li>
+            <li><strong>Dinner:</strong> Baked salmon with roasted sweet potatoes and steamed broccoli (rich in vitamin B12, protein, and zinc).</li>
+        </ul>
+    </div>
+</div>
+""")
         elif values["Absolute Lymphocyte Count"] > 3000:
-            advice.append("""High Absolute Lymphocyte Count (Lymphocytosis)
-
-Root Cause:
-    Infections: Lymphocytosis is often seen in response to viral infections such as mononucleosis (Epstein-Barr virus), hepatitis, or cytomegalovirus. It may also occur during some bacterial infections like tuberculosis.
-    Autoimmune Disorders: Conditions such as multiple sclerosis, rheumatoid arthritis, or Hashimoto's thyroiditis can cause an increase in lymphocytes due to chronic immune activation.
-    Chronic Lymphocytic Leukemia (CLL): A form of leukemia where there is a malignant overproduction of lymphocytes, leading to elevated counts.
-    Lymphoma: Certain types of lymphoma, such as Hodgkin's lymphoma and non-Hodgkin lymphoma, can lead to high lymphocyte counts.
-    Stress: Physical stress or emotional trauma can cause a temporary increase in lymphocyte production as part of the body's response to stress.
-    Smoking: Chronic smoking can lead to lymphocytosis, especially in the lungs, as part of the inflammatory response.
-    Medication Response: Certain medications, such as those used in immunotherapy or immune-stimulants, may increase lymphocyte levels as part of an immune response.
-
-Tips:
-    Identify the Underlying Cause: Lymphocytosis can be indicative of infection, autoimmune disorders, or cancer. Seek appropriate medical evaluation to determine the cause and start treatment.
-    Manage Chronic Infections or Inflammatory Conditions: If lymphocytosis is due to infections or chronic conditions, managing the underlying disease through medication, rest, and proper care can help normalize lymphocyte counts.
-    Monitor for Leukemia or Lymphoma: If there is concern about blood cancers such as leukemia or lymphoma, further diagnostic testing, including a bone marrow biopsy or imaging studies, may be necessary.
-    Avoid Smoking: Quitting smoking can reduce chronic inflammation and help normalize lymphocyte levels.
-    Manage Stress: If stress is a contributing factor, incorporating stress-management strategies like relaxation exercises or therapy may help in reducing lymphocyte levels.
-
-Foods to Eat:
-    Anti-Inflammatory Foods: Omega-3-rich foods like fatty fish (salmon, mackerel), olive oil, walnuts, and flaxseeds to reduce inflammation.
-    Antioxidant-Rich Foods: Berries (blueberries, strawberries), leafy greens (spinach, kale), and nuts to combat oxidative stress and reduce inflammation.
-    Fiber-Rich Foods: Whole grains (oats, brown rice), vegetables (broccoli, cauliflower), and legumes to support overall immune health.
-    Vitamin C-Rich Foods: Citrus fruits (oranges, lemons), bell peppers, strawberries, and broccoli to help combat inflammation.
-    Probiotic-Rich Foods: Yogurt, kefir, and fermented foods to support gut health and modulate immune function.
-
-Example Meal Plan for High Absolute Lymphocyte Count:
-    Breakfast: Oatmeal with chia seeds, walnuts, and blueberries (rich in antioxidants and fiber).
-    Lunch: Grilled salmon with quinoa, steamed broccoli, and a side salad with olive oil dressing (anti-inflammatory foods).
-    Snack: A handful of almonds and an orange (rich in vitamin C).
-    Dinner: Grilled chicken stir-fry with spinach, bell peppers, and carrots (rich in vitamin C and fiber).
+            advice.append("""
+<div>
+    <h2>High Absolute Lymphocyte Count (Lymphocytosis)</h2>
+    <div>
+        <h3>Root Cause:</h3>
+        <ul>
+            <li><strong>Infections:</strong> Viral infections like mononucleosis, hepatitis, or cytomegalovirus, or bacterial infections like tuberculosis.</li>
+            <li><strong>Autoimmune Disorders:</strong> Chronic conditions such as multiple sclerosis or rheumatoid arthritis can increase lymphocytes.</li>
+            <li><strong>Chronic Lymphocytic Leukemia (CLL):</strong> Malignant overproduction of lymphocytes in leukemia.</li>
+            <li><strong>Lymphoma:</strong> Certain types of lymphoma can elevate lymphocyte counts.</li>
+            <li><strong>Stress:</strong> Physical or emotional stress can cause temporary lymphocyte elevation.</li>
+            <li><strong>Smoking:</strong> Chronic smoking induces inflammation and lymphocyte elevation.</li>
+            <li><strong>Medication Response:</strong> Immune-stimulating drugs can increase lymphocyte counts.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Tips:</h3>
+        <ul>
+            <li><strong>Identify the Underlying Cause:</strong> Seek medical evaluation to determine and address the cause of lymphocytosis.</li>
+            <li><strong>Manage Chronic Conditions:</strong> Treat infections or chronic inflammatory diseases to normalize lymphocyte levels.</li>
+            <li><strong>Monitor for Blood Disorders:</strong> Diagnostic tests may be necessary for conditions like leukemia or lymphoma.</li>
+            <li><strong>Avoid Smoking:</strong> Quitting smoking reduces chronic inflammation.</li>
+            <li><strong>Stress Management:</strong> Incorporate relaxation techniques to manage stress-related lymphocytosis.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Foods to Eat:</h3>
+        <ul>
+            <li><strong>Anti-Inflammatory Foods:</strong> Fatty fish, olive oil, walnuts, and flaxseeds.</li>
+            <li><strong>Antioxidant-Rich Foods:</strong> Berries, leafy greens, and nuts.</li>
+            <li><strong>Fiber-Rich Foods:</strong> Whole grains, vegetables, and legumes.</li>
+            <li><strong>Vitamin C-Rich Foods:</strong> Citrus fruits, bell peppers, and broccoli.</li>
+            <li><strong>Probiotic-Rich Foods:</strong> Yogurt, kefir, and fermented foods.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Example Meal Plan for High Absolute Lymphocyte Count:</h3>
+        <ul>
+            <li><strong>Breakfast:</strong> Oatmeal with chia seeds, walnuts, and blueberries (rich in antioxidants and fiber).</li>
+            <li><strong>Lunch:</strong> Grilled salmon with quinoa, steamed broccoli, and a salad with olive oil dressing.</li>
+            <li><strong>Snack:</strong> A handful of almonds and an orange (rich in vitamin C).</li>
+            <li><strong>Dinner:</strong> Grilled chicken stir-fry with spinach, bell peppers, and carrots (rich in vitamin C and fiber).</li>
+        </ul>
+    </div>
+</div>
 """)
 
     # Absolute Eosinophil Count (range: 0.02-0.5 x10⁹/L)
     if "Absolute Eosinophil Count" in values:
         if values["Absolute Eosinophil Count"] < 20:
-            advice.append("""Low Absolute Eosinophil Count (Eosinopenia)
-
-Root Cause:
-    Acute Infections: During acute bacterial infections, particularly when the body is fighting severe infections such as sepsis or systemic infections, eosinophil levels can decrease.
-    Corticosteroid Use: Medications like corticosteroids (prednisone, hydrocortisone) can suppress eosinophil production, leading to low counts.
-    Cushing's Syndrome: This condition, caused by excessive cortisol in the body, can suppress eosinophil levels as cortisol directly impacts the immune system.
-    Stress: Prolonged physical or emotional stress can lead to elevated cortisol levels, which in turn can reduce eosinophil counts.
-    Bone Marrow Suppression: Conditions like aplastic anemia, leukemia, or myelodysplastic syndromes can affect the production of eosinophils in the bone marrow, leading to low levels.
-    Acute Inflammatory Disorders: Inflammatory conditions such as acute infections, acute trauma, or shock may cause eosinophils to be used up rapidly, resulting in temporarily low counts.
-    Severe Protein Malnutrition: Severe malnutrition can impair immune function, leading to reduced production of eosinophils.
-
-Tips:
-    Infection Management: Since eosinophils play a role in fighting infections, especially parasitic infections, it is important to address any underlying infection promptly.
-    Medication Adjustment: If corticosteroids or other medications are causing eosinophil suppression, consult a healthcare provider about potential alternatives or dosage adjustments.
-    Bone Marrow Monitoring: If bone marrow disorders are suspected, regular check-ups and diagnostic tests are necessary to monitor bone marrow health.
-    Stress Reduction: Engage in stress-management techniques, such as yoga, meditation, or deep-breathing exercises, to help reduce cortisol levels.
-    Nutritional Support: Ensure adequate nutrition, especially if malnutrition is a concern, by focusing on a balanced diet rich in protein and essential nutrients.
-
-Foods to Eat:
-    Protein-Rich Foods: Lean meats, poultry, fish, tofu, and legumes to support immune system function and overall health.
-    Vitamin B12 and Folate-Rich Foods: Animal products such as meat, eggs, and dairy, as well as leafy greens (spinach, kale), beans, and lentils.
-    Zinc-Rich Foods: Shellfish (oysters, crab), red meat, beans, nuts, and seeds for immune support.
-    Healthy Fats: Olive oil, avocados, and fatty fish like salmon, which can help reduce inflammation and support immune function.
-
-Example Meal Plan for Low Absolute Eosinophil Count:
-    Breakfast: Scrambled eggs with spinach and whole-grain toast (rich in vitamin B12, folate, and protein).
-    Lunch: Grilled chicken with quinoa and a side of leafy greens (rich in protein, folate, and zinc).
-    Snack: A handful of almonds and a boiled egg (rich in protein and zinc).
-    Dinner: Baked salmon with roasted sweet potatoes and steamed broccoli (rich in protein, zinc, and healthy fats).""")
+            advice.append("""
+<div>
+    <h2>Low Absolute Eosinophil Count (Eosinopenia)</h2>
+    <div>
+        <h3>Root Cause:</h3>
+        <ul>
+            <li><strong>Acute Infections:</strong> Severe bacterial infections like sepsis can reduce eosinophil levels.</li>
+            <li><strong>Corticosteroid Use:</strong> Medications like prednisone suppress eosinophil production.</li>
+            <li><strong>Cushing's Syndrome:</strong> Excess cortisol in the body suppresses eosinophil counts.</li>
+            <li><strong>Stress:</strong> Prolonged physical or emotional stress elevates cortisol, reducing eosinophil levels.</li>
+            <li><strong>Bone Marrow Suppression:</strong> Disorders like aplastic anemia or leukemia impair eosinophil production.</li>
+            <li><strong>Acute Inflammatory Disorders:</strong> Conditions like trauma, infections, or shock can deplete eosinophils.</li>
+            <li><strong>Severe Protein Malnutrition:</strong> Nutritional deficiencies can suppress immune function.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Tips:</h3>
+        <ul>
+            <li><strong>Infection Management:</strong> Address infections promptly to reduce immune system strain.</li>
+            <li><strong>Medication Adjustment:</strong> Discuss alternatives with your doctor if corticosteroids are causing low eosinophils.</li>
+            <li><strong>Bone Marrow Monitoring:</strong> Regular testing for bone marrow disorders may be necessary.</li>
+            <li><strong>Stress Reduction:</strong> Practice yoga, meditation, or relaxation techniques to lower stress levels.</li>
+            <li><strong>Nutritional Support:</strong> Consume a balanced diet rich in protein, vitamins, and minerals.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Foods to Eat:</h3>
+        <ul>
+            <li><strong>Protein-Rich Foods:</strong> Lean meats, poultry, fish, tofu, and legumes.</li>
+            <li><strong>Vitamin B12 and Folate-Rich Foods:</strong> Eggs, dairy, spinach, kale, beans, and lentils.</li>
+            <li><strong>Zinc-Rich Foods:</strong> Shellfish, red meat, beans, nuts, and seeds.</li>
+            <li><strong>Healthy Fats:</strong> Olive oil, avocados, and fatty fish like salmon.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Example Meal Plan for Low Absolute Eosinophil Count:</h3>
+        <ul>
+            <li><strong>Breakfast:</strong> Scrambled eggs with spinach and whole-grain toast (rich in vitamin B12 and folate).</li>
+            <li><strong>Lunch:</strong> Grilled chicken with quinoa and leafy greens (rich in protein, folate, and zinc).</li>
+            <li><strong>Snack:</strong> A handful of almonds and a boiled egg (rich in protein and zinc).</li>
+            <li><strong>Dinner:</strong> Baked salmon with roasted sweet potatoes and steamed broccoli (rich in protein, zinc, and healthy fats).</li>
+        </ul>
+    </div>
+</div>
+""")
         elif values["Absolute Eosinophil Count"] > 500:
-            advice.append("""High Absolute Eosinophil Count (Eosinophilia)
-
-Root Cause:
-    Allergic Reactions: Conditions such as asthma, hay fever, eczema, and allergic rhinitis can cause an increase in eosinophil count, as these cells are involved in the body’s response to allergens.
-    Parasitic Infections: Infections caused by parasites, such as hookworms, roundworms, and malaria, often result in an elevated eosinophil count as the body tries to combat the parasites.
-    Autoimmune Diseases: Conditions like rheumatoid arthritis, vasculitis, or inflammatory bowel disease (IBD) may cause an increase in eosinophils as part of the immune system's inflammatory response.
-    Eosinophilic Disorders: Eosinophilic esophagitis, eosinophilic pneumonia, or eosinophilic granulomatosis with polyangiitis (Churg-Strauss syndrome) are rare conditions in which eosinophils are abnormally elevated in the body.
-    Chronic Infections: Long-term infections, including fungal infections, tuberculosis, or certain viral infections, can lead to eosinophilia.
-    Drug Reactions: Certain medications, such as antibiotics, nonsteroidal anti-inflammatory drugs (NSAIDs), or some chemotherapy drugs, can trigger an allergic reaction leading to high eosinophil levels.
-    Cancer: Some cancers, particularly lymphomas or certain types of leukemia, may cause an increase in eosinophil levels as part of the body's response to malignancy.
-    Hypereosinophilic Syndrome: A rare condition characterized by persistently high eosinophil levels, which can affect various organs, including the heart, lungs, and skin.
-
-Tips:
-    Manage Allergies: If allergies are the cause, antihistamines, corticosteroids, or allergy shots (immunotherapy) may be recommended to control the allergic response.
-    Treat Parasitic Infections: If eosinophilia is due to a parasitic infection, appropriate antiparasitic medications will be required to eliminate the infection and normalize eosinophil levels.
-    Monitor for Autoimmune Disorders: If an autoimmune disorder is suspected, immunosuppressive medications or biologics may be used to reduce eosinophil levels.
-    Medication Adjustment: If drugs are causing eosinophilia, consult with your doctor about adjusting or changing the medication.
-    Avoid Environmental Triggers: For allergic eosinophilia, avoiding allergens like pollen, dust, or pet dander can help reduce eosinophil levels.
-
-Foods to Eat:
-    Anti-Inflammatory Foods: Omega-3-rich foods like fatty fish (salmon, mackerel), olive oil, walnuts, and flaxseeds to reduce inflammation.
-    Antioxidant-Rich Foods: Berries (blueberries, strawberries), leafy greens (spinach, kale), and nuts to combat oxidative stress and inflammation.
-    Fiber-Rich Foods: Whole grains (oats, brown rice), vegetables (broccoli, cauliflower), and legumes to support overall immune health.
-    Probiotic-Rich Foods: Yogurt, kefir, and fermented foods to support gut health and modulate immune function.
-    Vitamin C-Rich Foods: Citrus fruits (oranges, lemons), bell peppers, strawberries, and broccoli to help combat inflammation.
-
-Example Meal Plan for High Absolute Eosinophil Count:
-    Breakfast: Oatmeal with chia seeds, walnuts, and blueberries (rich in antioxidants and fiber).
-    Lunch: Grilled salmon with quinoa, steamed broccoli, and a side salad with olive oil dressing (anti-inflammatory foods).
-    Snack: A handful of almonds and an orange (rich in vitamin C).
-    Dinner: Grilled chicken stir-fry with spinach, bell peppers, and carrots (rich in vitamin C and fiber).
+            advice.append("""
+<div>
+    <h2>High Absolute Eosinophil Count (Eosinophilia)</h2>
+    <div>
+        <h3>Root Cause:</h3>
+        <ul>
+            <li><strong>Allergic Reactions:</strong> Asthma, hay fever, eczema, or rhinitis can increase eosinophils.</li>
+            <li><strong>Parasitic Infections:</strong> Parasites like hookworms, roundworms, and malaria trigger eosinophilia.</li>
+            <li><strong>Autoimmune Diseases:</strong> Conditions like rheumatoid arthritis or inflammatory bowel disease can elevate eosinophils.</li>
+            <li><strong>Eosinophilic Disorders:</strong> Rare conditions like eosinophilic esophagitis or pneumonia.</li>
+            <li><strong>Chronic Infections:</strong> Long-term fungal infections, tuberculosis, or certain viral infections.</li>
+            <li><strong>Drug Reactions:</strong> Medications like NSAIDs or antibiotics can induce eosinophilia.</li>
+            <li><strong>Cancer:</strong> Lymphomas or certain leukemias may cause high eosinophil levels.</li>
+            <li><strong>Hypereosinophilic Syndrome:</strong> Persistently high eosinophil levels affecting organs.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Tips:</h3>
+        <ul>
+            <li><strong>Manage Allergies:</strong> Antihistamines, corticosteroids, or allergy shots may help control symptoms.</li>
+            <li><strong>Treat Parasitic Infections:</strong> Use antiparasitic medications to resolve infections and normalize eosinophils.</li>
+            <li><strong>Monitor Autoimmune Disorders:</strong> Use immunosuppressive medications or biologics as advised by your doctor.</li>
+            <li><strong>Medication Adjustment:</strong> Discuss alternatives with your doctor if medications are causing eosinophilia.</li>
+            <li><strong>Avoid Environmental Triggers:</strong> Minimize exposure to allergens like pollen, dust, or pet dander.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Foods to Eat:</h3>
+        <ul>
+            <li><strong>Anti-Inflammatory Foods:</strong> Fatty fish, olive oil, walnuts, and flaxseeds.</li>
+            <li><strong>Antioxidant-Rich Foods:</strong> Berries, leafy greens, and nuts.</li>
+            <li><strong>Fiber-Rich Foods:</strong> Whole grains, vegetables, and legumes.</li>
+            <li><strong>Probiotic-Rich Foods:</strong> Yogurt, kefir, and fermented foods.</li>
+            <li><strong>Vitamin C-Rich Foods:</strong> Citrus fruits, bell peppers, and broccoli.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Example Meal Plan for High Absolute Eosinophil Count:</h3>
+        <ul>
+            <li><strong>Breakfast:</strong> Oatmeal with chia seeds, walnuts, and blueberries (rich in antioxidants and fiber).</li>
+            <li><strong>Lunch:</strong> Grilled salmon with quinoa, steamed broccoli, and a salad with olive oil dressing.</li>
+            <li><strong>Snack:</strong> A handful of almonds and an orange (rich in vitamin C).</li>
+            <li><strong>Dinner:</strong> Grilled chicken stir-fry with spinach, bell peppers, and carrots (rich in vitamin C and fiber).</li>
+        </ul>
+    </div>
+</div>
 """)
 
     # Absolute Monocyte Count (range: 0.1-1.0 x10⁹/L)
     if "Absolute Monocyte Count" in values:
         if values["Absolute Monocyte Count"] < 200:
-            advice.append("""Low Absolute Monocyte Count (Monocytopenia)
-Root Cause:
-    Acute Infections: During the initial stages of some infections, particularly viral infections (e.g., HIV, hepatitis), the monocyte count may decrease temporarily as the body prioritizes fighting the infection.
-    Bone Marrow Disorders: Conditions like aplastic anemia, leukemia, or myelodysplastic syndromes can affect the bone marrow's ability to produce monocytes, leading to a low count.
-    Corticosteroid Use: Corticosteroids (e.g., prednisone) and other immunosuppressive medications can suppress the production of monocytes, leading to monocytopenia.
-    Chemotherapy or Radiation Therapy: These treatments, used for cancer or other conditions, can impair bone marrow function and decrease the production of monocytes.
-    Severe Malnutrition: Nutritional deficiencies, particularly in proteins, vitamins, and minerals like vitamin B12 and folate, can impair the production of monocytes in the bone marrow.
-    Autoimmune Diseases: Certain autoimmune diseases, such as lupus or rheumatoid arthritis, may lead to low monocyte counts as a result of immune dysregulation.
-    Congenital or Genetic Disorders: Rare genetic conditions, like hereditary neutropenia, can lead to reduced production of monocytes and other white blood cells.
-
-Tips:
-    Monitor for Infections: Since monocytes are critical in fighting infections, a low count could make you more vulnerable to bacterial, fungal, and viral infections. It's important to prevent and manage infections with medical advice.
-    Review Medications: If monocytopenia is linked to corticosteroids or chemotherapy, consult your doctor about possible adjustments in treatment or switching medications.
-    Bone Marrow Function: If a bone marrow disorder is suspected, regular medical follow-up and tests are necessary to assess bone marrow health.
-    Boost Nutritional Intake: Ensure an adequate intake of essential nutrients, particularly protein, vitamin B12, folate, and iron, to support the production of healthy blood cells.
-    Stress Management: High levels of chronic stress can suppress monocyte production. Practice stress-reduction techniques such as deep breathing, meditation, and exercise.
-
-Foods to Eat:
-    Protein-Rich Foods: Lean meats, poultry, fish, eggs, tofu, and legumes to support immune cell production and overall health.
-    Vitamin B12 and Folate-Rich Foods: Animal products like meat, eggs, and dairy, as well as leafy greens (spinach, kale), beans, and lentils.
-    Iron-Rich Foods: Red meat, poultry, fish, lentils, and spinach to support red blood cell and immune cell production.
-    Zinc-Rich Foods: Shellfish (oysters), lean meats, legumes, nuts, and seeds to enhance immune function.
-    Healthy Fats: Olive oil, avocados, and fatty fish like salmon to reduce inflammation and support overall health.
-
-Example Meal Plan for Low Absolute Monocyte Count:
-    Breakfast: Scrambled eggs with spinach and whole-grain toast (rich in protein, vitamin B12, and folate).
-    Lunch: Grilled chicken with quinoa and a side of leafy greens (rich in protein, folate, and zinc).
-    Snack: A handful of almonds and a boiled egg (rich in protein and zinc).
-    Dinner: Baked salmon with roasted sweet potatoes and steamed broccoli (rich in protein, zinc, and healthy fats).""")
+            advice.append("""
+<div>
+    <h2>Low Absolute Monocyte Count (Monocytopenia)</h2>
+    <div>
+        <h3>Root Cause:</h3>
+        <ul>
+            <li><strong>Acute Infections:</strong> Initial stages of viral infections (e.g., HIV, hepatitis) can cause a temporary decrease in monocyte count.</li>
+            <li><strong>Bone Marrow Disorders:</strong> Conditions like aplastic anemia or leukemia can impair monocyte production.</li>
+            <li><strong>Corticosteroid Use:</strong> Medications such as prednisone suppress monocyte production.</li>
+            <li><strong>Chemotherapy or Radiation Therapy:</strong> These treatments may impair bone marrow function.</li>
+            <li><strong>Severe Malnutrition:</strong> Deficiencies in protein, vitamin B12, folate, and minerals can reduce monocyte production.</li>
+            <li><strong>Autoimmune Diseases:</strong> Disorders like lupus or rheumatoid arthritis can cause immune dysregulation and low monocyte counts.</li>
+            <li><strong>Congenital or Genetic Disorders:</strong> Rare genetic conditions such as hereditary neutropenia can lead to monocytopenia.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Tips:</h3>
+        <ul>
+            <li><strong>Monitor for Infections:</strong> Stay vigilant for signs of infections as low monocyte levels increase vulnerability.</li>
+            <li><strong>Review Medications:</strong> Consult your doctor if corticosteroids or chemotherapy are affecting your monocyte levels.</li>
+            <li><strong>Boost Nutritional Intake:</strong> Include essential nutrients like protein, vitamin B12, folate, and iron in your diet.</li>
+            <li><strong>Bone Marrow Monitoring:</strong> Conduct regular medical follow-ups to assess bone marrow health if disorders are suspected.</li>
+            <li><strong>Stress Management:</strong> Engage in stress-reduction techniques like meditation, yoga, or exercise.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Foods to Eat:</h3>
+        <ul>
+            <li><strong>Protein-Rich Foods:</strong> Lean meats, poultry, fish, eggs, tofu, and legumes.</li>
+            <li><strong>Vitamin B12 and Folate-Rich Foods:</strong> Meat, dairy, spinach, kale, beans, and lentils.</li>
+            <li><strong>Iron-Rich Foods:</strong> Red meat, lentils, spinach, and poultry.</li>
+            <li><strong>Zinc-Rich Foods:</strong> Shellfish, lean meats, nuts, and seeds.</li>
+            <li><strong>Healthy Fats:</strong> Olive oil, avocados, and fatty fish like salmon.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Example Meal Plan for Low Absolute Monocyte Count:</h3>
+        <ul>
+            <li><strong>Breakfast:</strong> Scrambled eggs with spinach and whole-grain toast (rich in protein, vitamin B12, and folate).</li>
+            <li><strong>Lunch:</strong> Grilled chicken with quinoa and leafy greens (rich in protein, folate, and zinc).</li>
+            <li><strong>Snack:</strong> A handful of almonds and a boiled egg (rich in protein and zinc).</li>
+            <li><strong>Dinner:</strong> Baked salmon with roasted sweet potatoes and steamed broccoli (rich in protein, zinc, and healthy fats).</li>
+        </ul>
+    </div>
+</div>
+""")
         elif values["Absolute Monocyte Count"] > 1000:
-            advice.append("""High Absolute Monocyte Count (Monocytosis)
-
-Root Cause:
-    Chronic Infections: Long-term infections, such as tuberculosis, brucellosis, syphilis, or fungal infections, can lead to elevated monocyte levels as the body’s immune response becomes chronically activated.
-    Inflammatory Diseases: Conditions like inflammatory bowel disease (IBD), rheumatoid arthritis, or lupus can cause chronic inflammation, leading to an elevated monocyte count.
-    Leukemia and Lymphoma: Certain cancers, particularly leukemia and lymphoma, can cause a marked increase in monocyte production in the bone marrow.
-    Recovery from Acute Infection: After an acute infection, as the body starts to recover, monocytes can remain elevated for a period of time.
-    Autoimmune Diseases: Conditions such as sarcoidosis, systemic lupus erythematosus (SLE), and vasculitis can result in elevated monocytes due to chronic immune activation.
-    Myeloproliferative Disorders: Conditions like chronic myelomonocytic leukemia (CMML) and other blood cancers can cause persistent monocytosis.
-    Stress: Physical or emotional stress can result in increased levels of monocytes as part of the body's stress response.
-    Tissue Damage or Inflammation: When tissues are damaged due to injury, surgery, or inflammation, the body increases monocyte production to aid in healing and immune response.
-
-Tips:
-    Identify the Underlying Cause: It is crucial to determine the root cause of monocytosis, such as infection, cancer, or inflammatory diseases, so that appropriate treatment can be initiated.
-    Treat Chronic Infections: If monocytosis is due to chronic infections, antimicrobial or antifungal medications will be necessary to eliminate the infection.
-    Manage Inflammatory Diseases: If the cause is related to an autoimmune or inflammatory disease, immunosuppressive drugs or disease-modifying therapies may be prescribed to control inflammation and reduce monocytosis.
-    Monitor for Blood Cancers: If leukemia or lymphoma is suspected, further diagnostic testing like bone marrow biopsies, imaging, and blood tests may be required to confirm the diagnosis.
-    Reduce Stress: Chronic stress can exacerbate inflammation and elevate monocyte levels. Practice stress-reduction techniques such as exercise, mindfulness, and relaxation therapies.
-
-Foods to Eat:
-    Anti-Inflammatory Foods: Omega-3-rich foods like fatty fish (salmon, mackerel), olive oil, walnuts, and flaxseeds to reduce inflammation.
-    Antioxidant-Rich Foods: Berries (blueberries, strawberries), leafy greens (spinach, kale), and nuts to combat oxidative stress and inflammation.
-    Fiber-Rich Foods: Whole grains (oats, brown rice), vegetables (broccoli, cauliflower), and legumes to support overall immune health.
-    Probiotic-Rich Foods: Yogurt, kefir, and fermented foods to support gut health and modulate immune function.
-    Vitamin C-Rich Foods: Citrus fruits (oranges, lemons), bell peppers, strawberries, and broccoli to help combat inflammation.
-
-Example Meal Plan for High Absolute Monocyte Count:
-    Breakfast: Oatmeal with chia seeds, walnuts, and blueberries (rich in antioxidants and fiber).
-    Lunch: Grilled salmon with quinoa, steamed broccoli, and a side salad with olive oil dressing (anti-inflammatory foods).
-    Snack: A handful of almonds and an orange (rich in vitamin C).
-    Dinner: Grilled chicken stir-fry with spinach, bell peppers, and carrots (rich in vitamin C and fiber).
+            advice.append("""
+<div>
+    <h2>High Absolute Monocyte Count (Monocytosis)</h2>
+    <div>
+        <h3>Root Cause:</h3>
+        <ul>
+            <li><strong>Chronic Infections:</strong> Tuberculosis, brucellosis, or fungal infections can chronically elevate monocytes.</li>
+            <li><strong>Inflammatory Diseases:</strong> Conditions like IBD, lupus, or rheumatoid arthritis cause chronic inflammation and high monocyte counts.</li>
+            <li><strong>Leukemia and Lymphoma:</strong> Certain cancers result in marked increases in monocyte levels.</li>
+            <li><strong>Recovery from Acute Infection:</strong> Monocytes can remain elevated during recovery phases.</li>
+            <li><strong>Autoimmune Diseases:</strong> Disorders like sarcoidosis or vasculitis can increase monocyte production.</li>
+            <li><strong>Myeloproliferative Disorders:</strong> Conditions like chronic myelomonocytic leukemia (CMML).</li>
+            <li><strong>Stress:</strong> Physical or emotional stress triggers higher monocyte production.</li>
+            <li><strong>Tissue Damage or Inflammation:</strong> Monocyte levels rise during healing processes.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Tips:</h3>
+        <ul>
+            <li><strong>Identify the Underlying Cause:</strong> Work with your doctor to diagnose and treat the root cause.</li>
+            <li><strong>Treat Chronic Infections:</strong> Use appropriate antimicrobial or antifungal treatments.</li>
+            <li><strong>Manage Inflammatory Diseases:</strong> Medications like immunosuppressants or biologics can help.</li>
+            <li><strong>Monitor for Blood Cancers:</strong> Perform diagnostic tests if blood cancers are suspected.</li>
+            <li><strong>Reduce Stress:</strong> Practice relaxation techniques to lower inflammation and monocyte counts.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Foods to Eat:</h3>
+        <ul>
+            <li><strong>Anti-Inflammatory Foods:</strong> Fatty fish, olive oil, walnuts, and flaxseeds.</li>
+            <li><strong>Antioxidant-Rich Foods:</strong> Berries, leafy greens, and nuts.</li>
+            <li><strong>Fiber-Rich Foods:</strong> Whole grains, broccoli, cauliflower, and legumes.</li>
+            <li><strong>Probiotic-Rich Foods:</strong> Yogurt, kefir, and fermented foods.</li>
+            <li><strong>Vitamin C-Rich Foods:</strong> Citrus fruits, bell peppers, and broccoli.</li>
+        </ul>
+    </div>
+    <div>
+        <h3>Example Meal Plan for High Absolute Monocyte Count:</h3>
+        <ul>
+            <li><strong>Breakfast:</strong> Oatmeal with chia seeds, walnuts, and blueberries (rich in antioxidants and fiber).</li>
+            <li><strong>Lunch:</strong> Grilled salmon with quinoa, steamed broccoli, and a salad with olive oil dressing.</li>
+            <li><strong>Snack:</strong> A handful of almonds and an orange (rich in vitamin C).</li>
+            <li><strong>Dinner:</strong> Grilled chicken stir-fry with spinach, bell peppers, and carrots (rich in vitamin C and fiber).</li>
+        </ul>
+    </div>
+</div>
 """)
 
     # Platelet Count (range: 150,000-410,000 cells/μL)
     if "Platelet Count" in values:
         if values["Platelet Count"] < 150000:
-            advice.append("""Low Platelet Count (Thrombocytopenia)
-
-Root Cause:
-    Bone Marrow Disorders: Conditions such as aplastic anemia, leukemia, or myelodysplastic syndromes can reduce the bone marrow's ability to produce platelets, leading to thrombocytopenia.
-    Autoimmune Diseases: Autoimmune conditions like lupus, rheumatoid arthritis, or idiopathic thrombocytopenic purpura (ITP) can cause the immune system to attack and destroy platelets.
-    Viral Infections: Infections such as dengue, HIV, hepatitis C, or Epstein-Barr virus (EBV) can cause platelet destruction and a low count.
-    Medications: Certain medications, including chemotherapy drugs, heparin (anticoagulants), and antibiotics, can lead to platelet destruction or inhibition of platelet production.
-    Nutritional Deficiencies: Deficiencies in vitamin B12, folate, or iron can impair platelet production in the bone marrow.
-    Alcohol Consumption: Chronic alcohol use can suppress bone marrow function and lead to low platelet counts.
-    Sepsis or Infections: Severe systemic infections or sepsis can lead to disseminated intravascular coagulation (DIC), a condition that consumes platelets.
-    Pregnancy: Some pregnant women may experience a mild decrease in platelets, particularly in the third trimester (gestational thrombocytopenia).
-    Hypersplenism: An enlarged spleen (often due to liver disease or certain infections) can sequester platelets, leading to low levels in the blood.
-
-Tips:
-    Monitor for Bleeding: Individuals with thrombocytopenia may be more prone to bleeding or bruising easily. Be cautious of activities that could cause cuts or injuries, and seek medical attention if any unusual bleeding occurs.
-    Medications Review: If medications are causing low platelet counts, consult a healthcare provider about alternatives or dosage adjustments.
-    Manage Infections: In cases of viral infections or sepsis, addressing the infection through appropriate treatment (antivirals, antibiotics) is critical.
-    Improve Nutrition: Make sure to consume a balanced diet that includes adequate amounts of vitamin B12, folate, and iron to support platelet production.
-    Avoid Alcohol: Limit or avoid alcohol consumption, as it can suppress bone marrow activity and contribute to low platelet counts.
-    Bone Marrow Monitoring: If a bone marrow disorder is suspected, follow-up tests and regular check-ups are necessary to monitor platelet production and overall health.
-
-Foods to Eat:
-    Iron-Rich Foods: Red meat, poultry, fish, beans, lentils, and spinach to support healthy red blood cell and platelet production.
-    Folate-Rich Foods: Leafy greens (kale, spinach), citrus fruits, avocados, and legumes to promote platelet production.
-    Vitamin B12-Rich Foods: Meat, eggs, dairy, and fortified cereals to help in red blood cell and platelet formation.
-    Vitamin C-Rich Foods: Citrus fruits (oranges, lemons), strawberries, and bell peppers to enhance iron absorption and immune health.
-    Healthy Fats: Olive oil, avocado, and nuts to reduce inflammation and support overall health.
-
-Example Meal Plan for Low Platelet Count:
-    Breakfast: Scrambled eggs with spinach, whole-grain toast, and a glass of orange juice (rich in vitamin B12, folate, and vitamin C).
-    Lunch: Grilled chicken with quinoa, steamed broccoli, and a side salad with avocado (rich in protein, iron, and healthy fats).
-    Snack: A handful of almonds and a boiled egg (rich in protein and healthy fats).
-    Dinner: Baked salmon with roasted sweet potatoes and steamed kale (rich in vitamin B12, folate, and healthy fats).""")
+            advice.append("""
+<h2>Low Platelet Count (Thrombocytopenia)</h2>
+<div>
+    <h3>Root Cause:</h3>
+    <ul>
+        <li><b>Bone Marrow Disorders:</b> Conditions such as aplastic anemia, leukemia, or myelodysplastic syndromes can impair platelet production.</li>
+        <li><b>Autoimmune Diseases:</b> Diseases like lupus, rheumatoid arthritis, or idiopathic thrombocytopenic purpura (ITP) can cause immune destruction of platelets.</li>
+        <li><b>Viral Infections:</b> Infections such as dengue, HIV, hepatitis C, or Epstein-Barr virus (EBV) can reduce platelet counts.</li>
+        <li><b>Medications:</b> Certain drugs (e.g., chemotherapy agents, heparin, some antibiotics) may decrease platelet production or cause platelet destruction.</li>
+        <li><b>Nutritional Deficiencies:</b> Deficiencies in vitamin B12, folate, or iron can impair platelet production.</li>
+        <li><b>Alcohol Consumption:</b> Chronic alcohol use can suppress bone marrow activity, leading to lower platelet counts.</li>
+        <li><b>Sepsis or Infections:</b> Severe systemic infections can lead to disseminated intravascular coagulation (DIC), consuming platelets.</li>
+        <li><b>Pregnancy:</b> Some pregnant women may experience mild decreases in platelet count, especially in the third trimester.</li>
+        <li><b>Hypersplenism:</b> An enlarged spleen can sequester platelets, leading to low levels in the bloodstream.</li>
+    </ul>
+</div>
+<div>
+    <h3>Tips:</h3>
+    <ul>
+        <li>Monitor for unusual bleeding or bruising and avoid activities that could result in injuries.</li>
+        <li>Review medications with a healthcare provider to check for drugs that may lower platelet counts.</li>
+        <li>Address infections with appropriate treatments, such as antivirals or antibiotics.</li>
+        <li>Consume a balanced diet rich in vitamin B12, folate, and iron to support platelet production.</li>
+        <li>Avoid alcohol, as it suppresses bone marrow activity.</li>
+        <li>If a bone marrow disorder is suspected, follow up with regular tests and check-ups.</li>
+    </ul>
+</div>
+<div>
+    <h3>Foods to Eat:</h3>
+    <ul>
+        <li><b>Iron-Rich Foods:</b> Red meat, poultry, fish, beans, lentils, and spinach.</li>
+        <li><b>Folate-Rich Foods:</b> Leafy greens (kale, spinach), citrus fruits, avocados, and legumes.</li>
+        <li><b>Vitamin B12-Rich Foods:</b> Meat, eggs, dairy, and fortified cereals.</li>
+        <li><b>Vitamin C-Rich Foods:</b> Citrus fruits (oranges, lemons), strawberries, and bell peppers.</li>
+        <li><b>Healthy Fats:</b> Olive oil, avocado, and nuts to reduce inflammation and support health.</li>
+    </ul>
+</div>
+<div>
+    <h3>Example Meal Plan for Low Platelet Count:</h3>
+    <ul>
+        <li><b>Breakfast:</b> Scrambled eggs with spinach, whole-grain toast, and a glass of orange juice (rich in vitamin B12, folate, and vitamin C).</li>
+        <li><b>Lunch:</b> Grilled chicken with quinoa, steamed broccoli, and a side salad with avocado (rich in protein, iron, and healthy fats).</li>
+        <li><b>Snack:</b> A handful of almonds and a boiled egg (rich in protein and healthy fats).</li>
+        <li><b>Dinner:</b> Baked salmon with roasted sweet potatoes and steamed kale (rich in vitamin B12, folate, and healthy fats).</li>
+    </ul>
+</div>
+""")
         elif values["Platelet Count"] > 410000:
-            advice.append("""High Platelet Count (Thrombocytosis)
-
-Root Cause:
-    Reactive (Secondary) Thrombocytosis: This is the most common cause and is typically a response to another condition, such as:
-    Infections: Bacterial, viral, or fungal infections can trigger an increase in platelet count as part of the inflammatory response.
-    Inflammatory Disorders: Chronic inflammatory diseases, such as rheumatoid arthritis, inflammatory bowel disease (IBD), or vasculitis, can cause reactive thrombocytosis.
-    Iron Deficiency Anemia: Iron deficiency can result in an increase in platelet count as a compensatory mechanism.
-    Surgical Procedures or Trauma: Recovery from surgery or trauma can lead to transient thrombocytosis as part of the healing process.
-    Myeloproliferative Disorders: Primary thrombocytosis, which occurs due to disorders of the bone marrow such as essential thrombocythemia (ET) or polycythemia vera, can lead to persistently elevated platelet counts.
-    Cancer: Certain cancers, particularly lung, gastrointestinal, and ovarian cancers, can lead to thrombocytosis due to the body's inflammatory response to the tumor or as a direct effect of the cancer on the bone marrow.
-    Splenectomy (Spleen Removal): Removal of the spleen (often due to injury or disease) can cause a prolonged increase in platelet count because the spleen plays a role in removing excess platelets from the bloodstream.
-
-Tips:
-    Identify and Treat Underlying Causes: Address any infections, iron deficiencies, or underlying conditions causing thrombocytosis. For reactive thrombocytosis, treating the underlying condition often resolves the high platelet count.
-    Monitor for Clotting Disorders: A high platelet count can increase the risk of blood clots, leading to conditions like stroke, deep vein thrombosis (DVT), or pulmonary embolism. Regular check-ups and blood tests may be needed.
-    Medications: For primary thrombocytosis or myeloproliferative disorders, medications such as low-dose aspirin, hydroxyurea, or interferon may be prescribed to reduce the risk of clotting.
-    Avoid Smoking: Smoking can increase the risk of clot formation and should be avoided if platelet counts are high.
-    Exercise Regularly: Regular exercise, under a healthcare provider's guidance, may help improve circulation and reduce the risk of clotting.
-
-Foods to Eat:
-    Anti-Inflammatory Foods: Omega-3-rich foods like fatty fish (salmon, mackerel), flaxseeds, walnuts, and olive oil to reduce inflammation and platelet aggregation.
-    Vitamin E-Rich Foods: Nuts (almonds, hazelnuts), spinach, and avocados to help reduce the risk of clotting by promoting healthy blood circulation.
-    Ginger and Turmeric: These have natural blood-thinning properties and can help reduce inflammation and platelet aggregation.
-    Fruits and Vegetables: A variety of antioxidant-rich fruits (berries, citrus fruits) and vegetables (broccoli, kale) can support overall vascular health and reduce inflammation.
-    Whole Grains: Brown rice, oats, quinoa, and whole wheat can provide fiber and antioxidants that support overall cardiovascular health.
-
-Example Meal Plan for High Platelet Count:
-    Breakfast: Oatmeal with chia seeds, walnuts, and blueberries (rich in omega-3s and antioxidants).
-    Lunch: Grilled salmon with quinoa, steamed broccoli, and a side salad with olive oil and turmeric dressing (anti-inflammatory foods).
-    Snack: A handful of almonds and a few slices of avocado (rich in vitamin E and healthy fats).
-    Dinner: Stir-fried tofu with spinach, bell peppers, and ginger (rich in anti-inflammatory compounds).
+            advice.append("""
+<h2>High Platelet Count (Thrombocytosis)</h2>
+<div>
+    <h3>Root Cause:</h3>
+    <ul>
+        <li><b>Reactive (Secondary) Thrombocytosis:</b> Response to conditions like infections, inflammatory disorders, or trauma.</li>
+        <li><b>Iron Deficiency Anemia:</b> Iron deficiency can increase platelet count as a compensatory mechanism.</li>
+        <li><b>Myeloproliferative Disorders:</b> Disorders such as essential thrombocythemia or polycythemia vera can cause persistently high platelet counts.</li>
+        <li><b>Cancer:</b> Certain cancers (lung, gastrointestinal, ovarian) can lead to thrombocytosis.</li>
+        <li><b>Splenectomy:</b> Removal of the spleen can cause prolonged increases in platelet levels.</li>
+    </ul>
+</div>
+<div>
+    <h3>Tips:</h3>
+    <ul>
+        <li>Identify and treat underlying conditions like infections or iron deficiency.</li>
+        <li>Monitor for clotting risks, as high platelet counts increase the likelihood of clots.</li>
+        <li>Avoid smoking, which can raise the risk of clot formation.</li>
+        <li>Exercise regularly to improve circulation under medical guidance.</li>
+        <li>In cases of primary thrombocytosis, medications like low-dose aspirin or hydroxyurea may be prescribed.</li>
+    </ul>
+</div>
+<div>
+    <h3>Foods to Eat:</h3>
+    <ul>
+        <li><b>Anti-Inflammatory Foods:</b> Fatty fish, flaxseeds, walnuts, and olive oil to reduce inflammation.</li>
+        <li><b>Vitamin E-Rich Foods:</b> Nuts (almonds, hazelnuts), spinach, and avocados to improve circulation.</li>
+        <li><b>Ginger and Turmeric:</b> These have natural anti-inflammatory and blood-thinning properties.</li>
+        <li><b>Fruits and Vegetables:</b> Berries, citrus fruits, broccoli, and kale to promote vascular health.</li>
+        <li><b>Whole Grains:</b> Oats, brown rice, and quinoa to support cardiovascular health.</li>
+    </ul>
+</div>
+<div>
+    <h3>Example Meal Plan for High Platelet Count:</h3>
+    <ul>
+        <li><b>Breakfast:</b> Oatmeal with chia seeds, walnuts, and blueberries (rich in omega-3s and antioxidants).</li>
+        <li><b>Lunch:</b> Grilled salmon with quinoa, steamed broccoli, and a side salad with olive oil and turmeric dressing.</li>
+        <li><b>Snack:</b> A handful of almonds and avocado slices (rich in vitamin E and healthy fats).</li>
+        <li><b>Dinner:</b> Stir-fried tofu with spinach, bell peppers, and ginger (rich in anti-inflammatory compounds).</li>
+    </ul>
+</div>
 """)
 
     # Erythrocyte Sedimentation Rate (range: 0-20 mm/hr)
     if "Erythrocyte Sedimentation Rate" in values:
         if values["Erythrocyte Sedimentation Rate"] < 0:
-            advice.append("""Low Erythrocyte Sedimentation Rate (ESR)
-
-Root Cause:
-    Normal Variation: A low ESR can sometimes be a normal finding, especially in healthy individuals, as the rate is influenced by various factors such as age, sex, and individual health status.
-    Polycythemia Vera: This is a condition where there is an overproduction of red blood cells, which increases blood viscosity and can lead to a lower ESR.
-    Hyperviscosity Syndromes: Conditions that cause thickened blood, such as Waldenström macroglobulinemia or multiple myeloma, can reduce the ESR.
-    Low Fibrinogen Levels: ESR is affected by proteins in the blood, particularly fibrinogen. Low fibrinogen levels, due to liver disease or certain genetic conditions, may result in a lower ESR.
-    Leukocytosis: A very high white blood cell count, such as in leukemia or other blood cancers, can reduce the ESR.
-    Severe Anemia: Certain types of severe anemia, particularly in the presence of low fibrinogen levels, may lead to a low ESR.
-    Extremely Elevated Blood Sugar: Hyperglycemia (very high blood sugar levels), which may be seen in uncontrolled diabetes, can lower the ESR.
-
-Tips:
-    Monitor for Symptoms: While a low ESR may not be concerning in itself, monitor for symptoms related to potential underlying conditions, like polycythemia vera or hyperviscosity syndromes. Consult your doctor if you have symptoms of these disorders.
-    Check Blood Viscosity: If you have conditions known to increase blood viscosity, such as polycythemia vera or myeloma, ensure proper treatment and management to prevent complications.
-    Review Liver Function: If low fibrinogen levels are suspected, check liver function, as the liver is responsible for producing fibrinogen, and treatment may be needed to address any liver abnormalities.
-    Evaluate Blood Glucose: If hyperglycemia is suspected as the cause, it is crucial to manage your blood sugar levels through diet, exercise, and medication as prescribed by your healthcare provider.
-    Follow-up with Regular Monitoring: For individuals with blood disorders, anemia, or other underlying conditions, regular blood tests and check-ups are important to monitor changes in ESR and overall health.
-
-Foods to Eat:
-    Iron-Rich Foods: Red meat, poultry, beans, lentils, and spinach to help with anemia and support overall blood health.
-    Healthy Fats: Olive oil, avocados, and fatty fish (salmon, mackerel) to reduce inflammation.
-    Fiber-Rich Foods: Whole grains, vegetables, and fruits to support overall health and help control blood sugar levels.
-    Vitamin B12 and Folate-Rich Foods: Animal products like meat, eggs, and dairy, as well as leafy greens, beans, and fortified cereals to help support red blood cell production and healthy blood viscosity.
-    Antioxidant-Rich Foods: Berries, citrus fruits, and leafy greens to support immune function and reduce inflammation.
-
-Example Meal Plan for Low ESR:
-    Breakfast: Scrambled eggs with spinach, whole-grain toast, and a glass of orange juice (rich in vitamin B12, folate, and vitamin C).
-    Lunch: Grilled chicken with quinoa, roasted sweet potatoes, and a side salad with avocado (rich in iron, vitamin B12, and healthy fats).
-    Snack: A handful of almonds and a boiled egg (rich in protein and healthy fats).
-    Dinner: Baked salmon with roasted broccoli and quinoa (rich in healthy fats, iron, and fiber).
+            advice.append("""
+<h2>Low Erythrocyte Sedimentation Rate (ESR)</h2>
+<div>
+    <h3>Root Cause:</h3>
+    <ul>
+        <li><b>Normal Variation:</b> A low ESR can sometimes be a normal finding, especially in healthy individuals, as the rate is influenced by various factors such as age, sex, and individual health status.</li>
+        <li><b>Polycythemia Vera:</b> This is a condition where there is an overproduction of red blood cells, which increases blood viscosity and can lead to a lower ESR.</li>
+        <li><b>Hyperviscosity Syndromes:</b> Conditions that cause thickened blood, such as Waldenström macroglobulinemia or multiple myeloma, can reduce the ESR.</li>
+        <li><b>Low Fibrinogen Levels:</b> ESR is affected by proteins in the blood, particularly fibrinogen. Low fibrinogen levels, due to liver disease or certain genetic conditions, may result in a lower ESR.</li>
+        <li><b>Leukocytosis:</b> A very high white blood cell count, such as in leukemia or other blood cancers, can reduce the ESR.</li>
+        <li><b>Severe Anemia:</b> Certain types of severe anemia, particularly in the presence of low fibrinogen levels, may lead to a low ESR.</li>
+        <li><b>Extremely Elevated Blood Sugar:</b> Hyperglycemia (very high blood sugar levels), which may be seen in uncontrolled diabetes, can lower the ESR.</li>
+    </ul>
+</div>
+<div>
+    <h3>Tips:</h3>
+    <ul>
+        <li>Monitor for symptoms related to potential underlying conditions, like polycythemia vera or hyperviscosity syndromes. Consult your doctor if you have symptoms of these disorders.</li>
+        <li>If you have conditions known to increase blood viscosity, ensure proper treatment and management to prevent complications.</li>
+        <li>Check liver function if low fibrinogen levels are suspected, as treatment may be needed to address liver abnormalities.</li>
+        <li>Manage blood sugar levels through diet, exercise, and medication if hyperglycemia is suspected as the cause.</li>
+        <li>Regular monitoring of blood tests and check-ups for individuals with blood disorders, anemia, or other conditions.</li>
+    </ul>
+</div>
+<div>
+    <h3>Foods to Eat:</h3>
+    <ul>
+        <li><b>Iron-Rich Foods:</b> Red meat, poultry, beans, lentils, and spinach to help with anemia and support overall blood health.</li>
+        <li><b>Healthy Fats:</b> Olive oil, avocados, and fatty fish (salmon, mackerel) to reduce inflammation.</li>
+        <li><b>Fiber-Rich Foods:</b> Whole grains, vegetables, and fruits to support overall health and help control blood sugar levels.</li>
+        <li><b>Vitamin B12 and Folate-Rich Foods:</b> Animal products like meat, eggs, and dairy, as well as leafy greens, beans, and fortified cereals to help support red blood cell production and healthy blood viscosity.</li>
+        <li><b>Antioxidant-Rich Foods:</b> Berries, citrus fruits, and leafy greens to support immune function and reduce inflammation.</li>
+    </ul>
+</div>
+<div>
+    <h3>Example Meal Plan for Low ESR:</h3>
+    <ul>
+        <li><b>Breakfast:</b> Scrambled eggs with spinach, whole-grain toast, and a glass of orange juice (rich in vitamin B12, folate, and vitamin C).</li>
+        <li><b>Lunch:</b> Grilled chicken with quinoa, roasted sweet potatoes, and a side salad with avocado (rich in iron, vitamin B12, and healthy fats).</li>
+        <li><b>Snack:</b> A handful of almonds and a boiled egg (rich in protein and healthy fats).</li>
+        <li><b>Dinner:</b> Baked salmon with roasted broccoli and quinoa (rich in healthy fats, iron, and fiber).</li>
+    </ul>
+</div>
 """)
         elif values["Erythrocyte Sedimentation Rate"] > 15:
-            advice.append("""High Erythrocyte Sedimentation Rate (ESR)
-
-Root Cause:
-    Chronic Inflammatory Diseases: Conditions such as rheumatoid arthritis, lupus, inflammatory bowel disease (IBD), or vasculitis are commonly associated with an elevated ESR due to the body's ongoing inflammatory response.
-    Infections: Bacterial infections (e.g., tuberculosis, osteomyelitis) and some viral infections can cause a significant rise in ESR as part of the body's acute-phase response.
-    Cancer: Certain cancers, especially lymphomas, leukemia, and solid tumors, can cause an elevated ESR as the body responds to tumor activity and inflammation.
-    Kidney Disease: Chronic kidney disease, especially in its later stages, can lead to an elevated ESR due to inflammation and other systemic effects.
-    Anemia: Particularly in cases of iron-deficiency anemia or anemia of chronic disease, ESR can be elevated as the body responds to decreased red blood cells and tissue hypoxia.
-    Pregnancy: ESR is naturally elevated during pregnancy, particularly in the second and third trimesters, due to changes in the immune system and hormone levels.
-    Temporal Arteritis (Giant Cell Arteritis): A condition affecting the large arteries, particularly the temporal arteries, often causes a significantly high ESR, which is used as a diagnostic marker.
-    Tissue Injury: Severe trauma, surgery, or burns can cause an increase in ESR as part of the inflammatory healing process.
-
-Tips:
-    Investigate the Underlying Cause: A high ESR is typically a marker of inflammation, and it’s crucial to identify the underlying condition causing the elevated level. This may require further diagnostic tests, such as imaging, biopsy, or blood cultures.
-    Manage Inflammatory Diseases: If the cause is an autoimmune or inflammatory condition, such as rheumatoid arthritis or lupus, medications to reduce inflammation (like corticosteroids or disease-modifying antirheumatic drugs) may be prescribed.
-    Treat Infections: If the high ESR is due to an infection, appropriate antibiotics or antiviral treatments will be necessary to control the infection and reduce inflammation.
-    Cancer Treatment: For cancers causing elevated ESR, a targeted treatment plan, including chemotherapy, radiation, or immunotherapy, will be required.
-    Monitor Kidney Function: If kidney disease is the cause, monitoring kidney function through regular tests is critical, along with managing blood pressure and potential fluid imbalances.
-    Address Anemia: Treating the underlying cause of anemia, whether it be iron deficiency or anemia of chronic disease, can help lower the ESR over time.
-    Monitor Pregnancy: ESR naturally rises during pregnancy, and in most cases, this is not a cause for concern. However, it's important to monitor and discuss any abnormal increases with your doctor.
-
-Foods to Eat:
-    Anti-Inflammatory Foods: Omega-3-rich foods like fatty fish (salmon, sardines), flaxseeds, chia seeds, walnuts, and olive oil to help reduce inflammation.
-    Fiber-Rich Foods: Whole grains (oats, quinoa, brown rice), vegetables (spinach, kale, broccoli), and fruits (berries, apples) to support overall health and reduce inflammation.
-    Antioxidant-Rich Foods: Berries, citrus fruits, tomatoes, and leafy greens to combat oxidative stress and support immune health.
-    Lean Protein: Skinless poultry, lean beef, tofu, and legumes to support immune function without exacerbating inflammation.
-    Spices with Anti-Inflammatory Properties: Turmeric, ginger, and garlic can be added to meals to reduce inflammation.
-
-Example Meal Plan for High ESR:
-    Breakfast: Oatmeal with chia seeds, flaxseeds, and fresh blueberries (rich in omega-3s, fiber, and antioxidants).
-    Lunch: Grilled salmon with quinoa, spinach salad with olive oil, and a side of roasted sweet potatoes (anti-inflammatory foods and healthy fats).
-    Snack: A handful of walnuts and a green smoothie with spinach, ginger, and lemon (rich in anti-inflammatory compounds).
-    Dinner: Stir-fried tofu with broccoli, bell peppers, and turmeric (anti-inflammatory and antioxidant-rich).
+            advice.append("""
+<h2>High Erythrocyte Sedimentation Rate (ESR)</h2>
+<div>
+    <h3>Root Cause:</h3>
+    <ul>
+        <li><b>Chronic Inflammatory Diseases:</b> Conditions such as rheumatoid arthritis, lupus, inflammatory bowel disease (IBD), or vasculitis are commonly associated with an elevated ESR due to the body's ongoing inflammatory response.</li>
+        <li><b>Infections:</b> Bacterial infections (e.g., tuberculosis, osteomyelitis) and some viral infections can cause a significant rise in ESR as part of the body's acute-phase response.</li>
+        <li><b>Cancer:</b> Certain cancers, especially lymphomas, leukemia, and solid tumors, can cause an elevated ESR as the body responds to tumor activity and inflammation.</li>
+        <li><b>Kidney Disease:</b> Chronic kidney disease, especially in its later stages, can lead to an elevated ESR due to inflammation and other systemic effects.</li>
+        <li><b>Anemia:</b> Particularly in cases of iron-deficiency anemia or anemia of chronic disease, ESR can be elevated as the body responds to decreased red blood cells and tissue hypoxia.</li>
+        <li><b>Pregnancy:</b> ESR is naturally elevated during pregnancy, particularly in the second and third trimesters, due to changes in the immune system and hormone levels.</li>
+        <li><b>Temporal Arteritis:</b> A condition affecting the large arteries, particularly the temporal arteries, often causes a significantly high ESR, which is used as a diagnostic marker.</li>
+        <li><b>Tissue Injury:</b> Severe trauma, surgery, or burns can cause an increase in ESR as part of the inflammatory healing process.</li>
+    </ul>
+</div>
+<div>
+    <h3>Tips:</h3>
+    <ul>
+        <li>Investigate the underlying cause with further diagnostic tests, such as imaging, biopsy, or blood cultures.</li>
+        <li>Manage autoimmune or inflammatory conditions with medications like corticosteroids or disease-modifying antirheumatic drugs (DMARDs).</li>
+        <li>Treat infections with appropriate antibiotics or antivirals.</li>
+        <li>Follow targeted treatment plans for cancers causing elevated ESR, including chemotherapy, radiation, or immunotherapy.</li>
+        <li>Monitor kidney function and manage chronic kidney disease through regular tests and blood pressure control.</li>
+        <li>Treat the underlying cause of anemia to reduce ESR over time.</li>
+        <li>Monitor ESR during pregnancy and discuss any abnormal increases with a doctor.</li>
+    </ul>
+</div>
+<div>
+    <h3>Foods to Eat:</h3>
+    <ul>
+        <li><b>Anti-Inflammatory Foods:</b> Omega-3-rich foods like fatty fish (salmon, sardines), flaxseeds, chia seeds, walnuts, and olive oil to help reduce inflammation.</li>
+        <li><b>Fiber-Rich Foods:</b> Whole grains (oats, quinoa, brown rice), vegetables (spinach, kale, broccoli), and fruits (berries, apples) to support overall health and reduce inflammation.</li>
+        <li><b>Antioxidant-Rich Foods:</b> Berries, citrus fruits, tomatoes, and leafy greens to combat oxidative stress and support immune health.</li>
+        <li><b>Lean Protein:</b> Skinless poultry, lean beef, tofu, and legumes to support immune function without exacerbating inflammation.</li>
+        <li><b>Spices with Anti-Inflammatory Properties:</b> Turmeric, ginger, and garlic can be added to meals to reduce inflammation.</li>
+    </ul>
+</div>
+<div>
+    <h3>Example Meal Plan for High ESR:</h3>
+    <ul>
+        <li><b>Breakfast:</b> Oatmeal with chia seeds, flaxseeds, and fresh blueberries (rich in omega-3s, fiber, and antioxidants).</li>
+        <li><b>Lunch:</b> Grilled salmon with quinoa, spinach salad with olive oil, and a side of roasted sweet potatoes (anti-inflammatory foods and healthy fats).</li>
+        <li><b>Snack:</b> A handful of walnuts and a green smoothie with spinach, ginger, and lemon (rich in anti-inflammatory compounds).</li>
+        <li><b>Dinner:</b> Stir-fried tofu with broccoli, bell peppers, and turmeric (anti-inflammatory and antioxidant-rich).</li>
+    </ul>
+</div>
 """)
+
 
     # Fasting Plasma Glucose (range: 70-100 mg/dL)
     if "Fasting Plasma Glucose" in values:
         if values["Fasting Plasma Glucose"] < 70:
-            advice.append("""Low Fasting Plasma Glucose (Hypoglycemia)
-
-Root Cause:
-    Insulin Overdose: In people with diabetes, too much insulin or oral hypoglycemic medication can cause blood glucose levels to drop below normal levels.
-    Prolonged Fasting or Starvation: Extended periods without eating can lead to a significant drop in blood glucose, as the body runs out of readily available energy from food.
-    Alcohol Consumption: Excessive drinking, especially without eating, can impair the liver's ability to release glucose into the bloodstream, leading to hypoglycemia.
-    Hormonal Imbalances: Conditions like adrenal insufficiency, hypothyroidism, or growth hormone deficiencies can result in low blood sugar levels.
-    Insulinoma: A rare tumor of the pancreas that produces excessive insulin, leading to low blood sugar levels.
-    Severe Liver Disease: Liver disease, such as cirrhosis or hepatitis, can impair the liver’s ability to produce glucose, leading to low blood sugar levels.
-    Malnutrition: Lack of sufficient calories, particularly carbohydrates, can lead to hypoglycemia, especially in individuals with eating disorders or poor nutrition.
-    Certain Medications: Medications such as sulfonylureas (used in type 2 diabetes) and other drugs can increase the risk of low blood sugar.
-
-Tips:
-    Eat Regular, Balanced Meals: Ensure regular meals and snacks throughout the day, especially those containing complex carbohydrates, protein, and healthy fats to stabilize blood sugar levels.
-    Monitor Medication: If taking insulin or oral hypoglycemics, adjust the dosage with guidance from a healthcare provider to prevent hypoglycemia.
-    Avoid Excessive Alcohol: Limit alcohol consumption, particularly on an empty stomach, to avoid hypoglycemia.
-    Identify and Treat Underlying Conditions: Conditions like insulinoma, adrenal insufficiency, or liver disease may require specific treatment and monitoring.
-    Carry Glucose: Always have a source of fast-acting carbohydrates, such as glucose tablets or sugary drinks, in case of an emergency hypoglycemic episode.
-
-Foods to Eat:
-    Complex Carbohydrates: Whole grains (brown rice, oats), sweet potatoes, and legumes (lentils, beans) to provide a steady source of glucose.
-    Lean Protein: Chicken, turkey, eggs, and tofu to stabilize blood sugar and prevent rapid drops.
-    Healthy Fats: Avocados, olive oil, and nuts to provide energy and slow down glucose absorption.
-    Fibrous Vegetables: Leafy greens (spinach, kale), bell peppers, and broccoli to provide essential nutrients without causing rapid blood sugar spikes.
-    Fruits: Berries, apples, and pears for natural sugars that can be combined with fiber to stabilize blood sugar levels.
-
-Example Meal Plan for Low Fasting Plasma Glucose:
-    Breakfast: Oatmeal with chia seeds, sliced almonds, and a handful of blueberries (complex carbs, fiber, and protein).
-    Lunch: Grilled chicken with quinoa and a side of roasted vegetables (balanced meal with protein and fiber).
-    Snack: A boiled egg with an apple (protein and natural sugars).
-    Dinner: Baked salmon with steamed broccoli and a small baked sweet potato (healthy fats, protein, and complex carbs).
+            advice.append("""
+<h2>Low Fasting Plasma Glucose (Hypoglycemia)</h2>
+<div>
+    <h3>Root Cause:</h3>
+    <ul>
+        <li><b>Insulin Overdose:</b> In people with diabetes, too much insulin or oral hypoglycemic medication can cause blood glucose levels to drop below normal levels.</li>
+        <li><b>Prolonged Fasting or Starvation:</b> Extended periods without eating can lead to a significant drop in blood glucose, as the body runs out of readily available energy from food.</li>
+        <li><b>Alcohol Consumption:</b> Excessive drinking, especially without eating, can impair the liver's ability to release glucose into the bloodstream, leading to hypoglycemia.</li>
+        <li><b>Hormonal Imbalances:</b> Conditions like adrenal insufficiency, hypothyroidism, or growth hormone deficiencies can result in low blood sugar levels.</li>
+        <li><b>Insulinoma:</b> A rare tumor of the pancreas that produces excessive insulin, leading to low blood sugar levels.</li>
+        <li><b>Severe Liver Disease:</b> Liver disease, such as cirrhosis or hepatitis, can impair the liver’s ability to produce glucose, leading to low blood sugar levels.</li>
+        <li><b>Malnutrition:</b> Lack of sufficient calories, particularly carbohydrates, can lead to hypoglycemia, especially in individuals with eating disorders or poor nutrition.</li>
+        <li><b>Certain Medications:</b> Medications such as sulfonylureas (used in type 2 diabetes) and other drugs can increase the risk of low blood sugar.</li>
+    </ul>
+</div>
+<div>
+    <h3>Tips:</h3>
+    <ul>
+        <li>Eat Regular, Balanced Meals: Ensure regular meals and snacks throughout the day, especially those containing complex carbohydrates, protein, and healthy fats to stabilize blood sugar levels.</li>
+        <li>Monitor Medication: If taking insulin or oral hypoglycemics, adjust the dosage with guidance from a healthcare provider to prevent hypoglycemia.</li>
+        <li>Avoid Excessive Alcohol: Limit alcohol consumption, particularly on an empty stomach, to avoid hypoglycemia.</li>
+        <li>Identify and Treat Underlying Conditions: Conditions like insulinoma, adrenal insufficiency, or liver disease may require specific treatment and monitoring.</li>
+        <li>Carry Glucose: Always have a source of fast-acting carbohydrates, such as glucose tablets or sugary drinks, in case of an emergency hypoglycemic episode.</li>
+    </ul>
+</div>
+<div>
+    <h3>Foods to Eat:</h3>
+    <ul>
+        <li><b>Complex Carbohydrates:</b> Whole grains (brown rice, oats), sweet potatoes, and legumes (lentils, beans) to provide a steady source of glucose.</li>
+        <li><b>Lean Protein:</b> Chicken, turkey, eggs, and tofu to stabilize blood sugar and prevent rapid drops.</li>
+        <li><b>Healthy Fats:</b> Avocados, olive oil, and nuts to provide energy and slow down glucose absorption.</li>
+        <li><b>Fibrous Vegetables:</b> Leafy greens (spinach, kale), bell peppers, and broccoli to provide essential nutrients without causing rapid blood sugar spikes.</li>
+        <li><b>Fruits:</b> Berries, apples, and pears for natural sugars that can be combined with fiber to stabilize blood sugar levels.</li>
+    </ul>
+</div>
+<div>
+    <h3>Example Meal Plan for Low Fasting Plasma Glucose:</h3>
+    <ul>
+        <li><b>Breakfast:</b> Oatmeal with chia seeds, sliced almonds, and a handful of blueberries (complex carbs, fiber, and protein).</li>
+        <li><b>Lunch:</b> Grilled chicken with quinoa and a side of roasted vegetables (balanced meal with protein and fiber).</li>
+        <li><b>Snack:</b> A boiled egg with an apple (protein and natural sugars).</li>
+        <li><b>Dinner:</b> Baked salmon with steamed broccoli and a small baked sweet potato (healthy fats, protein, and complex carbs).</li>
+    </ul>
+</div>
 """)
         elif values["Fasting Plasma Glucose"] > 100:
-            advice.append("""High Fasting Plasma Glucose (Hyperglycemia)
-
-Root Cause:
-    Diabetes Mellitus: The most common cause of high fasting plasma glucose is diabetes, particularly when blood glucose is not well controlled. This can happen in both Type 1 and Type 2 diabetes.
-    Insulin Resistance: In conditions like obesity or metabolic syndrome, the body’s cells become less responsive to insulin, causing elevated blood glucose levels.
-    Stress or Illness: Physical or emotional stress, as well as infections or other illnesses, can cause blood glucose levels to rise due to the release of stress hormones like cortisol.
-    Medications: Certain medications, such as corticosteroids, thiazide diuretics, or beta-blockers, can increase blood glucose levels.
-    Endocrine Disorders: Conditions like Cushing’s syndrome (excess cortisol), pheochromocytoma (tumors that release adrenaline), or acromegaly (growth hormone excess) can result in elevated blood sugar.
-    Pregnancy (Gestational Diabetes): High blood glucose levels during pregnancy, due to insulin resistance, is known as gestational diabetes.
-    Pancreatic Disorders: Diseases like pancreatitis, pancreatic cancer, or removal of part of the pancreas can reduce insulin production, leading to high blood sugar levels.
-    Chronic Stress: Prolonged emotional or physical stress can raise cortisol levels, which in turn raises blood sugar levels.
-
-Tips:
-    Monitor Blood Sugar: Regular monitoring of blood glucose levels is crucial for individuals with diabetes or those at risk of developing diabetes.
-    Follow a Diabetes Management Plan: If diagnosed with diabetes, work with your healthcare provider to create and stick to a blood sugar management plan, including medication, diet, and exercise.
-    Stay Active: Regular physical activity can help increase insulin sensitivity and reduce blood sugar levels.
-    Manage Stress: Practice stress management techniques like yoga, meditation, or deep breathing to lower cortisol levels and improve blood sugar control.
-    Watch Your Diet: Avoid processed foods, sugary snacks, and beverages that cause rapid spikes in blood glucose. Focus on a balanced diet with whole foods.
-    Weight Management: Achieving and maintaining a healthy weight through diet and exercise can help manage insulin resistance and lower blood sugar levels.
-
-Foods to Eat:
-    Whole Grains: Brown rice, quinoa, barley, and oats to provide fiber and help regulate blood sugar levels.
-    Leafy Greens and Non-Starchy Vegetables: Spinach, kale, broccoli, cauliflower, and bell peppers to help manage glucose levels.
-    Lean Proteins: Skinless poultry, fish, beans, and legumes for steady energy and to help manage hunger.
-    Healthy Fats: Avocados, nuts, seeds, and olive oil to support blood sugar control and promote satiety.
-    Cinnamon and Apple Cider Vinegar: Both have been shown to help in reducing blood sugar levels and improving insulin sensitivity.
-
-Example Meal Plan for High Fasting Plasma Glucose:
-    Breakfast: Scrambled eggs with spinach, a slice of whole-grain toast, and a side of fresh berries (protein, fiber, and healthy fats).
-    Lunch: Grilled chicken with a quinoa salad, mixed vegetables (leafy greens, cucumber, tomatoes), and a drizzle of olive oil (balanced meal with complex carbs, lean protein, and healthy fats).
-    Snack: A small handful of almonds and an apple (protein and fiber).
-    Dinner: Baked salmon with roasted Brussels sprouts and cauliflower (healthy fats and non-starchy vegetables).
+            advice.append("""
+<h2>High Fasting Plasma Glucose (Hyperglycemia)</h2>
+<div>
+    <h3>Root Cause:</h3>
+    <ul>
+        <li><b>Diabetes Mellitus:</b> The most common cause of high fasting plasma glucose is diabetes, particularly when blood glucose is not well controlled. This can happen in both Type 1 and Type 2 diabetes.</li>
+        <li><b>Insulin Resistance:</b> In conditions like obesity or metabolic syndrome, the body’s cells become less responsive to insulin, causing elevated blood glucose levels.</li>
+        <li><b>Stress or Illness:</b> Physical or emotional stress, as well as infections or other illnesses, can cause blood glucose levels to rise due to the release of stress hormones like cortisol.</li>
+        <li><b>Medications:</b> Certain medications, such as corticosteroids, thiazide diuretics, or beta-blockers, can increase blood glucose levels.</li>
+        <li><b>Endocrine Disorders:</b> Conditions like Cushing’s syndrome (excess cortisol), pheochromocytoma (tumors that release adrenaline), or acromegaly (growth hormone excess) can result in elevated blood sugar.</li>
+        <li><b>Pregnancy (Gestational Diabetes):</b> High blood glucose levels during pregnancy, due to insulin resistance, is known as gestational diabetes.</li>
+        <li><b>Pancreatic Disorders:</b> Diseases like pancreatitis, pancreatic cancer, or removal of part of the pancreas can reduce insulin production, leading to high blood sugar levels.</li>
+        <li><b>Chronic Stress:</b> Prolonged emotional or physical stress can raise cortisol levels, which in turn raises blood sugar levels.</li>
+    </ul>
+</div>
+<div>
+    <h3>Tips:</h3>
+    <ul>
+        <li>Monitor Blood Sugar: Regular monitoring of blood glucose levels is crucial for individuals with diabetes or those at risk of developing diabetes.</li>
+        <li>Follow a Diabetes Management Plan: If diagnosed with diabetes, work with your healthcare provider to create and stick to a blood sugar management plan, including medication, diet, and exercise.</li>
+        <li>Stay Active: Regular physical activity can help increase insulin sensitivity and reduce blood sugar levels.</li>
+        <li>Manage Stress: Practice stress management techniques like yoga, meditation, or deep breathing to lower cortisol levels and improve blood sugar control.</li>
+        <li>Watch Your Diet: Avoid processed foods, sugary snacks, and beverages that cause rapid spikes in blood glucose. Focus on a balanced diet with whole foods.</li>
+        <li>Weight Management: Achieving and maintaining a healthy weight through diet and exercise can help manage insulin resistance and lower blood sugar levels.</li>
+    </ul>
+</div>
+<div>
+    <h3>Foods to Eat:</h3>
+    <ul>
+        <li><b>Whole Grains:</b> Brown rice, quinoa, barley, and oats to provide fiber and help regulate blood sugar levels.</li>
+        <li><b>Leafy Greens and Non-Starchy Vegetables:</b> Spinach, kale, broccoli, cauliflower, and bell peppers to help manage glucose levels.</li>
+        <li><b>Lean Proteins:</b> Skinless poultry, fish, beans, and legumes for steady energy and to help manage hunger.</li>
+        <li><b>Healthy Fats:</b> Avocados, nuts, seeds, and olive oil to support blood sugar control and promote satiety.</li>
+        <li><b>Cinnamon and Apple Cider Vinegar:</b> Both have been shown to help in reducing blood sugar levels and improving insulin sensitivity.</li>
+    </ul>
+</div>
+<div>
+    <h3>Example Meal Plan for High Fasting Plasma Glucose:</h3>
+    <ul>
+        <li><b>Breakfast:</b> Scrambled eggs with spinach, a slice of whole-grain toast, and a side of fresh berries (protein, fiber, and healthy fats).</li>
+        <li><b>Lunch:</b> Grilled chicken with a quinoa salad, mixed vegetables (leafy greens, cucumber, tomatoes), and a drizzle of olive oil (balanced meal with complex carbs, lean protein, and healthy fats).</li>
+        <li><b>Snack:</b> A small handful of almonds and an apple (protein and fiber).</li>
+        <li><b>Dinner:</b> Baked salmon with roasted Brussels sprouts and cauliflower (healthy fats and non-starchy vegetables).</li>
+    </ul>
+</div>
 """)
 
     # Glycated Hemoglobin (HbA1C) (range: 4.0-5.6%)
     if "Glycated Hemoglobin" in values:
         if values["Glycated Hemoglobin"] < 5.7:
-            advice.append("""Low Glycated Hemoglobin (HbA1c)
-
-Root Cause:
-    Good Blood Sugar Control: A low HbA1c usually indicates good control of blood glucose over the past 2-3 months. In individuals with diabetes, a low HbA1c can signify effective management through medication, lifestyle changes (diet and exercise), or both.
-    Recent Hypoglycemia: If someone with diabetes experienced significant hypoglycemia (low blood sugar) recently, it can lower their HbA1c, but this is not typically a healthy sign, as it may indicate that blood sugar control has been unstable.
-    Anemia: Certain types of anemia, such as iron-deficiency anemia or hemolytic anemia, can cause falsely low HbA1c readings. The shortened lifespan of red blood cells in these conditions leads to a reduced time for glucose to attach to hemoglobin.
-    Chronic Blood Loss: Conditions such as gastrointestinal bleeding or other chronic blood loss can lead to lower HbA1c levels as new red blood cells are formed and have less time to become glycated.
-    Pregnancy: Pregnancy, especially in the first trimester, can lower HbA1c levels due to changes in red blood cell turnover and increased blood volume.
-
-Tips:
-    Monitor Overall Blood Sugar Control: While a low HbA1c can be a positive indicator of good control, ensure it is not the result of frequent hypoglycemic episodes. If you have diabetes, it is essential to aim for a balance, avoiding both high and low extremes.
-    Ensure Adequate Nutrition: Make sure you're getting enough essential nutrients, particularly iron, vitamin B12, and folic acid, as deficiencies in these can contribute to anemia, which might lower HbA1c readings.
-    Avoid Hypoglycemia: If you're on diabetes medication, be cautious of taking too much insulin or other glucose-lowering medications. Regular monitoring of blood glucose levels can help avoid dangerous low blood sugar episodes.
-    Regular Monitoring: Continue regular testing of blood glucose levels and HbA1c, especially if you have diabetes, to stay on top of your long-term blood sugar control.
-
-Foods to Eat:
-    Iron-Rich Foods: Red meat, poultry, beans, lentils, spinach, and fortified cereals to prevent or address anemia.
-    Vitamin B12 and Folate-Rich Foods: Eggs, dairy, fortified cereals, leafy greens, beans, and lentils to prevent deficiencies that might affect red blood cell production.
-    Complex Carbohydrates: Whole grains (oats, quinoa, brown rice) for stable glucose control and overall energy.
-    Healthy Fats: Avocados, olive oil, and nuts for heart health and blood sugar stabilization.
-
-Example Meal Plan for Low HbA1c:
-    Breakfast: Oatmeal with chia seeds, almond butter, and sliced strawberries (iron and fiber).
-    Lunch: Grilled chicken salad with spinach, quinoa, avocado, and olive oil dressing (iron, protein, healthy fats).
-    Snack: A boiled egg and a small handful of almonds (protein and healthy fats).
-    Dinner: Baked salmon with roasted sweet potatoes and broccoli (omega-3s, complex carbs, and fiber).
+            advice.append("""
+<h2>Low Glycated Hemoglobin (HbA1c)</h2>
+<div>
+    <h3>Root Cause:</h3>
+    <ul>
+        <li><b>Good Blood Sugar Control:</b> A low HbA1c usually indicates good control of blood glucose over the past 2-3 months. In individuals with diabetes, a low HbA1c can signify effective management through medication, lifestyle changes (diet and exercise), or both.</li>
+        <li><b>Recent Hypoglycemia:</b> If someone with diabetes experienced significant hypoglycemia (low blood sugar) recently, it can lower their HbA1c, but this is not typically a healthy sign, as it may indicate that blood sugar control has been unstable.</li>
+        <li><b>Anemia:</b> Certain types of anemia, such as iron-deficiency anemia or hemolytic anemia, can cause falsely low HbA1c readings. The shortened lifespan of red blood cells in these conditions leads to a reduced time for glucose to attach to hemoglobin.</li>
+        <li><b>Chronic Blood Loss:</b> Conditions such as gastrointestinal bleeding or other chronic blood loss can lead to lower HbA1c levels as new red blood cells are formed and have less time to become glycated.</li>
+        <li><b>Pregnancy:</b> Pregnancy, especially in the first trimester, can lower HbA1c levels due to changes in red blood cell turnover and increased blood volume.</li>
+    </ul>
+</div>
+<div>
+    <h3>Tips:</h3>
+    <ul>
+        <li>Monitor Overall Blood Sugar Control: While a low HbA1c can be a positive indicator of good control, ensure it is not the result of frequent hypoglycemic episodes. If you have diabetes, it is essential to aim for a balance, avoiding both high and low extremes.</li>
+        <li>Ensure Adequate Nutrition: Make sure you're getting enough essential nutrients, particularly iron, vitamin B12, and folic acid, as deficiencies in these can contribute to anemia, which might lower HbA1c readings.</li>
+        <li>Avoid Hypoglycemia: If you're on diabetes medication, be cautious of taking too much insulin or other glucose-lowering medications. Regular monitoring of blood glucose levels can help avoid dangerous low blood sugar episodes.</li>
+        <li>Regular Monitoring: Continue regular testing of blood glucose levels and HbA1c, especially if you have diabetes, to stay on top of your long-term blood sugar control.</li>
+    </ul>
+</div>
+<div>
+    <h3>Foods to Eat:</h3>
+    <ul>
+        <li><b>Iron-Rich Foods:</b> Red meat, poultry, beans, lentils, spinach, and fortified cereals to prevent or address anemia.</li>
+        <li><b>Vitamin B12 and Folate-Rich Foods:</b> Eggs, dairy, fortified cereals, leafy greens, beans, and lentils to prevent deficiencies that might affect red blood cell production.</li>
+        <li><b>Complex Carbohydrates:</b> Whole grains (oats, quinoa, brown rice) for stable glucose control and overall energy.</li>
+        <li><b>Healthy Fats:</b> Avocados, olive oil, and nuts for heart health and blood sugar stabilization.</li>
+    </ul>
+</div>
+<div>
+    <h3>Example Meal Plan for Low HbA1c:</h3>
+    <ul>
+        <li><b>Breakfast:</b> Oatmeal with chia seeds, almond butter, and sliced strawberries (iron and fiber).</li>
+        <li><b>Lunch:</b> Grilled chicken salad with spinach, quinoa, avocado, and olive oil dressing (iron, protein, healthy fats).</li>
+        <li><b>Snack:</b> A boiled egg and a small handful of almonds (protein and healthy fats).</li>
+        <li><b>Dinner:</b> Baked salmon with roasted sweet potatoes and broccoli (omega-3s, complex carbs, and fiber).</li>
+    </ul>
+</div>
 """)
         elif values["Glycated Hemoglobin"] >= 5.7:
-            advice.append("""High Glycated Hemoglobin (HbA1c)
-
-Root Cause:
-    Poor Blood Sugar Control: A high HbA1c level is typically seen in individuals with poorly controlled diabetes, where blood glucose levels remain elevated over an extended period (usually 2-3 months).
-    Diabetes: Most commonly associated with uncontrolled Type 1 and Type 2 diabetes. When blood sugar levels remain high, glucose binds to hemoglobin in red blood cells, raising HbA1c levels.
-    Increased Red Blood Cell Turnover: Conditions that cause the destruction of red blood cells, such as hemolytic anemia, may lead to falsely high HbA1c levels. This is because the new red blood cells formed from this increased turnover have less time to be glycated.
-    Kidney Disease: Chronic kidney disease can lead to impaired clearance of glucose from the blood, causing high blood sugar levels and, consequently, high HbA1c levels.
-    Stress: Physical or emotional stress can lead to an increase in blood sugar levels due to the release of stress hormones (like cortisol), which raise glucose levels.
-    Poor Diet: A diet high in refined carbohydrates and sugars can contribute to consistently high blood glucose, increasing HbA1c levels.
-    Medications: Certain medications, such as corticosteroids, can raise blood glucose levels and increase HbA1c.
-
-Tips:
-    Improve Blood Sugar Control: If you have diabetes, work with your healthcare provider to adjust your medication (insulin, oral hypoglycemics) and improve blood sugar monitoring.
-    Exercise Regularly: Physical activity helps to increase insulin sensitivity, lower blood glucose, and improve HbA1c.
-    Dietary Modifications: Adopt a balanced diet rich in whole grains, vegetables, lean proteins, and healthy fats to stabilize blood sugar levels.
-    Monitor for Complications: Elevated HbA1c levels over time can increase the risk of diabetes complications (e.g., neuropathy, kidney disease, cardiovascular issues). Regular check-ups are important to prevent or manage these issues.
-    Manage Stress: Stress can worsen blood sugar control. Consider incorporating relaxation techniques, such as meditation, deep breathing exercises, and yoga.
-    Track Your Progress: Keep a food journal, monitor blood glucose regularly, and work with your healthcare provider to adjust treatment plans as necessary.
-
-Foods to Eat:
-    Complex Carbohydrates: Whole grains like quinoa, barley, and brown rice to provide steady energy without spiking blood glucose.
-    Non-Starchy Vegetables: Leafy greens (spinach, kale), broccoli, cauliflower, and bell peppers for fiber and low glycemic index (GI) options.
-    Lean Protein: Skinless poultry, fish, beans, and legumes to stabilize blood sugar and support muscle repair.
-    Healthy Fats: Avocados, olive oil, chia seeds, and walnuts to support heart health and prevent blood sugar spikes.
-    Cinnamon and Turmeric: Both spices are believed to help with blood sugar regulation. Add them to meals or beverages for flavor and health benefits.
-
-Example Meal Plan for High HbA1c:
-    Breakfast: Scrambled eggs with spinach and a side of whole-grain toast (protein and complex carbs).
-    Lunch: Grilled salmon with quinoa, a spinach salad, and olive oil dressing (lean protein, complex carbs, and healthy fats).
-    Snack: A handful of almonds and an apple (healthy fats and fiber).
-    Dinner: Grilled chicken with roasted Brussels sprouts and sweet potato (lean protein, non-starchy vegetables, and complex carbs).
+            advice.append("""
+<h2>High Glycated Hemoglobin (HbA1c)</h2>
+<div>
+    <h3>Root Cause:</h3>
+    <ul>
+        <li><b>Poor Blood Sugar Control:</b> A high HbA1c level is typically seen in individuals with poorly controlled diabetes, where blood glucose levels remain elevated over an extended period (usually 2-3 months).</li>
+        <li><b>Diabetes:</b> Most commonly associated with uncontrolled Type 1 and Type 2 diabetes. When blood sugar levels remain high, glucose binds to hemoglobin in red blood cells, raising HbA1c levels.</li>
+        <li><b>Increased Red Blood Cell Turnover:</b> Conditions that cause the destruction of red blood cells, such as hemolytic anemia, may lead to falsely high HbA1c levels. This is because the new red blood cells formed from this increased turnover have less time to be glycated.</li>
+        <li><b>Kidney Disease:</b> Chronic kidney disease can lead to impaired clearance of glucose from the blood, causing high blood sugar levels and, consequently, high HbA1c levels.</li>
+        <li><b>Stress:</b> Physical or emotional stress can lead to an increase in blood sugar levels due to the release of stress hormones (like cortisol), which raise glucose levels.</li>
+        <li><b>Poor Diet:</b> A diet high in refined carbohydrates and sugars can contribute to consistently high blood glucose, increasing HbA1c levels.</li>
+        <li><b>Medications:</b> Certain medications, such as corticosteroids, can raise blood glucose levels and increase HbA1c.</li>
+    </ul>
+</div>
+<div>
+    <h3>Tips:</h3>
+    <ul>
+        <li>Improve Blood Sugar Control: If you have diabetes, work with your healthcare provider to adjust your medication (insulin, oral hypoglycemics) and improve blood sugar monitoring.</li>
+        <li>Exercise Regularly: Physical activity helps to increase insulin sensitivity, lower blood glucose, and improve HbA1c.</li>
+        <li>Dietary Modifications: Adopt a balanced diet rich in whole grains, vegetables, lean proteins, and healthy fats to stabilize blood sugar levels.</li>
+        <li>Monitor for Complications: Elevated HbA1c levels over time can increase the risk of diabetes complications (e.g., neuropathy, kidney disease, cardiovascular issues). Regular check-ups are important to prevent or manage these issues.</li>
+        <li>Manage Stress: Stress can worsen blood sugar control. Consider incorporating relaxation techniques, such as meditation, deep breathing exercises, and yoga.</li>
+        <li>Track Your Progress: Keep a food journal, monitor blood glucose regularly, and work with your healthcare provider to adjust treatment plans as necessary.</li>
+    </ul>
+</div>
+<div>
+    <h3>Foods to Eat:</h3>
+    <ul>
+        <li><b>Complex Carbohydrates:</b> Whole grains like quinoa, barley, and brown rice to provide steady energy without spiking blood glucose.</li>
+        <li><b>Non-Starchy Vegetables:</b> Leafy greens (spinach, kale), broccoli, cauliflower, and bell peppers for fiber and low glycemic index (GI) options.</li>
+        <li><b>Lean Protein:</b> Skinless poultry, fish, beans, and legumes to stabilize blood sugar and support muscle repair.</li>
+        <li><b>Healthy Fats:</b> Avocados, olive oil, chia seeds, and walnuts to support heart health and prevent blood sugar spikes.</li>
+        <li><b>Cinnamon and Turmeric:</b> Both spices are believed to help with blood sugar regulation. Add them to meals or beverages for flavor and health benefits.</li>
+    </ul>
+</div>
+<div>
+    <h3>Example Meal Plan for High HbA1c:</h3>
+    <ul>
+        <li><b>Breakfast:</b> Scrambled eggs with spinach and a side of whole-grain toast (protein and complex carbs).</li>
+        <li><b>Lunch:</b> Grilled salmon with quinoa, a spinach salad, and olive oil dressing (lean protein, complex carbs, and healthy fats).</li>
+        <li><b>Snack:</b> A handful of almonds and an apple (healthy fats and fiber).</li>
+        <li><b>Dinner:</b> Grilled chicken with roasted Brussels sprouts and sweet potato (lean protein, non-starchy vegetables, and complex carbs).</li>
+    </ul>
+</div>
 """)
 
     # Triglycerides (range: 150 mg/dL)
     if "Triglycerides" in values:
         if values["Triglycerides"] > 150:
-            advice.append("""High Triglycerides (Hypertriglyceridemia)
+            advice.append("""
+        <div>
+            <h2>High Triglycerides (Hypertriglyceridemia)</h2>
+            
+            <div>
+                <h3>Root Cause:</h3>
+                <ul>
+                    <li><strong>Obesity or Overweight:</strong> Excess body fat increases triglyceride production and reduces clearance.</li>
+                    <li><strong>Poor Diet:</strong> Diets high in refined carbohydrates, sugars, trans fats, and saturated fats elevate triglycerides.</li>
+                    <li><strong>Diabetes:</strong> Insulin resistance from poorly controlled diabetes contributes to high triglyceride levels.</li>
+                    <li><strong>Excessive Alcohol:</strong> Alcohol is converted into triglycerides in the liver.</li>
+                    <li><strong>Hypothyroidism:</strong> An underactive thyroid reduces fat breakdown, leading to elevated triglycerides.</li>
+                    <li><strong>Genetic Factors:</strong> Familial hypertriglyceridemia is a genetic disorder causing high triglyceride levels.</li>
+                    <li><strong>Medications:</strong> Certain drugs like corticosteroids, diuretics, and beta-blockers may increase triglycerides.</li>
+                </ul>
+            </div>
 
-Root Cause:
-    Obesity or Overweight: Being overweight or obese, especially with excess abdominal fat, is a primary cause of high triglycerides. It increases the production of triglycerides in the liver and reduces the clearance of these fats.
-    Poor Diet: Diets high in refined carbohydrates, sugars, trans fats, and saturated fats can increase triglyceride levels.
-    Diabetes: Poorly controlled diabetes, particularly type 2, can lead to elevated triglycerides due to insulin resistance, which reduces the body's ability to regulate fat metabolism.
-    Excessive Alcohol Consumption: Drinking alcohol in excess can significantly increase triglyceride levels as the liver converts alcohol into fats.
-    Hypothyroidism: Underactive thyroid (hypothyroidism) can lead to higher triglyceride levels due to slowed metabolism and impaired fat breakdown.
-    Kidney Disease: Chronic kidney disease or nephrotic syndrome can result in higher triglyceride levels due to disturbances in lipid metabolism and kidney function.
-    Genetic Factors: Familial hypertriglyceridemia is a genetic disorder that causes extremely high triglyceride levels in some people.
-    Medications: Certain drugs, including corticosteroids, diuretics, beta-blockers, and some HIV medications, can raise triglyceride levels.
+            <div>
+                <h3>Tips:</h3>
+                <ul>
+                    <li>Adopt a <strong>Low-Carb, Low-Sugar Diet:</strong> Reducing sugar and refined carbs can help lower triglycerides.</li>
+                    <li><strong>Exercise Regularly:</strong> Aerobic exercises like walking, swimming, or cycling are effective.</li>
+                    <li><strong>Lose Weight:</strong> Losing just 5-10% of body weight can significantly reduce triglycerides.</li>
+                    <li><strong>Avoid Alcohol:</strong> Minimize or eliminate alcohol consumption.</li>
+                    <li><strong>Increase Omega-3 Fatty Acids:</strong> Eat fatty fish (salmon, mackerel), flaxseeds, chia seeds, and walnuts.</li>
+                    <li><strong>Control Blood Sugar:</strong> Properly managing diabetes can lower triglyceride levels.</li>
+                    <li><strong>Consider Medications:</strong> Consult a doctor about fibrates, omega-3 supplements, or statins if necessary.</li>
+                </ul>
+            </div>
 
-Tips:
-    Adopt a Low-Carb, Low-Sugar Diet: Reducing intake of sugary foods, refined carbohydrates (white bread, pasta, pastries), and high-fructose corn syrup can help lower triglycerides.
-    Exercise Regularly: Aim for at least 30 minutes of aerobic exercise (such as walking, swimming, or cycling) most days of the week. Exercise helps reduce triglyceride levels by improving metabolism.
-    Lose Weight: Losing even a small amount of weight (5-10% of body weight) can have a significant effect on lowering triglyceride levels.
-    Avoid Alcohol: Limit or avoid alcohol, as it can significantly increase triglyceride levels, particularly in individuals who are overweight or have diabetes.
-    Increase Omega-3 Fatty Acids: Omega-3 fatty acids, found in fish, flaxseeds, and walnuts, have been shown to lower triglycerides. Consider adding more of these to your diet.
-    Control Blood Sugar: If you have diabetes, work with your healthcare provider to keep blood glucose levels under control to prevent high triglycerides.
-    Consider Medications: If lifestyle changes alone do not sufficiently reduce triglyceride levels, your doctor may recommend medications such as fibrates, statins, or omega-3 fatty acid supplements.
+            <div>
+                <h3>Foods to Eat:</h3>
+                <ul>
+                    <li><strong>Omega-3 Fatty Acids:</strong> Fatty fish (salmon, mackerel), flaxseeds, chia seeds, and walnuts.</li>
+                    <li><strong>Fiber-Rich Foods:</strong> Oats, barley, lentils, beans, and vegetables.</li>
+                    <li><strong>Healthy Fats:</strong> Olive oil, avocado, and nuts (almonds, walnuts).</li>
+                    <li><strong>Leafy Greens and Vegetables:</strong> Spinach, kale, broccoli, and cauliflower.</li>
+                    <li><strong>Whole Grains:</strong> Brown rice, quinoa, and whole wheat for more fiber and nutrients.</li>
+                </ul>
+            </div>
 
-Foods to Eat:
-    Omega-3 Fatty Acids: Fatty fish (salmon, mackerel), flaxseeds, chia seeds, walnuts to help lower triglycerides.
-    Fiber-Rich Foods: Oats, barley, legumes, and vegetables that help lower cholesterol and triglycerides.
-    Healthy Fats: Olive oil, avocado, and nuts (such as almonds and walnuts) to provide healthy monounsaturated and polyunsaturated fats.
-    Leafy Greens and Vegetables: Spinach, kale, broccoli, cauliflower to provide antioxidants and fiber while lowering triglyceride levels.
-    Whole Grains: Brown rice, quinoa, and whole wheat to replace refined grains and provide more fiber and nutrients.
+            <div>
+                <h3>Example Meal Plan:</h3>
+                <ul>
+                    <li><strong>Breakfast:</strong> Oatmeal with chia seeds, flaxseeds, and fresh berries (fiber, omega-3s, antioxidants).</li>
+                    <li><strong>Lunch:</strong> Grilled salmon with quinoa salad, avocado, and mixed greens with olive oil dressing.</li>
+                    <li><strong>Snack:</strong> A handful of walnuts and a pear.</li>
+                    <li><strong>Dinner:</strong> Baked chicken with roasted Brussels sprouts and sweet potatoes.</li>
+                </ul>
+            </div>
+        </div>
+        """)
 
-Example Meal Plan for High Triglycerides:
-    Breakfast: Oatmeal with chia seeds, flaxseeds, and fresh berries (fiber, omega-3s, and antioxidants).
-    Lunch: Grilled salmon with a quinoa salad, avocado, and a mixed greens salad with olive oil dressing (lean protein, omega-3s, and healthy fats).
-    Snack: A handful of walnuts and a pear (healthy fats and fiber).
-    Dinner: Baked chicken with roasted Brussels sprouts and sweet potatoes (lean protein, complex carbs, and non-starchy vegetables).
-""")
-
-    # Total Cholesterol (range: 125-200 mg/dL)
     if "Total Cholesterol" in values:
         if values["Total Cholesterol"] < 125:
-            advice.append("""Low Total Cholesterol (Hypocholesterolemia)
+            advice.append("""
+            <div>
+                <h2>Low Total Cholesterol (Hypocholesterolemia)</h2>
+                
+                <div>
+                    <h3>Root Cause:</h3>
+                    <ul>
+                        <li><strong>Good Diet and Lifestyle:</strong> A balanced diet and physical activity contribute to healthy cholesterol levels.</li>
+                        <li><strong>Hyperthyroidism:</strong> An overactive thyroid gland speeds up metabolism, lowering cholesterol.</li>
+                        <li><strong>Liver Disease:</strong> Impaired liver function can reduce cholesterol production.</li>
+                        <li><strong>Malnutrition or Starvation:</strong> Inadequate nutrient intake can cause low cholesterol.</li>
+                        <li><strong>Genetic Factors:</strong> Rare genetic conditions can result in low cholesterol levels.</li>
+                        <li><strong>Chronic Infections or Inflammatory Diseases:</strong> Severe systemic inflammation can decrease cholesterol production.</li>
+                        <li><strong>Medications:</strong> Cholesterol-lowering drugs may sometimes reduce cholesterol too much.</li>
+                    </ul>
+                </div>
 
-Root Cause:
-    Good Diet and Lifestyle: A diet that is rich in fruits, vegetables, whole grains, and lean proteins, while low in saturated and trans fats, can contribute to low total cholesterol levels. Regular physical activity also helps maintain healthy cholesterol levels.
-    Hyperthyroidism: An overactive thyroid gland speeds up metabolism and can lead to lower cholesterol levels.
-    Liver Disease: Chronic liver disease or cirrhosis can impair the liver's ability to produce cholesterol, leading to low total cholesterol levels.
-    Malnutrition or Starvation: Inadequate intake of fats and other essential nutrients due to malnutrition, anorexia, or prolonged fasting can cause low cholesterol.
-    Genetic Factors: Some rare genetic conditions, such as familial hypocholesterolemia, can cause abnormally low cholesterol levels.
-    Chronic Infections or Inflammatory Diseases: Conditions such as tuberculosis or severe systemic inflammation can lead to decreased cholesterol production by the liver.
-    Medications: Certain medications, like statins or other cholesterol-lowering drugs, may result in lower total cholesterol levels, sometimes too low if not properly managed.
+                <div>
+                    <h3>Tips:</h3>
+                    <ul>
+                        <li>Ensure adequate <strong>caloric intake</strong> with a balanced diet.</li>
+                        <li>Include <strong>healthy fats</strong> from avocados, olive oil, nuts, and seeds.</li>
+                        <li>Monitor <strong>thyroid function</strong> to rule out hyperthyroidism.</li>
+                        <li>Avoid <strong>extreme diets</strong> that excessively limit fat intake.</li>
+                        <li>Get <strong>regular check-ups</strong> for medical conditions affecting cholesterol.</li>
+                    </ul>
+                </div>
 
-Tips:
-    Ensure Adequate Caloric Intake: If you're experiencing low cholesterol due to malnutrition, it's important to consume a balanced diet with adequate calories, healthy fats, and proteins to restore normal cholesterol levels.
-    Include Healthy Fats: Healthy fats (from sources like avocados, olive oil, nuts, seeds, and fatty fish) can help increase HDL (good) cholesterol and maintain overall cholesterol balance.
-    Monitor Thyroid Function: If you have symptoms of hyperthyroidism (e.g., weight loss, rapid heartbeat), have your thyroid levels checked.
-    Avoid Extreme Diets: If you are on a very restrictive or low-fat diet, consult with a nutritionist to ensure you're still getting the nutrients needed for healthy cholesterol production.
-    Regular Check-Ups: If you have a medical condition (like liver disease or inflammatory disease), ensure regular medical check-ups to manage the condition effectively and monitor cholesterol levels.
+                <div>
+                    <h3>Foods to Eat:</h3>
+                    <ul>
+                        <li><strong>Healthy Fats:</strong> Avocados, olive oil, nuts, and seeds.</li>
+                        <li><strong>Lean Proteins:</strong> Poultry, fatty fish, tofu, and legumes.</li>
+                        <li><strong>Whole Grains:</strong> Brown rice, quinoa, oats, and barley.</li>
+                        <li><strong>Fruits and Vegetables:</strong> Dark leafy greens, cruciferous vegetables, and antioxidant-rich fruits.</li>
+                    </ul>
+                </div>
 
-Foods to Eat:
-    Healthy Fats: Avocados, olive oil, nuts (such as almonds and walnuts), and seeds (like chia and flaxseeds) to boost healthy fat intake.
-    Lean Proteins: Skinless poultry, fatty fish (like salmon and mackerel), tofu, and legumes to support overall health.
-    Whole Grains: Brown rice, quinoa, oats, and barley to provide complex carbohydrates, fiber, and essential nutrients.
-    Fruits and Vegetables: Dark leafy greens (spinach, kale), cruciferous vegetables (broccoli, cauliflower), and antioxidant-rich fruits (berries, oranges).
+                <div>
+                    <h3>Example Meal Plan:</h3>
+                    <ul>
+                        <li><strong>Breakfast:</strong> Oatmeal with chia seeds, ground flaxseeds, walnuts, and fresh berries.</li>
+                        <li><strong>Lunch:</strong> Grilled salmon salad with avocado, mixed greens, quinoa, and olive oil dressing.</li>
+                        <li><strong>Snack:</strong> A handful of almonds and a banana.</li>
+                        <li><strong>Dinner:</strong> Baked chicken with roasted sweet potatoes and steamed broccoli.</li>
+                    </ul>
+                </div>
+            </div>
+            """)
 
-Example Meal Plan for Low Total Cholesterol:
-    Breakfast: Oatmeal with chia seeds, ground flaxseeds, walnuts, and fresh berries (fiber, healthy fats, and antioxidants).
-    Lunch: Grilled salmon salad with avocado, mixed greens, quinoa, and olive oil dressing (lean protein, omega-3s, and healthy fats).
-    Snack: A handful of almonds and a banana (healthy fats and potassium).
-    Dinner: Baked chicken with roasted sweet potatoes and steamed broccoli (lean protein, complex carbs, and non-starchy vegetables).
-""")
-        elif values["Total Cholesterol"] > 200:
-            advice.append("""High Total Cholesterol (Hypercholesterolemia)
-
-Root Cause:
-    Unhealthy Diet: A diet high in saturated fats (from red meat, dairy products, and processed foods), trans fats, and refined carbohydrates (sugar, white bread, pastries) can increase total cholesterol levels, particularly LDL (bad cholesterol).
-    Obesity: Excess body weight, especially abdominal fat, is a significant contributor to high cholesterol levels. Obesity reduces the body's ability to clear excess cholesterol and increases the production of triglycerides, leading to higher cholesterol.
-    Sedentary Lifestyle: Lack of physical activity can contribute to elevated cholesterol levels, as exercise helps to increase HDL (good cholesterol) and lower LDL and triglycerides.
-    Genetic Factors: Familial hypercholesterolemia, a genetic disorder, can lead to elevated cholesterol levels, particularly elevated LDL cholesterol, which can increase the risk of cardiovascular diseases.
-    Diabetes: Uncontrolled diabetes or insulin resistance can lead to higher cholesterol levels. Insulin resistance affects lipid metabolism and increases production of VLDL (very-low-density lipoprotein) and LDL cholesterol.
-    Hypothyroidism: An underactive thyroid can impair cholesterol metabolism, leading to elevated levels of LDL and total cholesterol.
-    Kidney Disease: Chronic kidney disease can also lead to higher cholesterol levels due to disturbances in lipid metabolism.
-    Medications: Certain medications like steroids, diuretics, and beta-blockers can contribute to elevated cholesterol levels.
-
-Tips:
-    Adopt a Heart-Healthy Diet: Focus on a diet rich in fiber, healthy fats (like omega-3 fatty acids), and low in saturated and trans fats. This helps lower LDL and raise HDL levels.
-    Exercise Regularly: Engaging in at least 30 minutes of moderate-intensity aerobic activity, such as walking, cycling, or swimming, can help lower total cholesterol, particularly by boosting HDL.
-    Lose Weight: Losing excess weight, especially abdominal fat, can help improve cholesterol levels, lower triglycerides, and reduce overall heart disease risk.
-    Avoid Smoking: Quitting smoking can improve HDL cholesterol levels and reduce the risk of cardiovascular disease.
-    Manage Stress: Chronic stress can contribute to poor diet choices and unhealthy cholesterol levels, so incorporating relaxation techniques, such as yoga or meditation, is helpful.
-    Monitor Diabetes: If you have diabetes, work with your healthcare provider to control your blood sugar levels, as uncontrolled blood sugar can increase total cholesterol.
-
-Foods to Eat:
-    Omega-3 Fatty Acids: Fatty fish (salmon, mackerel, sardines), flaxseeds, chia seeds, and walnuts, which help lower LDL cholesterol and triglycerides while raising HDL cholesterol.
-    Fiber-Rich Foods: Oats, barley, beans, lentils, and vegetables, as they help lower LDL cholesterol by binding with it in the digestive system.
-    Healthy Fats: Olive oil, avocado, nuts (especially almonds, walnuts), and seeds, which help reduce LDL and raise HDL cholesterol.
-    Fruits and Vegetables: Dark leafy greens (kale, spinach), cruciferous vegetables (broccoli, cauliflower), and antioxidant-rich fruits (berries, apples, citrus).
-    Legumes and Whole Grains: Beans, lentils, quinoa, and whole grains to help reduce cholesterol and support overall cardiovascular health.
-
-Example Meal Plan for High Total Cholesterol:
-    Breakfast: Oatmeal with chia seeds, flaxseeds, and fresh berries (fiber and omega-3s).
-    Lunch: Grilled salmon with a mixed greens salad, avocado, olive oil, and a side of quinoa (healthy fats, fiber, and lean protein).
-    Snack: A small handful of almonds and an apple (healthy fats and fiber).
-    Dinner: Grilled chicken with roasted Brussels sprouts and sweet potatoes (lean protein, complex carbs, and non-starchy vegetables).""")
-
+    # LDL Cholesterol (range: < 100 mg/dL)
     # LDL Cholesterol (range: < 100 mg/dL)
     if "LDL Cholesterol" in values:
         if values["LDL Cholesterol"] > 130:
-            advice.append("""High LDL Cholesterol (Low-Density Lipoprotein Cholesterol)
-
-Root Cause:
-    Unhealthy Diet: A diet rich in saturated fats (found in red meat, butter, cheese, and full-fat dairy products) and trans fats (found in processed foods, baked goods, and fried foods) increases LDL cholesterol levels.
-    Obesity: Excess weight, particularly abdominal fat, can lead to higher LDL cholesterol levels. Obesity affects lipid metabolism, leading to an increase in "bad" cholesterol (LDL) and triglycerides.
-    Sedentary Lifestyle: Lack of physical activity reduces the body’s ability to break down LDL cholesterol and increase HDL cholesterol (the "good" cholesterol), leading to an imbalance.
-    Genetic Factors (Familial Hypercholesterolemia): A genetic disorder that results in high cholesterol, particularly high LDL levels, and a higher risk of cardiovascular diseases at an early age.
-    Diabetes: Insulin resistance and poorly controlled blood sugar can lead to an increase in LDL cholesterol and decrease HDL cholesterol, which can contribute to higher total cholesterol levels.
-    Hypothyroidism: An underactive thyroid (hypothyroidism) slows down metabolism and cholesterol processing, resulting in higher LDL cholesterol levels.
-    Kidney Disease: Chronic kidney disease can lead to dyslipidemia (abnormal levels of lipids in the blood), including high LDL cholesterol.
-    Medications: Certain medications, such as corticosteroids, beta-blockers, and diuretics, can increase LDL cholesterol levels.
-    Health Risks of High LDL Cholesterol:
-    Atherosclerosis: High LDL levels can lead to the buildup of plaque in the arteries, narrowing and hardening them, which increases the risk of heart disease and stroke.
-    Heart Disease: High LDL cholesterol is a significant risk factor for coronary artery disease (CAD), heart attacks, and other cardiovascular problems.
-    Stroke: Increased LDL can also contribute to blocked blood vessels in the brain, raising the risk of stroke.
-
-Tips:
-    Adopt a Heart-Healthy Diet: Focus on eating foods that help lower LDL cholesterol while supporting overall heart health. This includes reducing your intake of saturated fats, trans fats, and cholesterol-rich foods.
-    Exercise Regularly: Engage in at least 30 minutes of moderate-intensity exercise most days of the week. Aerobic activities, such as walking, swimming, cycling, and jogging, can help lower LDL cholesterol and raise HDL cholesterol.
-    Maintain a Healthy Weight: Losing excess weight can help reduce LDL cholesterol levels and improve overall cardiovascular health.
-    Quit Smoking: If you smoke, quitting can help improve your cholesterol levels and reduce the risk of heart disease and other health complications.
-    Limit Alcohol Consumption: Excessive alcohol intake can raise LDL cholesterol and triglyceride levels, so it's important to limit consumption.
-    Consider Medications: In some cases, lifestyle changes alone may not be enough to lower LDL cholesterol. Statins or other cholesterol-lowering medications may be prescribed by a healthcare provider.
-    Manage Underlying Conditions: Control other conditions that can raise LDL levels, such as diabetes, hypothyroidism, and kidney disease, to better manage cholesterol levels.
-
-Foods to Eat:
-    Omega-3 Fatty Acids: Fatty fish (salmon, mackerel, sardines), flaxseeds, chia seeds, and walnuts can help lower LDL cholesterol while improving cardiovascular health.
-    Fiber-Rich Foods: Soluble fiber (found in oats, barley, beans, lentils, apples, and carrots) helps lower LDL cholesterol by binding with cholesterol in the digestive system.
-    Healthy Fats: Replace saturated fats with healthy monounsaturated and polyunsaturated fats. Foods like olive oil, avocado, nuts, and seeds support healthy cholesterol levels.
-    Plant Sterols and Stanols: Found in fortified foods like margarine, orange juice, and yogurt drinks, these plant compounds can help lower LDL cholesterol.
-    Whole Grains: Oats, quinoa, brown rice, and whole wheat bread are high in fiber and can help reduce LDL cholesterol levels.
-    Fruits and Vegetables: Leafy greens (kale, spinach), cruciferous vegetables (broccoli, Brussels sprouts), and antioxidant-rich fruits (berries, citrus) help lower LDL cholesterol and provide essential nutrients.
-
-Example Meal Plan for High LDL Cholesterol:
-    Breakfast: Oatmeal with chia seeds, flaxseeds, and fresh berries (fiber and omega-3s).
-    Lunch: Grilled salmon with a quinoa salad, mixed greens, avocado, and olive oil dressing (omega-3s, fiber, and healthy fats).
-    Snack: A handful of almonds and an apple (healthy fats and fiber).
-    Dinner: Baked chicken breast with roasted Brussels sprouts, sweet potatoes, and a side of mixed greens (lean protein, fiber, and antioxidants).""")
+            advice.append("""
+        <h2>High LDL Cholesterol (Low-Density Lipoprotein Cholesterol)</h2>
+        <h3>Root Cause:</h3>
+        <ul>
+            <li><strong>Unhealthy Diet:</strong> A diet rich in saturated fats (e.g., red meat, butter, cheese, full-fat dairy) and trans fats (processed foods, baked goods, fried foods).</li>
+            <li><strong>Obesity:</strong> Excess weight, especially abdominal fat, leads to higher LDL cholesterol levels.</li>
+            <li><strong>Sedentary Lifestyle:</strong> Lack of physical activity reduces the body’s ability to balance LDL and HDL cholesterol.</li>
+            <li><strong>Genetic Factors:</strong> Familial hypercholesterolemia, a genetic disorder causing high LDL cholesterol levels.</li>
+            <li><strong>Diabetes:</strong> Insulin resistance and high blood sugar can raise LDL cholesterol.</li>
+            <li><strong>Hypothyroidism:</strong> An underactive thyroid slows cholesterol metabolism.</li>
+            <li><strong>Kidney Disease:</strong> Chronic kidney disease can impair lipid metabolism.</li>
+            <li><strong>Medications:</strong> Drugs like corticosteroids, beta-blockers, and diuretics may increase LDL cholesterol.</li>
+        </ul>
+        <h3>Health Risks:</h3>
+        <ul>
+            <li>Atherosclerosis: Plaque buildup in arteries leading to narrowing and increased cardiovascular risk.</li>
+            <li>Heart Disease: Significant risk for coronary artery disease (CAD) and heart attacks.</li>
+            <li>Stroke: Blocked blood vessels in the brain raise stroke risk.</li>
+        </ul>
+        <h3>Tips to Lower LDL Cholesterol:</h3>
+        <ul>
+            <li><strong>Heart-Healthy Diet:</strong> Reduce saturated and trans fats; increase fiber and healthy fats.</li>
+            <li><strong>Exercise Regularly:</strong> 30 minutes of moderate-intensity aerobic activity most days.</li>
+            <li><strong>Maintain a Healthy Weight:</strong> Losing excess weight improves cholesterol levels.</li>
+            <li><strong>Quit Smoking:</strong> Improves cholesterol balance and reduces cardiovascular risk.</li>
+            <li><strong>Limit Alcohol:</strong> Reducing excessive alcohol intake helps manage cholesterol.</li>
+            <li><strong>Consider Medications:</strong> Statins or other cholesterol-lowering drugs if necessary.</li>
+        </ul>
+        <h3>Foods to Include:</h3>
+        <ul>
+            <li><strong>Omega-3 Fatty Acids:</strong> Fatty fish (salmon, mackerel), flaxseeds, walnuts.</li>
+            <li><strong>Fiber-Rich Foods:</strong> Oats, barley, beans, lentils, apples, carrots.</li>
+            <li><strong>Healthy Fats:</strong> Olive oil, avocado, nuts, seeds.</li>
+            <li><strong>Plant Sterols:</strong> Found in fortified foods like margarine, orange juice, yogurt drinks.</li>
+            <li><strong>Whole Grains:</strong> Quinoa, brown rice, whole wheat bread.</li>
+            <li><strong>Fruits and Vegetables:</strong> Berries, citrus fruits, leafy greens, cruciferous vegetables.</li>
+        </ul>
+        <h3>Example Meal Plan:</h3>
+        <ul>
+            <li><strong>Breakfast:</strong> Oatmeal with chia seeds, flaxseeds, fresh berries.</li>
+            <li><strong>Lunch:</strong> Grilled salmon with quinoa salad, mixed greens, olive oil dressing.</li>
+            <li><strong>Snack:</strong> Handful of almonds and an apple.</li>
+            <li><strong>Dinner:</strong> Baked chicken breast with roasted Brussels sprouts, sweet potatoes, and mixed greens.</li>
+        </ul>
+        """)
 
     # HDL Cholesterol (range: > 40 mg/dL for men, > 50 mg/dL for women)
+    # HDL Cholesterol (range: > 40 mg/dL)
     if "HDL Cholesterol" in values:
         if values["HDL Cholesterol"] < 40:
-            advice.append("""Low HDL Cholesterol (High-Density Lipoprotein Cholesterol)
+            advice.append("""
+        <h2>Low HDL Cholesterol (High-Density Lipoprotein Cholesterol)</h2>
+        <h3>Root Cause:</h3>
+        <ul>
+            <li><strong>Unhealthy Diet:</strong> High intake of refined sugars, trans fats, and unhealthy fats (saturated fats in red meat, processed foods, and fried foods).</li>
+            <li><strong>Obesity:</strong> Excess body weight, particularly abdominal fat, is linked to low HDL levels and increased LDL and triglycerides.</li>
+            <li><strong>Physical Inactivity:</strong> Lack of exercise reduces HDL cholesterol.</li>
+            <li><strong>Smoking:</strong> Smoking damages blood vessels, reduces HDL cholesterol, and increases cardiovascular risk.</li>
+            <li><strong>Genetics:</strong> Genetic predisposition to low HDL levels may run in families.</li>
+            <li><strong>Type 2 Diabetes:</strong> Insulin resistance and metabolic imbalances can lower HDL cholesterol.</li>
+            <li><strong>Chronic Inflammation:</strong> Conditions like rheumatoid arthritis or chronic infections may reduce HDL levels.</li>
+            <li><strong>Alcohol:</strong> While moderate consumption can raise HDL, excessive drinking lowers HDL and harms health.</li>
+            <li><strong>Medications:</strong> Certain medications (e.g., anabolic steroids, beta-blockers) can lower HDL levels.</li>
+        </ul>
+        <h3>Health Risks of Low HDL Cholesterol:</h3>
+        <ul>
+            <li><strong>Cardiovascular Disease:</strong> Low HDL is a major risk factor for heart disease and prevents effective cholesterol removal.</li>
+            <li><strong>Atherosclerosis:</strong> Increased risk of plaque buildup in arteries, leading to heart attack and stroke.</li>
+            <li><strong>Metabolic Syndrome:</strong> Low HDL is a marker for metabolic syndrome, increasing risk of diabetes and heart disease.</li>
+        </ul>
+        <h3>Tips to Raise HDL Cholesterol:</h3>
+        <ul>
+            <li><strong>Adopt a Heart-Healthy Diet:</strong> Include monounsaturated and polyunsaturated fats, and avoid trans and saturated fats.</li>
+            <li><strong>Exercise Regularly:</strong> Engage in aerobic activities (walking, jogging, cycling, swimming) for at least 30 minutes most days.</li>
+            <li><strong>Lose Excess Weight:</strong> Reducing abdominal fat can improve HDL and overall lipid profile.</li>
+            <li><strong>Quit Smoking:</strong> Improves HDL levels and overall cardiovascular health.</li>
+            <li><strong>Limit Alcohol:</strong> Moderate intake may help, but avoid excessive consumption.</li>
+            <li><strong>Manage Underlying Conditions:</strong> Treat conditions like diabetes and hypothyroidism to improve HDL levels.</li>
+        </ul>
+        <h3>Foods to Eat:</h3>
+        <ul>
+            <li><strong>Healthy Fats:</strong> Olive oil, avocado, fatty fish (salmon, mackerel), walnuts, flaxseeds, chia seeds.</li>
+            <li><strong>Nuts and Seeds:</strong> Almonds, walnuts, sunflower seeds, flaxseeds.</li>
+            <li><strong>Fatty Fish:</strong> Salmon, mackerel, sardines, and herring.</li>
+            <li><strong>Olive Oil:</strong> Rich in monounsaturated fats and antioxidants.</li>
+            <li><strong>Fiber-Rich Foods:</strong> Oats, barley, beans, lentils, whole grains.</li>
+            <li><strong>Fruits and Vegetables:</strong> Berries, citrus fruits, dark leafy greens, cruciferous vegetables.</li>
+        </ul>
+        """)
 
-Root Cause:
-    Unhealthy Diet: A diet high in refined sugars, trans fats, and unhealthy fats (saturated fats found in red meat, processed foods, and fried foods) can lead to low HDL cholesterol levels.
-    Obesity: Excess body weight, especially abdominal fat, is associated with low levels of HDL cholesterol. Being overweight can also increase the levels of "bad" LDL cholesterol and triglycerides.
-    Physical Inactivity: A sedentary lifestyle can lower HDL cholesterol levels. Regular exercise is crucial for raising HDL cholesterol.
-    Smoking: Smoking damages blood vessels, reduces HDL cholesterol levels, and contributes to cardiovascular disease.
-    Genetics: Some people are genetically predisposed to low HDL cholesterol, which can run in families. Genetic variations can affect how the body produces or breaks down HDL cholesterol.
-    Type 2 Diabetes and Insulin Resistance: People with type 2 diabetes or insulin resistance often have lower HDL cholesterol levels because of metabolic imbalances that affect lipid metabolism.
-    Chronic Inflammation: Inflammatory conditions like rheumatoid arthritis or chronic infections can contribute to reduced HDL cholesterol.
-    Alcohol: While moderate alcohol consumption (especially red wine) may raise HDL cholesterol, heavy drinking can lead to lower HDL levels and other health problems.
-    Medications: Some medications, such as anabolic steroids, beta-blockers, and certain diuretics, may lower HDL cholesterol levels.
-    Health Risks of Low HDL Cholesterol:
-    Cardiovascular Disease: Low HDL cholesterol is a major risk factor for heart disease. HDL helps remove excess cholesterol from the bloodstream, preventing plaque buildup in arteries.
-    Increased Risk of Atherosclerosis: Low HDL levels are associated with an increased risk of plaque formation in arteries, leading to atherosclerosis and increasing the risk of heart attack and stroke.
-    Metabolic Syndrome: Low HDL cholesterol is one of the markers for metabolic syndrome, a cluster of conditions that increase the risk of heart disease, stroke, and type 2 diabetes.
-
-Tips:
-    Adopt a Heart-Healthy Diet: A diet rich in healthy fats, particularly monounsaturated and polyunsaturated fats, can help increase HDL cholesterol. Avoid trans fats and limit saturated fats.
-    Exercise Regularly: Aerobic exercises such as walking, jogging, cycling, and swimming can help raise HDL cholesterol levels. Aim for at least 30 minutes of moderate-intensity exercise most days of the week.
-    Lose Excess Weight: Losing excess weight, particularly belly fat, can help raise HDL cholesterol and improve overall lipid profile.
-    Quit Smoking: Stopping smoking can lead to a noticeable increase in HDL cholesterol levels, as smoking lowers HDL and damages blood vessels.
-    Limit Alcohol Consumption: Moderate alcohol intake may help raise HDL cholesterol, but excessive alcohol consumption can harm the liver and overall health, leading to lower HDL levels.
-    Manage Underlying Conditions: If you have conditions like type 2 diabetes, hypothyroidism, or metabolic syndrome, controlling them can help improve your HDL cholesterol levels.
-
-Foods to Eat:
-    Healthy Fats: Include monounsaturated fats (olive oil, avocado) and polyunsaturated fats (omega-3 fatty acids from fatty fish like salmon, walnuts, flaxseeds) in your diet to raise HDL cholesterol.
-    Nuts and Seeds: Almonds, walnuts, flaxseeds, chia seeds, and sunflower seeds are rich in healthy fats and fiber, which can improve HDL cholesterol levels.
-    Fatty Fish: Salmon, mackerel, sardines, and herring are excellent sources of omega-3 fatty acids, which help raise HDL cholesterol and improve heart health.
-    Olive Oil: Extra virgin olive oil is rich in monounsaturated fats and antioxidants, which can help increase HDL cholesterol levels.
-    Fiber-Rich Foods: Oats, barley, beans, lentils, and whole grains can help reduce LDL cholesterol and improve HDL levels by aiding in cholesterol excretion.
-    Fruits and Vegetables: Berries, citrus fruits, dark leafy greens (spinach, kale), and cruciferous vegetables (broccoli, Brussels sprouts) are rich in antioxidants and fiber, which help improve HDL cholesterol.""")
-
-    # VLDL Cholesterol (range: 2-30 mg/dL)
+# VLDL Cholesterol (range: 2-30 mg/dL)
     if "VLDL Cholesterol" in values:
         if values["VLDL Cholesterol"] < 2:
-            advice.append("""High VLDL Cholesterol (Very-Low-Density Lipoprotein Cholesterol)
-
-Root Cause:
-    Unhealthy Diet: A diet high in refined carbohydrates, sugars, and unhealthy fats (trans fats, saturated fats) can lead to high VLDL cholesterol levels. These fats increase the liver's production of VLDL, which is primarily composed of triglycerides.
-    Obesity: Excess body weight, particularly abdominal fat, contributes to increased VLDL cholesterol. Obesity is associated with insulin resistance, which affects the liver’s ability to manage cholesterol production.
-    Diabetes and Insulin Resistance: High blood sugar levels and insulin resistance can lead to increased production of VLDL, as the liver compensates by producing more triglycerides.
-    Alcohol Consumption: Excessive alcohol intake can raise VLDL levels by increasing triglyceride production in the liver.
-    Genetics: Some people inherit genetic conditions like familial hypertriglyceridemia, which leads to elevated VLDL cholesterol and triglycerides.
-    Kidney Disease: Chronic kidney disease can lead to dyslipidemia, including high VLDL levels, due to impaired lipid metabolism.
-    Hypothyroidism: An underactive thyroid can impair lipid metabolism, causing an increase in VLDL cholesterol.
-    Health Risks of High VLDL Cholesterol:
-    Atherosclerosis: VLDL cholesterol is rich in triglycerides, and its accumulation in the arteries can contribute to plaque formation, narrowing and hardening the arteries (atherosclerosis).
-    Heart Disease: Elevated VLDL cholesterol can contribute to an increased risk of coronary artery disease (CAD), heart attacks, and stroke due to its impact on artery health.
-    Metabolic Syndrome: High VLDL levels are a key feature of metabolic syndrome, a cluster of risk factors that increase the likelihood of heart disease, diabetes, and stroke.
-
-Tips to Lower High VLDL Cholesterol:
-    Limit Refined Carbs and Sugars: Reduce intake of refined sugars, white bread, pastries, and sugary beverages to decrease VLDL cholesterol levels.
-    Reduce Saturated and Trans Fats: Cut back on saturated fats found in fatty meats, full-fat dairy, and processed foods, as well as trans fats in packaged baked goods, margarine, and fried foods.
-    Increase Fiber Intake: High-fiber foods like oats, beans, lentils, and fruits can help lower VLDL cholesterol by binding with excess cholesterol and triglycerides in the digestive system.
-    Exercise Regularly: Engage in aerobic activities such as walking, swimming, cycling, and jogging to improve lipid metabolism, raise HDL cholesterol (the "good" cholesterol), and lower triglycerides and VLDL.
-    Lose Excess Weight: Maintaining a healthy weight, especially reducing abdominal fat, can lower VLDL cholesterol and reduce the risk of cardiovascular disease.
-    Limit Alcohol Intake: Reduce alcohol consumption, as excessive drinking can increase VLDL cholesterol levels.
-    Control Blood Sugar: If you have diabetes or insulin resistance, managing blood sugar levels with diet, exercise, and medications can help lower VLDL cholesterol.
-    Consider Medications: In some cases, your healthcare provider may recommend medications, such as statins or fibrates, to help lower VLDL cholesterol and triglycerides.
-
-Foods to Eat for High VLDL Cholesterol:
-    Omega-3 Fatty Acids: Fatty fish like salmon, sardines, and mackerel, as well as flaxseeds and walnuts, can help lower VLDL cholesterol by reducing triglycerides.
-    Soluble Fiber: Foods like oats, barley, beans, lentils, apples, and carrots help reduce triglyceride levels and improve overall lipid profile.
-    Healthy Fats: Avocados, olive oil, and nuts (especially almonds and walnuts) are good sources of healthy monounsaturated fats that can improve lipid balance.
-    Antioxidant-Rich Vegetables and Fruits: Leafy greens (spinach, kale), berries, citrus fruits, and cruciferous vegetables (broccoli, Brussels sprouts) can help improve lipid metabolism and reduce inflammation.
-    Whole Grains: Quinoa, brown rice, and whole wheat bread are high in fiber and can help reduce triglycerides and lower VLDL cholesterol.""")
+            advice.append("""
+        <h2>Low VLDL Cholesterol</h2>
+        <h3>Root Cause:</h3>
+        <ul>
+            <li><strong>Very Low Fat Diet:</strong> Extremely low-fat diets may lower VLDL cholesterol production.</li>
+            <li><strong>Malnutrition or Starvation:</strong> Prolonged fasting or malnutrition reduces fat intake, lowering VLDL.</li>
+            <li><strong>Hyperthyroidism:</strong> Overactive thyroid accelerates metabolism, reducing lipid levels.</li>
+            <li><strong>Genetic Factors:</strong> Rare genetic conditions like familial hypolipidemia.</li>
+            <li><strong>Medications:</strong> Statins and fibrates can lower VLDL as part of their effect.</li>
+            <li><strong>Liver Disease:</strong> Severe liver dysfunction impairs lipoprotein production.</li>
+        </ul>
+        <h3>Health Considerations:</h3>
+        <ul>
+            <li><strong>Nutrient Deficiency:</strong> Inadequate fats may impair absorption of fat-soluble vitamins (A, D, E, K).</li>
+            <li><strong>Hormonal Imbalance:</strong> Cholesterol is essential for hormone production.</li>
+            <li><strong>Impaired Fat Metabolism:</strong> Indicates improper fat metabolism and nutrient deficiencies.</li>
+        </ul>
+        <h3>Tips to Raise Low VLDL Cholesterol:</h3>
+        <ul>
+            <li><strong>Increase Healthy Fats:</strong> Include olive oil, avocados, nuts, and seeds in the diet.</li>
+            <li><strong>Ensure Adequate Caloric Intake:</strong> Increase calorie intake with nutrient-dense foods.</li>
+            <li><strong>Incorporate Healthy Carbohydrates:</strong> Whole grains like quinoa, oats, and brown rice.</li>
+            <li><strong>Avoid Very Low-Fat Diets:</strong> Balance fat intake to ensure essential lipid levels.</li>
+        </ul>
+        <h3>Foods to Eat:</h3>
+        <ul>
+            <li><strong>Healthy Fats:</strong> Olive oil, avocado, fatty fish, nuts, and seeds.</li>
+            <li><strong>Lean Proteins:</strong> Chicken, turkey, legumes, tofu, and low-fat dairy.</li>
+            <li><strong>Whole Grains:</strong> Quinoa, oats, barley, brown rice.</li>
+            <li><strong>Fruits and Vegetables:</strong> Bananas, avocados, sweet potatoes, carrots.</li>
+        </ul>
+        """)
         elif values["VLDL Cholesterol"] > 11:
-            advice.append("""Low VLDL Cholesterol
-
-Root Cause:
-    Very Low Fat Diet: A very restrictive diet that is extremely low in fats may result in low VLDL cholesterol levels, as VLDL is synthesized from triglycerides, which come from fat.
-    Malnutrition or Starvation: A lack of essential fats in the diet due to malnutrition, anorexia, or prolonged fasting can lower VLDL cholesterol levels.
-    Hyperthyroidism: An overactive thyroid can lead to a faster metabolism and reduced levels of cholesterol, including VLDL, due to altered lipid metabolism.
-    Genetic Factors: Some rare genetic conditions, such as familial hypolipidemia, can lead to lower than normal levels of VLDL cholesterol.
-    Certain Medications: Some medications, such as statins and fibrates (used to lower cholesterol and triglycerides), can lower VLDL cholesterol as part of their therapeutic effect.
-    Liver Disease: In cases of severe liver dysfunction, the liver may not produce adequate amounts of lipoproteins like VLDL, leading to low levels.
-    Health Considerations of Low VLDL Cholesterol:
-    Nutrient Deficiency: Very low levels of VLDL cholesterol may suggest an inadequate intake of fats, which are essential for the absorption of fat-soluble vitamins (A, D, E, and K) and hormone production.
-    Hormonal Imbalance: Cholesterol is vital for hormone production, including sex hormones, and very low cholesterol levels can lead to hormonal imbalances, affecting reproductive health and metabolism.
-    Impaired Fat Metabolism: Very low VLDL cholesterol may indicate that the body is not metabolizing fats properly, which could result in fat-soluble nutrient deficiencies.
-
-Tips to Increase Low VLDL Cholesterol:
-    Increase Healthy Fats: Include more healthy fats in your diet, such as monounsaturated and polyunsaturated fats (from olive oil, avocados, nuts, and seeds) to boost VLDL levels.
-    Ensure Adequate Caloric Intake: If you are not consuming enough calories or fats, consider increasing your calorie intake with nutrient-dense foods to support normal lipid metabolism.
-    Incorporate Healthy Carbohydrates: Whole grains like quinoa, oats, and brown rice provide necessary energy and help regulate cholesterol and triglyceride levels.
-    Avoid Very Low-Fat Diets: While it’s important to limit unhealthy fats, an excessively low-fat diet can also result in low VLDL cholesterol. Aim for a balanced intake of healthy fats.
-
-Foods to Eat for Low VLDL Cholesterol:
-    Healthy Fats: Include sources of healthy fats, such as avocados, olive oil, fatty fish (salmon, mackerel), nuts (almonds, walnuts), and seeds (flaxseeds, chia seeds).
-    Lean Proteins: Lean meats (chicken, turkey), legumes, tofu, and low-fat dairy provide essential nutrients while supporting fat and cholesterol production.
-    Whole Grains: Incorporate fiber-rich whole grains like quinoa, oats, and barley to support normal fat metabolism.
-    Fruits and Vegetables: Focus on high-calorie fruits like bananas, avocados, and dried fruits, along with vegetables like sweet potatoes and carrots, to increase calorie intake in a healthy way.""")
+            advice.append("""
+        <h2>High VLDL Cholesterol</h2>
+        <h3>Root Cause:</h3>
+        <ul>
+            <li><strong>Unhealthy Diet:</strong> High intake of refined carbs, sugars, and unhealthy fats.</li>
+            <li><strong>Obesity:</strong> Abdominal fat increases VLDL levels.</li>
+            <li><strong>Diabetes and Insulin Resistance:</strong> Leads to increased triglycerides and VLDL production.</li>
+            <li><strong>Alcohol Consumption:</strong> Excessive alcohol increases liver triglyceride production.</li>
+            <li><strong>Genetics:</strong> Conditions like familial hypertriglyceridemia.</li>
+            <li><strong>Kidney Disease:</strong> Impaired lipid metabolism in chronic kidney disease.</li>
+            <li><strong>Hypothyroidism:</strong> Slows metabolism and increases VLDL production.</li>
+        </ul>
+        <h3>Health Risks:</h3>
+        <ul>
+            <li><strong>Atherosclerosis:</strong> Contributes to plaque formation and artery narrowing.</li>
+            <li><strong>Heart Disease:</strong> Increases risk of coronary artery disease and heart attack.</li>
+            <li><strong>Metabolic Syndrome:</strong> Cluster of conditions raising the risk of heart disease and diabetes.</li>
+        </ul>
+        <h3>Tips to Lower High VLDL Cholesterol:</h3>
+        <ul>
+            <li><strong>Limit Refined Carbs and Sugars:</strong> Avoid sugary beverages, white bread, and pastries.</li>
+            <li><strong>Reduce Saturated and Trans Fats:</strong> Avoid fatty meats, full-fat dairy, and processed foods.</li>
+            <li><strong>Increase Fiber Intake:</strong> Include oats, beans, lentils, and fruits.</li>
+            <li><strong>Exercise Regularly:</strong> Engage in aerobic activities like walking, swimming, and jogging.</li>
+            <li><strong>Lose Excess Weight:</strong> Focus on reducing abdominal fat.</li>
+            <li><strong>Limit Alcohol Intake:</strong> Excessive drinking contributes to high VLDL levels.</li>
+            <li><strong>Control Blood Sugar:</strong> Manage diabetes with diet, exercise, and medication.</li>
+        </ul>
+        <h3>Foods to Eat:</h3>
+        <ul>
+            <li><strong>Omega-3 Fatty Acids:</strong> Salmon, mackerel, flaxseeds, and walnuts.</li>
+            <li><strong>Soluble Fiber:</strong> Oats, barley, apples, and carrots.</li>
+            <li><strong>Healthy Fats:</strong> Avocado, olive oil, almonds, and walnuts.</li>
+            <li><strong>Antioxidant-Rich Vegetables and Fruits:</strong> Berries, citrus fruits, broccoli, spinach.</li>
+            <li><strong>Whole Grains:</strong> Quinoa, brown rice, whole wheat bread.</li>
+        </ul>
+        """)
 
     # Total Cholesterol / HDL Cholesterol Ratio (range: 3.5-5.0)
     if "Total Cholesterol / HDL Cholesterol Ratio" in values:
         if values["Total Cholesterol / HDL Cholesterol Ratio"] > 4.5:
-            advice.append("""High Total Cholesterol / HDL Cholesterol Ratio
+            advice.append("""
+        <h2>High Total Cholesterol / HDL Cholesterol Ratio</h2>
+        <h3>Root Cause:</h3>
+        <ul>
+            <li><strong>Unhealthy Diet:</strong> A diet high in saturated fats, trans fats, and cholesterol-rich foods can elevate total cholesterol levels while reducing HDL cholesterol.</li>
+            <li><strong>Obesity:</strong> Excess body weight, particularly abdominal fat, increases total cholesterol levels and reduces HDL cholesterol.</li>
+            <li><strong>Physical Inactivity:</strong> Lack of exercise can lead to high levels of total cholesterol and low levels of HDL cholesterol.</li>
+            <li><strong>Smoking:</strong> Smoking damages blood vessels and lowers HDL cholesterol, increasing the ratio.</li>
+            <li><strong>Genetics:</strong> Conditions like familial hypercholesterolemia can contribute to a higher ratio.</li>
+            <li><strong>Diabetes and Insulin Resistance:</strong> Poorly controlled diabetes can worsen the cholesterol balance.</li>
+            <li><strong>Chronic Stress:</strong> Long-term stress may increase total cholesterol while lowering HDL cholesterol.</li>
+            <li><strong>Hypothyroidism:</strong> An underactive thyroid can elevate total cholesterol levels and lower HDL cholesterol.</li>
+        </ul>
+        <h3>Health Risks:</h3>
+        <ul>
+            <li><strong>Cardiovascular Disease:</strong> A higher ratio increases the risk of atherosclerosis, heart disease, and stroke.</li>
+            <li><strong>Metabolic Syndrome:</strong> A high ratio is a marker for metabolic syndrome, linked to heart disease and type 2 diabetes.</li>
+        </ul>
+        <h3>Tips to Lower the Ratio:</h3>
+        <ul>
+            <li>Adopt a heart-healthy diet, focusing on healthy fats, fiber, and whole foods.</li>
+            <li>Engage in regular physical activity.</li>
+            <li>Lose excess weight, especially abdominal fat.</li>
+            <li>Quit smoking and limit alcohol intake.</li>
+            <li>Control diabetes and insulin resistance.</li>
+            <li>Consult a healthcare provider about medications if needed.</li>
+        </ul>
+        <h3>Foods to Eat:</h3>
+        <ul>
+            <li>Healthy fats: Olive oil, avocados, nuts, and seeds.</li>
+            <li>Omega-3 fatty acids: Fatty fish, flaxseeds, and walnuts.</li>
+            <li>Soluble fiber: Oats, beans, lentils, and fruits like apples and pears.</li>
+            <li>Whole grains: Quinoa, brown rice, and whole wheat bread.</li>
+            <li>Antioxidant-rich vegetables and fruits: Leafy greens, berries, and citrus fruits.</li>
+        </ul>
+        <h3>Example Meal Plan:</h3>
+        <ul>
+            <li><strong>Breakfast:</strong> Oatmeal with chia seeds, walnuts, and berries.</li>
+            <li><strong>Lunch:</strong> Grilled salmon with quinoa and mixed greens.</li>
+            <li><strong>Snack:</strong> A handful of almonds and an apple.</li>
+            <li><strong>Dinner:</strong> Grilled chicken with roasted Brussels sprouts and sweet potatoes.</li>
+        </ul>
+        """)
 
-Root Cause:
-    Unhealthy Diet: A diet high in saturated fats, trans fats, and cholesterol-rich foods can elevate total cholesterol levels while reducing HDL cholesterol, resulting in a higher ratio. Processed foods, fatty meats, fried foods, and full-fat dairy products contribute to this imbalance.
-    Obesity: Excess body weight, particularly abdominal fat, increases total cholesterol levels and reduces HDL cholesterol, raising the total cholesterol to HDL ratio.
-    Physical Inactivity: Lack of exercise can lead to high levels of total cholesterol and low levels of HDL cholesterol. Regular physical activity is essential for maintaining a healthy balance.
-    Smoking: Smoking damages blood vessels and lowers HDL cholesterol, which increases the total cholesterol to HDL ratio and raises the risk of heart disease.
-    Genetics: Familial hypercholesterolemia (a genetic condition) can result in high total cholesterol levels and a higher cholesterol ratio. Some people are genetically predisposed to have lower HDL levels, contributing to a higher ratio.
-    Diabetes and Insulin Resistance: Poorly controlled diabetes or insulin resistance can increase total cholesterol levels while reducing HDL cholesterol, leading to a higher ratio.
-    Chronic Stress: Long-term stress may negatively affect cholesterol metabolism, contributing to higher total cholesterol levels and lower HDL cholesterol.
-    Hypothyroidism: An underactive thyroid can cause elevated total cholesterol levels and lower HDL cholesterol, increasing the cholesterol ratio.
-    Health Risks of High Total Cholesterol / HDL Cholesterol Ratio:
-    Cardiovascular Disease: A higher total cholesterol to HDL ratio is strongly associated with an increased risk of atherosclerosis, heart disease, stroke, and heart attacks. HDL cholesterol plays a protective role by removing excess cholesterol from the bloodstream, and low levels of HDL, combined with high total cholesterol, increase the risk of plaque buildup in arteries.
-    Increased Risk of Stroke: High total cholesterol levels, particularly when paired with low HDL cholesterol, contribute to plaque formation in blood vessels, which can lead to a blockage in cerebral arteries, increasing the risk of stroke.
-    Metabolic Syndrome: A high cholesterol ratio is a key marker for metabolic syndrome, a group of risk factors that increase the likelihood of developing heart disease, type 2 diabetes, and stroke.
-
-Tips to Lower High Total Cholesterol / HDL Cholesterol Ratio:
-    Eat a Heart-Healthy Diet: Focus on a diet rich in healthy fats (monounsaturated and polyunsaturated fats) and low in saturated fats and cholesterol. Increase fiber intake and avoid processed foods, trans fats, and refined sugars.
-    Exercise Regularly: Regular aerobic exercise, such as walking, cycling, or swimming, can help lower total cholesterol and raise HDL cholesterol. Aim for at least 30 minutes of exercise most days of the week.
-    Lose Weight: Reducing excess body fat, especially abdominal fat, can help improve your cholesterol balance and lower the cholesterol ratio.
-    Quit Smoking: If you smoke, quitting can improve HDL cholesterol levels and lower your total cholesterol to HDL ratio.
-    Limit Alcohol Intake: Excessive alcohol consumption can negatively impact cholesterol levels. While moderate alcohol intake may increase HDL cholesterol, heavy drinking raises total cholesterol and triglyceride levels.
-    Control Diabetes and Insulin Resistance: Proper management of blood sugar levels, either through medication or lifestyle changes, can help improve your cholesterol balance and reduce the cholesterol ratio.
-    Medications: In some cases, your healthcare provider may recommend cholesterol-lowering medications, such as statins, to reduce total cholesterol levels and improve the cholesterol ratio.
-
-Foods to Eat for High Total Cholesterol / HDL Cholesterol Ratio:
-    Healthy Fats: Replace unhealthy fats with healthy fats. Olive oil, avocados, nuts (such as almonds and walnuts), and seeds (like flaxseeds and chia seeds) help increase HDL cholesterol and reduce total cholesterol.
-    Omega-3 Fatty Acids: Fatty fish (salmon, mackerel, sardines), walnuts, chia seeds, and flaxseeds are excellent sources of omega-3 fatty acids, which help reduce total cholesterol and triglyceride levels while boosting HDL cholesterol.
-    Soluble Fiber: Foods rich in soluble fiber, such as oats, barley, beans, lentils, and fruits (apples, pears), help lower total cholesterol by binding to cholesterol in the digestive system and excreting it.
-    Whole Grains: Quinoa, brown rice, and whole wheat bread are rich in fiber and help lower total cholesterol levels while supporting healthy cholesterol balance.
-    Antioxidant-Rich Fruits and Vegetables: Leafy greens (spinach, kale), cruciferous vegetables (broccoli, Brussels sprouts), and antioxidant-rich fruits (berries, citrus) improve cholesterol metabolism and support overall heart health.
-
-Example Meal Plan for High Total Cholesterol / HDL Cholesterol Ratio:
-    Breakfast: Oatmeal with chia seeds, flaxseeds, walnuts, and fresh berries (fiber, omega-3s, and antioxidants).
-    Lunch: Grilled salmon with quinoa, mixed greens, avocado, and olive oil dressing (omega-3s, healthy fats, and fiber).
-    Snack: A handful of almonds and an apple (healthy fats and fiber).
-    Dinner: Grilled chicken breast with roasted Brussels sprouts, sweet potatoes, and a side of mixed greens (lean protein, healthy fats, and antioxidants).""")
-
-    # LDL Cholesterol / HDL Cholesterol Ratio (range: 1.0-3.5)
     if "LDL Cholesterol / HDL Cholesterol Ratio" in values:
         if values["LDL Cholesterol / HDL Cholesterol Ratio"] > 3:
-            advice.append("""High LDL Cholesterol / HDL Cholesterol Ratio
-
-Root Cause:
-    Unhealthy Diet: A diet high in saturated fats (found in red meat, full-fat dairy, and processed foods) and trans fats (in fried and packaged foods) raises LDL (low-density lipoprotein) cholesterol levels while lowering HDL (high-density lipoprotein) cholesterol. This imbalance results in a high LDL/HDL ratio.
-    Obesity: Excess body weight, especially visceral fat (fat around the abdomen), contributes to higher LDL cholesterol levels and lower HDL cholesterol levels, leading to an elevated ratio.
-    Physical Inactivity: A lack of regular physical activity contributes to higher LDL cholesterol and lower HDL cholesterol levels, worsening the LDL/HDL ratio.
-    Smoking: Smoking lowers HDL cholesterol, which in turn raises the LDL/HDL ratio, increasing the risk of heart disease and stroke.
-    Genetics: Some individuals are genetically predisposed to having higher LDL cholesterol levels or lower HDL cholesterol levels, both of which contribute to a higher LDL/HDL ratio. Familial hypercholesterolemia is one such genetic condition.
-    Diabetes and Insulin Resistance: Poorly controlled blood sugar, insulin resistance, and metabolic syndrome are often associated with higher LDL cholesterol levels and lower HDL cholesterol levels.
-    Chronic Stress: Long-term stress may increase levels of LDL cholesterol and decrease HDL cholesterol, negatively affecting the LDL/HDL ratio.
-    Hypothyroidism: An underactive thyroid slows down lipid metabolism, leading to elevated LDL cholesterol and lower HDL cholesterol.
-    Health Risks of High LDL Cholesterol / HDL Cholesterol Ratio:
-    Cardiovascular Disease: A high LDL/HDL ratio is strongly linked to an increased risk of heart disease. LDL cholesterol (the "bad" cholesterol) contributes to the buildup of plaque in the arteries, which can cause atherosclerosis (narrowing of arteries), leading to heart attacks, stroke, and other cardiovascular problems.
-    Atherosclerosis: High levels of LDL cholesterol promote plaque buildup in blood vessels, which can obstruct blood flow and increase the risk of coronary artery disease, heart attack, and stroke.
-    Increased Risk of Stroke: A high LDL/HDL ratio contributes to the formation of plaques that can break loose and form blood clots, blocking blood flow to the brain and causing a stroke.
-    Metabolic Syndrome: An elevated LDL/HDL ratio is a key marker of metabolic syndrome, which increases the risk of type 2 diabetes, heart disease, and stroke.
-
-Tips to Lower High LDL Cholesterol / HDL Cholesterol Ratio:
-    Adopt a Heart-Healthy Diet: Focus on reducing saturated fats, trans fats, and cholesterol-rich foods while increasing your intake of healthy fats, fiber, and plant-based foods. Avoid processed and fried foods, and prioritize whole foods like fruits, vegetables, whole grains, and lean proteins.
-    Exercise Regularly: Engage in aerobic activities like walking, swimming, cycling, or jogging to raise HDL cholesterol and lower LDL cholesterol. Aim for at least 30 minutes of moderate-intensity exercise on most days of the week.
-    Lose Excess Weight: Reducing body fat, especially abdominal fat, can help lower LDL cholesterol levels and raise HDL cholesterol levels, improving the LDL/HDL ratio.
-    Quit Smoking: Stopping smoking can help increase HDL cholesterol and improve your lipid profile by lowering LDL cholesterol.
-    Limit Alcohol Intake: Excessive alcohol consumption can raise triglycerides and LDL cholesterol. Limiting alcohol can help improve the balance between LDL and HDL cholesterol.
-    Control Blood Sugar and Insulin Resistance: If you have diabetes or metabolic syndrome, managing your blood sugar and insulin levels can help improve the LDL/HDL ratio.
-    Consider Medications: In some cases, your healthcare provider may recommend medications such as statins or fibrates to help lower LDL cholesterol levels and improve the cholesterol ratio.
-
-Foods to Eat for High LDL Cholesterol / HDL Cholesterol Ratio:
-    Healthy Fats: Incorporate sources of healthy fats, such as olive oil, avocado, fatty fish (salmon, mackerel, sardines), and nuts (walnuts, almonds). These fats help increase HDL cholesterol and lower LDL cholesterol.
-    Fiber-Rich Foods: Soluble fiber from oats, beans, lentils, apples, and other fruits and vegetables can help lower LDL cholesterol by binding to cholesterol and excreting it from the body.
-    Omega-3 Fatty Acids: Fatty fish (salmon, mackerel, sardines), flaxseeds, chia seeds, and walnuts are rich in omega-3 fatty acids, which help reduce LDL cholesterol levels and raise HDL cholesterol.
-    Whole Grains: Foods like quinoa, brown rice, and whole-wheat bread provide fiber and help lower LDL cholesterol levels while supporting overall heart health.
-    Nuts and Seeds: Almonds, walnuts, chia seeds, and flaxseeds are great sources of healthy fats and fiber, which can help lower LDL cholesterol and improve HDL cholesterol.
-    Antioxidant-Rich Vegetables and Fruits: Leafy greens (spinach, kale), berries, citrus fruits, and cruciferous vegetables (broccoli, Brussels sprouts) provide fiber, antioxidants, and essential nutrients that support cardiovascular health and improve cholesterol balance.
-    Legumes and Plant-Based Proteins: Beans, lentils, tofu, and other plant-based protein sources are low in saturated fats and can help lower LDL cholesterol levels while supporting a balanced lipid profile.
-
-Example Meal Plan for High LDL Cholesterol / HDL Cholesterol Ratio:
-    Breakfast: Oatmeal with chia seeds, flaxseeds, walnuts, and fresh berries (fiber, healthy fats, and antioxidants).
-    Lunch: Grilled salmon with quinoa, mixed greens, avocado, and olive oil dressing (omega-3s, healthy fats, and fiber).
-    Snack: A handful of almonds and an apple (healthy fats and fiber).
-    Dinner: Grilled chicken breast with roasted Brussels sprouts, sweet potatoes, and a side of mixed greens (lean protein, healthy fats, and antioxidants).""")
+            advice.append("""
+        <h2>High LDL Cholesterol / HDL Cholesterol Ratio</h2>
+        <h3>Root Cause:</h3>
+        <ul>
+            <li><strong>Unhealthy Diet:</strong> High intake of saturated and trans fats raises LDL and lowers HDL cholesterol.</li>
+            <li><strong>Obesity:</strong> Excess body weight contributes to higher LDL and lower HDL cholesterol levels.</li>
+            <li><strong>Physical Inactivity:</strong> Lack of exercise worsens the LDL/HDL ratio.</li>
+            <li><strong>Smoking:</strong> Smoking lowers HDL cholesterol, raising the LDL/HDL ratio.</li>
+            <li><strong>Genetics:</strong> Genetic conditions like familial hypercholesterolemia elevate LDL cholesterol levels.</li>
+            <li><strong>Diabetes and Insulin Resistance:</strong> Poorly controlled blood sugar can affect the LDL/HDL ratio.</li>
+            <li><strong>Chronic Stress:</strong> Stress may increase LDL and lower HDL cholesterol.</li>
+            <li><strong>Hypothyroidism:</strong> An underactive thyroid slows lipid metabolism, leading to imbalance.</li>
+        </ul>
+        <h3>Health Risks:</h3>
+        <ul>
+            <li><strong>Cardiovascular Disease:</strong> High LDL contributes to plaque buildup and atherosclerosis.</li>
+            <li><strong>Metabolic Syndrome:</strong> An elevated LDL/HDL ratio is a key marker for this condition.</li>
+        </ul>
+        <h3>Tips to Lower the Ratio:</h3>
+        <ul>
+            <li>Focus on a heart-healthy diet, low in saturated and trans fats.</li>
+            <li>Exercise regularly to raise HDL and lower LDL cholesterol.</li>
+            <li>Lose excess weight to improve cholesterol balance.</li>
+            <li>Quit smoking and limit alcohol consumption.</li>
+            <li>Manage diabetes and insulin resistance effectively.</li>
+            <li>Consider medications like statins if prescribed by a doctor.</li>
+        </ul>
+        <h3>Foods to Eat:</h3>
+        <ul>
+            <li>Healthy fats: Olive oil, fatty fish, nuts, and seeds.</li>
+            <li>Fiber-rich foods: Oats, beans, lentils, and fruits.</li>
+            <li>Omega-3 fatty acids: Fatty fish, flaxseeds, and walnuts.</li>
+            <li>Whole grains: Quinoa, brown rice, and whole wheat bread.</li>
+            <li>Antioxidant-rich vegetables and fruits: Leafy greens and berries.</li>
+        </ul>
+        <h3>Example Meal Plan:</h3>
+        <ul>
+            <li><strong>Breakfast:</strong> Oatmeal with chia seeds and berries.</li>
+            <li><strong>Lunch:</strong> Grilled salmon with quinoa and avocado.</li>
+            <li><strong>Snack:</strong> A handful of almonds and an apple.</li>
+            <li><strong>Dinner:</strong> Grilled chicken with roasted vegetables.</li>
+        </ul>
+        """)
 
     # Total Bilirubin (range: 0.1-1.2 mg/dL)
     if "Total Bilirubin" in values:
         if values["Total Bilirubin"] > 1.2:
-            advice.append("""High Total Bilirubin
-Root Cause:
-    Liver Disease: Elevated total bilirubin levels can indicate liver dysfunction. Conditions such as hepatitis (inflammation of the liver), cirrhosis (scarring of the liver tissue), and liver tumors can impair the liver’s ability to process and excrete bilirubin.
-    Hemolysis (Increased Red Blood Cell Breakdown): Excessive breakdown of red blood cells can overwhelm the liver's capacity to process the bilirubin released from hemoglobin. This can occur due to hemolytic anemia, certain genetic conditions, or blood disorders.
-    Gallbladder Disease: Blockages in the bile ducts or gallbladder issues (such as gallstones) can prevent bilirubin from being excreted, leading to increased bilirubin levels in the blood.
-    Gilbert’s Syndrome: A genetic disorder where the liver has a reduced ability to process bilirubin efficiently, leading to temporary mild elevations in bilirubin, especially during times of stress, illness, or fasting.
-    Biliary Obstruction: Any condition that obstructs the bile ducts, such as tumors or gallstones, can prevent bilirubin from being properly excreted, causing a buildup in the bloodstream.
-    Alcoholism: Chronic alcohol consumption can lead to liver damage, which can impair bilirubin processing, resulting in higher bilirubin levels.
-    Infections: Certain infections affecting the liver, such as viral hepatitis, malaria, or sepsis, can cause elevated bilirubin due to liver inflammation or cell destruction.
-    Medications: Some medications (such as acetaminophen in large doses, certain antibiotics, and chemotherapy drugs) can cause liver toxicity and interfere with bilirubin metabolism.
-    Health Risks of High Total Bilirubin:
-    Jaundice: The most noticeable sign of high bilirubin levels is jaundice, a yellowing of the skin and eyes. This occurs because bilirubin, when accumulated in excess, starts to deposit in tissues, particularly in the skin.
-    Liver Dysfunction: Persistently high levels of bilirubin may indicate an ongoing issue with liver function, which can lead to chronic liver disease or failure if not addressed.
-    Gallbladder Issues: High bilirubin can be a sign of gallstones or bile duct obstruction, which may require surgical intervention.
-    Anemia: If high bilirubin is due to hemolysis (destruction of red blood cells), it may lead to anemia, causing fatigue, weakness, and shortness of breath.
-    Severe Complications: If not treated, persistently high bilirubin levels can result in further liver damage, bile duct injury, or complications in blood flow to and from the liver, all of which can be life-threatening.
+            advice.append("""<h2>High Total Bilirubin</h2>
+<p><strong>Root Cause:</strong></p>
+<ul>
+    <li><strong>Liver Disease:</strong> Elevated total bilirubin levels can indicate liver dysfunction. Conditions such as hepatitis (inflammation of the liver), cirrhosis (scarring of the liver tissue), and liver tumors can impair the liver’s ability to process and excrete bilirubin.</li>
+    <li><strong>Hemolysis (Increased Red Blood Cell Breakdown):</strong> Excessive breakdown of red blood cells can overwhelm the liver's capacity to process the bilirubin released from hemoglobin. This can occur due to hemolytic anemia, certain genetic conditions, or blood disorders.</li>
+    <li><strong>Gallbladder Disease:</strong> Blockages in the bile ducts or gallbladder issues (such as gallstones) can prevent bilirubin from being excreted, leading to increased bilirubin levels in the blood.</li>
+    <li><strong>Gilbert’s Syndrome:</strong> A genetic disorder where the liver has a reduced ability to process bilirubin efficiently, leading to temporary mild elevations in bilirubin, especially during times of stress, illness, or fasting.</li>
+    <li><strong>Biliary Obstruction:</strong> Any condition that obstructs the bile ducts, such as tumors or gallstones, can prevent bilirubin from being properly excreted, causing a buildup in the bloodstream.</li>
+    <li><strong>Alcoholism:</strong> Chronic alcohol consumption can lead to liver damage, which can impair bilirubin processing, resulting in higher bilirubin levels.</li>
+    <li><strong>Infections:</strong> Certain infections affecting the liver, such as viral hepatitis, malaria, or sepsis, can cause elevated bilirubin due to liver inflammation or cell destruction.</li>
+    <li><strong>Medications:</strong> Some medications (such as acetaminophen in large doses, certain antibiotics, and chemotherapy drugs) can cause liver toxicity and interfere with bilirubin metabolism.</li>
+</ul>
 
-Tips to Lower High Total Bilirubin Levels:
-    Seek Medical Attention: If elevated bilirubin levels are due to liver disease, bile duct obstructions, or hemolysis, it's essential to identify and treat the underlying cause. Consult with a healthcare provider to assess liver function and determine the appropriate course of treatment.
-    Avoid Alcohol: If high bilirubin levels are due to liver dysfunction caused by alcohol consumption, it is critical to stop drinking to prevent further liver damage.
-    Manage Infections: If bilirubin levels are elevated due to infection (such as hepatitis), proper medical treatment, including antiviral medications and supportive care, is essential.
-    Consider Gallbladder Health: If a gallbladder or bile duct blockage is the cause, addressing the issue through procedures such as surgery or medication may be necessary.
-    Stay Hydrated: Adequate water intake helps the liver flush out toxins and process waste products like bilirubin more efficiently.
-    Limit Medication Use: If medications are contributing to liver damage and elevated bilirubin, discuss alternatives with your doctor. Avoid self-medicating and follow the prescribed dosage and treatment plan.
-    Monitor Blood Cell Health: If hemolysis (red blood cell destruction) is the cause of high bilirubin, managing underlying conditions (like autoimmune diseases or blood disorders) and preventing infections can help reduce hemolysis.
+<p><strong>Health Risks of High Total Bilirubin:</strong></p>
+<ul>
+    <li><strong>Jaundice:</strong> The most noticeable sign of high bilirubin levels is jaundice, a yellowing of the skin and eyes. This occurs because bilirubin, when accumulated in excess, starts to deposit in tissues, particularly in the skin.</li>
+    <li><strong>Liver Dysfunction:</strong> Persistently high levels of bilirubin may indicate an ongoing issue with liver function, which can lead to chronic liver disease or failure if not addressed.</li>
+    <li><strong>Gallbladder Issues:</strong> High bilirubin can be a sign of gallstones or bile duct obstruction, which may require surgical intervention.</li>
+    <li><strong>Anemia:</strong> If high bilirubin is due to hemolysis (destruction of red blood cells), it may lead to anemia, causing fatigue, weakness, and shortness of breath.</li>
+    <li><strong>Severe Complications:</strong> If not treated, persistently high bilirubin levels can result in further liver damage, bile duct injury, or complications in blood flow to and from the liver, all of which can be life-threatening.</li>
+</ul>
 
-Foods to Eat for High Total Bilirubin:
-    Liver-Friendly Foods: The liver plays a central role in processing bilirubin, so eating foods that support liver function can help. These include:
-    Leafy Greens: Kale, spinach, and other dark leafy vegetables are rich in antioxidants and chlorophyll, which help detoxify the liver and improve its function.
-    Cruciferous Vegetables: Broccoli, Brussels sprouts, and cabbage contain compounds that support liver detoxification pathways and reduce liver inflammation.
-    Berries: Blueberries, strawberries, and raspberries are rich in antioxidants that protect liver cells from damage.
-    Turmeric: This spice contains curcumin, which has anti-inflammatory properties and supports liver detoxification.
-    Beets: Beets are rich in antioxidants and fiber, which help cleanse the liver and improve its ability to process bilirubin.
-    Garlic: Garlic has sulfur compounds that support liver detoxification and may help reduce inflammation in liver tissue.
-    Green Tea: Rich in antioxidants, particularly catechins, green tea has been shown to support liver function and detoxification.
-    Lemon and Lime: These citrus fruits are rich in vitamin C and antioxidants that support liver health and enhance the liver’s detoxifying abilities.
-    High-Fiber Foods: Foods rich in fiber (such as whole grains, oats, beans, and legumes) support overall digestion and bile flow, aiding in the processing and elimination of waste products like bilirubin.
-    Healthy Fats: Include healthy fats like olive oil, nuts, seeds, and fatty fish (salmon, mackerel) in your diet. These fats support liver function and have anti-inflammatory effects.
+<p><strong>Tips to Lower High Total Bilirubin Levels:</strong></p>
+<ul>
+    <li><strong>Seek Medical Attention:</strong> If elevated bilirubin levels are due to liver disease, bile duct obstructions, or hemolysis, it's essential to identify and treat the underlying cause. Consult with a healthcare provider to assess liver function and determine the appropriate course of treatment.</li>
+    <li><strong>Avoid Alcohol:</strong> If high bilirubin levels are due to liver dysfunction caused by alcohol consumption, it is critical to stop drinking to prevent further liver damage.</li>
+    <li><strong>Manage Infections:</strong> If bilirubin levels are elevated due to infection (such as hepatitis), proper medical treatment, including antiviral medications and supportive care, is essential.</li>
+    <li><strong>Consider Gallbladder Health:</strong> If a gallbladder or bile duct blockage is the cause, addressing the issue through procedures such as surgery or medication may be necessary.</li>
+    <li><strong>Stay Hydrated:</strong> Adequate water intake helps the liver flush out toxins and process waste products like bilirubin more efficiently.</li>
+    <li><strong>Limit Medication Use:</strong> If medications are contributing to liver damage and elevated bilirubin, discuss alternatives with your doctor. Avoid self-medicating and follow the prescribed dosage and treatment plan.</li>
+    <li><strong>Monitor Blood Cell Health:</strong> If hemolysis (red blood cell destruction) is the cause of high bilirubin, managing underlying conditions (like autoimmune diseases or blood disorders) and preventing infections can help reduce hemolysis.</li>
+</ul>
 
-Example Meal Plan for High Total Bilirubin:
-    Breakfast: Oatmeal with chia seeds, blueberries, and a drizzle of honey (fiber, antioxidants, and liver-supporting compounds).
-    Lunch: Grilled salmon with quinoa, steamed broccoli, and a side of mixed greens with olive oil and lemon dressing (omega-3s, antioxidants, and fiber).
-    Snack: A handful of walnuts and a small apple (healthy fats and fiber).
-    Dinner: Grilled chicken breast with roasted beets, sautéed spinach with garlic, and a side of brown rice (protein, antioxidants, and liver-supporting vegetables).""")
+<p><strong>Foods to Eat for High Total Bilirubin:</strong></p>
+<ul>
+    <li><strong>Liver-Friendly Foods:</strong> The liver plays a central role in processing bilirubin, so eating foods that support liver function can help. These include:
+        <ul>
+            <li><strong>Leafy Greens:</strong> Kale, spinach, and other dark leafy vegetables are rich in antioxidants and chlorophyll, which help detoxify the liver and improve its function.</li>
+            <li><strong>Cruciferous Vegetables:</strong> Broccoli, Brussels sprouts, and cabbage contain compounds that support liver detoxification pathways and reduce liver inflammation.</li>
+            <li><strong>Berries:</strong> Blueberries, strawberries, and raspberries are rich in antioxidants that protect liver cells from damage.</li>
+            <li><strong>Turmeric:</strong> This spice contains curcumin, which has anti-inflammatory properties and supports liver detoxification.</li>
+            <li><strong>Beets:</strong> Beets are rich in antioxidants and fiber, which help cleanse the liver and improve its ability to process bilirubin.</li>
+            <li><strong>Garlic:</strong> Garlic has sulfur compounds that support liver detoxification and may help reduce inflammation in liver tissue.</li>
+            <li><strong>Green Tea:</strong> Rich in antioxidants, particularly catechins, green tea has been shown to support liver function and detoxification.</li>
+            <li><strong>Lemon and Lime:</strong> These citrus fruits are rich in vitamin C and antioxidants that support liver health and enhance the liver’s detoxifying abilities.</li>
+            <li><strong>High-Fiber Foods:</strong> Foods rich in fiber (such as whole grains, oats, beans, and legumes) support overall digestion and bile flow, aiding in the processing and elimination of waste products like bilirubin.</li>
+            <li><strong>Healthy Fats:</strong> Include healthy fats like olive oil, nuts, seeds, and fatty fish (salmon, mackerel) in your diet. These fats support liver function and have anti-inflammatory effects.</li>
+        </ul>
+    </li>
+</ul>
 
-    # Direct Bilirubin (range: 0.0-0.4 mg/dL)
+<p><strong>Example Meal Plan for High Total Bilirubin:</strong></p>
+<ul>
+    <li><strong>Breakfast:</strong> Oatmeal with chia seeds, blueberries, and a drizzle of honey (fiber, antioxidants, and liver-supporting compounds).</li>
+    <li><strong>Lunch:</strong> Grilled salmon with quinoa, steamed broccoli, and a side of mixed greens with olive oil and lemon dressing (omega-3s, antioxidants, and fiber).</li>
+    <li><strong>Snack:</strong> A handful of walnuts and a small apple (healthy fats and fiber).</li>
+    <li><strong>Dinner:</strong> Grilled chicken breast with roasted beets, sautéed spinach with garlic, and a side of brown rice (protein, antioxidants, and liver-supporting vegetables).</li>
+</ul>
+""")
+
     if "Direct Bilirubin" in values:
         if values["Direct Bilirubin"] > 0.2:
-            advice.append("""High Direct Bilirubin (Conjugated Bilirubin)
+            advice.append("""
+       
+            <h2>High Direct Bilirubin (Conjugated Bilirubin)</h2>
+            <h3>Root Cause:</h3>
+            <ul>
+                <li><strong>Liver Disease:</strong> Direct bilirubin is produced when unconjugated (indirect) bilirubin is processed in the liver and conjugated with glucuronic acid. If the liver is unable to properly conjugate bilirubin or if there is liver damage, direct bilirubin levels can rise.</li>
+                <ul>
+                    <li>Hepatitis: Inflammation of the liver can impair its ability to conjugate and excrete bilirubin.</li>
+                    <li>Cirrhosis: Scarring of the liver tissue can obstruct bile flow and hinder bilirubin processing.</li>
+                    <li>Liver Cancer: Tumors or malignancy in the liver can disrupt the normal metabolic process, leading to elevated direct bilirubin levels.</li>
+                </ul>
+                <li><strong>Biliary Obstruction:</strong> Blockage in the bile ducts (from gallstones, bile duct tumors, or strictures) can prevent conjugated bilirubin from being excreted into the intestine, leading to a buildup of direct bilirubin in the blood.</li>
+                <li><strong>Cholestasis:</strong> A condition where bile flow is impaired due to intrahepatic (within the liver) or extrahepatic (outside the liver) causes. This can be seen in diseases like primary biliary cirrhosis or primary sclerosing cholangitis.</li>
+                <li><strong>Gallstones:</strong> When gallstones obstruct the bile ducts, it prevents bile from flowing properly, causing the buildup of bilirubin in the bloodstream.</li>
+                <li><strong>Rare Genetic Disorders:</strong>
+                    <ul>
+                        <li>Dubin-Johnson Syndrome</li>
+                        <li>Rotor Syndrome</li>
+                    </ul>
+                </li>
+                <li><strong>Liver Toxicity from Medications:</strong> Certain medications, such as anabolic steroids or acetaminophen in high doses, can cause liver damage, impairing bilirubin metabolism.</li>
+            </ul>
 
-Root Cause:
-Liver Disease: Direct bilirubin is produced when unconjugated (indirect) bilirubin is processed in the liver and conjugated with glucuronic acid. If the liver is unable to properly conjugate bilirubin or if there is liver damage, direct bilirubin levels can rise. Conditions such as:
-Hepatitis: Inflammation of the liver can impair its ability to conjugate and excrete bilirubin.
-Cirrhosis: Scarring of the liver tissue can obstruct bile flow and hinder bilirubin processing.
-Liver Cancer: Tumors or malignancy in the liver can disrupt the normal metabolic process, leading to elevated direct bilirubin levels.
-Biliary Obstruction: Blockage in the bile ducts (from gallstones, bile duct tumors, or strictures) can prevent conjugated bilirubin from being excreted into the intestine, leading to a buildup of direct bilirubin in the blood.
-Cholestasis: A condition where bile flow is impaired due to either intrahepatic (within the liver) or extrahepatic (outside the liver) causes. This can be seen in diseases like primary biliary cirrhosis or primary sclerosing cholangitis, leading to high direct bilirubin levels.
-Gallstones: When gallstones obstruct the bile ducts, it prevents bile from flowing properly, causing the buildup of bilirubin in the bloodstream.
-Dubin-Johnson Syndrome: A rare inherited disorder where the liver is unable to secrete conjugated bilirubin properly, resulting in its buildup in the bloodstream. This condition leads to mild to moderate increases in direct bilirubin.
-Rotor Syndrome: Another rare inherited condition similar to Dubin-Johnson syndrome, causing elevated direct bilirubin levels due to improper bilirubin storage and transport.
-Liver Toxicity from Medications: Certain medications, such as anabolic steroids, acetaminophen in high doses, or some antibiotics, can cause liver damage, impairing bilirubin metabolism and resulting in high direct bilirubin levels.
-Health Risks of High Direct Bilirubin:
-Jaundice: The primary symptom of high direct bilirubin levels is jaundice, which causes the skin and the whites of the eyes to turn yellow. This occurs due to the accumulation of bilirubin in the tissues.
-Liver Dysfunction: Persistent high levels of direct bilirubin often point to liver dysfunction or bile duct obstruction. If left untreated, this could lead to further liver damage or complications such as cirrhosis or liver failure.
-Cholestasis: If the bilirubin rise is due to cholestasis, it can result in bile buildup, causing itching, fatigue, and digestive issues.
-Gallbladder or Bile Duct Issues: If high direct bilirubin is caused by gallstones or a blockage in the bile ducts, these conditions may require surgical or medical intervention to restore proper bile flow and prevent further complications.
+            <h3>Health Risks of High Direct Bilirubin:</h3>
+            <ul>
+                <li><strong>Jaundice:</strong> Causes the skin and eyes to turn yellow due to bilirubin accumulation.</li>
+                <li><strong>Liver Dysfunction:</strong> Persistent high levels often point to liver dysfunction or bile duct obstruction.</li>
+                <li><strong>Cholestasis:</strong> Results in bile buildup, causing itching, fatigue, and digestive issues.</li>
+                <li><strong>Gallbladder or Bile Duct Issues:</strong> May require surgical intervention.</li>
+            </ul>
 
-Tips to Lower High Direct Bilirubin Levels:
-Treat Underlying Conditions: The primary approach to lowering direct bilirubin levels is addressing the root cause. For example, treating hepatitis or cirrhosis, relieving bile duct obstructions, or addressing cholestasis can help lower direct bilirubin.
-Avoid Alcohol: Alcohol can worsen liver damage, so if high direct bilirubin levels are due to liver disease, abstaining from alcohol is essential.
-Control Infections: If high direct bilirubin is caused by infections (such as hepatitis or liver abscesses), it is crucial to receive appropriate treatment, such as antiviral or antibacterial medications.
-Medications to Address Obstruction: In cases of bile duct obstruction, medications (such as ursodeoxycholic acid) or surgical interventions (such as gallstone removal or stent placement) may be needed to restore bile flow.
-Cholestasis Management: For conditions like primary biliary cirrhosis or primary sclerosing cholangitis, medications that improve bile flow and reduce liver inflammation, such as ursodeoxycholic acid or immunosuppressive drugs, may be prescribed.
-Regular Monitoring: For conditions like Dubin-Johnson syndrome or Rotor syndrome, regular monitoring of bilirubin levels and liver function is necessary to ensure that the condition remains stable and does not worsen.
-Manage Medications: If high bilirubin is due to medication-induced liver damage, consult a healthcare provider about changing or adjusting the medications.
+            <h3>Tips to Lower High Direct Bilirubin Levels:</h3>
+            <ul>
+                <li><strong>Treat Underlying Conditions:</strong> Addressing the root cause can help lower direct bilirubin.</li>
+                <li><strong>Avoid Alcohol:</strong> Essential if high bilirubin levels are due to liver disease.</li>
+                <li><strong>Control Infections:</strong> Treat conditions like hepatitis with antiviral or antibacterial medications.</li>
+                <li><strong>Manage Medications:</strong> Consult a healthcare provider about alternative drugs that do not harm the liver.</li>
+            </ul>
 
-Foods to Eat for High Direct Bilirubin:
-    Liver-Supportive Foods: Eating foods that support liver function and reduce inflammation is key in managing high direct bilirubin levels:
-    Leafy Greens: Vegetables like spinach, kale, and Swiss chard provide antioxidants and help detoxify the liver.
-    Cruciferous Vegetables: Broccoli, Brussels sprouts, and cauliflower promote liver detoxification and bile flow.
-    Beets: Rich in antioxidants, beets support liver detoxification and bile processing.
-    Garlic and Onions: These foods contain sulfur compounds that support liver detoxification and help reduce liver inflammation.
-    Turmeric: Contains curcumin, which has anti-inflammatory properties and supports liver function.
-    Green Tea: Packed with antioxidants, particularly catechins, green tea helps support liver health and can aid in detoxification.
-    Berries: Blueberries, strawberries, and raspberries are rich in antioxidants that protect liver cells from oxidative stress.
-    Healthy Fats: Incorporate sources of omega-3 fatty acids (such as salmon, walnuts, and flaxseeds) to reduce liver inflammation and support overall health.
-    High-Fiber Foods: Fiber helps with overall digestion and detoxification. Include whole grains, oats, legumes, and vegetables in your diet.
-    Bile-Stimulating Foods: Foods like artichokes, beets, and dandelion greens stimulate bile production, which can help with bile flow and reduce the buildup of bilirubin in the blood.
+            <h3>Foods to Eat for High Direct Bilirubin:</h3>
+            <ul>
+                <li>Leafy Greens: Spinach, kale, and Swiss chard provide antioxidants and help detoxify the liver.</li>
+                <li>Cruciferous Vegetables: Broccoli, Brussels sprouts, and cauliflower promote liver detoxification and bile flow.</li>
+                <li>Beets: Rich in antioxidants and support liver detoxification.</li>
+                <li>Garlic and Onions: Contain sulfur compounds that support liver detoxification.</li>
+                <li>Turmeric: Contains curcumin, which has anti-inflammatory properties and supports liver function.</li>
+                <li>Green Tea: Packed with antioxidants that aid in detoxification.</li>
+            </ul>
 
-Example Meal Plan for High Direct Bilirubin:
-    Breakfast: Oatmeal with chia seeds, blueberries, and a handful of walnuts (fiber, antioxidants, and healthy fats).
-    Lunch: Grilled salmon with quinoa, steamed broccoli, and a side of kale salad with olive oil and lemon dressing (omega-3s, liver-supporting vegetables).
-    Snack: A small handful of almonds and a green tea (healthy fats and antioxidants).
-    Dinner: Grilled chicken breast with roasted beets, sautéed spinach with garlic, and a side of brown rice (protein, liver-supporting foods, and fiber).""")
+            <h3>Example Meal Plan for High Direct Bilirubin:</h3>
+            <ul>
+                <li>Breakfast: Oatmeal with chia seeds, blueberries, and a handful of walnuts.</li>
+                <li>Lunch: Grilled salmon with quinoa, steamed broccoli, and a side of kale salad with olive oil and lemon dressing.</li>
+                <li>Snack: A small handful of almonds and green tea.</li>
+                <li>Dinner: Grilled chicken breast with roasted beets, sautéed spinach with garlic, and a side of brown rice.</li>
+            </ul>
+        """)
 
-    # Indirect Bilirubin (range: 0.1-0.7 mg/dL)
     if "Indirect Bilirubin" in values:
         if values["Indirect Bilirubin"] > 1:
-            advice.append("""High Indirect Bilirubin (Unconjugated Bilirubin)
+            advice.append("""
+            <h2>High Indirect Bilirubin (Unconjugated Bilirubin)</h2>
+            <h3>Root Cause:</h3>
+            <ul>
+                <li><strong>Hemolysis (Increased Red Blood Cell Breakdown):</strong> The most common cause of elevated indirect bilirubin is the accelerated breakdown of red blood cells. Causes include:
+                    <ul>
+                        <li><strong>Hemolytic Anemia:</strong> Conditions like sickle cell anemia, thalassemia, autoimmune hemolytic anemia, or infections.</li>
+                        <li><strong>Infections:</strong> Malaria and other infections leading to the destruction of red blood cells.</li>
+                        <li><strong>Transfusion Reactions:</strong> Incompatible blood transfusions can cause hemolysis and raise indirect bilirubin levels.</li>
+                    </ul>
+                </li>
+                <li><strong>Liver Dysfunction:</strong> Severe liver damage can impair the liver’s ability to process and clear indirect bilirubin.</li>
+                <li><strong>Genetic Disorders:</strong>
+                    <ul>
+                        <li><strong>Gilbert’s Syndrome:</strong> A common genetic disorder with mild elevations during stress, illness, or fasting.</li>
+                        <li><strong>Crigler-Najjar Syndrome:</strong> A rare inherited disorder with a deficiency in the enzyme UDP-glucuronosyltransferase.</li>
+                    </ul>
+                </li>
+                <li><strong>Neonatal Jaundice:</strong> Occurs in newborns due to the immature liver's inability to process bilirubin effectively.</li>
+                <li><strong>Sepsis or Other Systemic Infections:</strong> Can lead to hemolysis, liver dysfunction, or both.</li>
+                <li><strong>Medications:</strong> Certain drugs like chemotherapy agents, some antibiotics, and anti-inflammatory drugs can cause hemolysis or liver damage.</li>
+            </ul>
 
-Root Cause:
-    Hemolysis (Increased Red Blood Cell Breakdown): The most common cause of elevated indirect bilirubin is the accelerated breakdown of red blood cells. When red blood cells are destroyed prematurely, they release hemoglobin, which is then broken down into heme and bilirubin. The liver can only process a limited amount of unconjugated bilirubin, so an excess can build up in the blood. Hemolysis can be caused by:
-    Hemolytic Anemia: Conditions like sickle cell anemia, thalassemia, autoimmune hemolytic anemia, or certain infections can cause excessive destruction of red blood cells.
-    Infections: Certain infections, such as malaria, can lead to the destruction of red blood cells, releasing more heme and indirectly increasing bilirubin levels.
-    Transfusion Reactions: If a person receives a blood transfusion with incompatible blood, it can cause the destruction of red blood cells (hemolysis) and raise indirect bilirubin levels.
-    Liver Dysfunction: While the liver primarily processes unconjugated bilirubin, severe liver damage can impair its ability to process and clear indirect bilirubin. Conditions like cirrhosis, hepatitis, and alcoholic liver disease can contribute to high indirect bilirubin levels.
-    Gilbert’s Syndrome: A common genetic disorder where the liver has a reduced ability to process bilirubin. It typically leads to mild elevations in indirect bilirubin, especially during stress, illness, or fasting.
-    Crigler-Najjar Syndrome: A rare inherited disorder in which the liver is unable to conjugate bilirubin due to a deficiency in the enzyme UDP-glucuronosyltransferase. This leads to high levels of unconjugated bilirubin.
-    Neonatal Jaundice: In newborns, high indirect bilirubin levels can occur as a result of the immature liver’s inability to process bilirubin effectively. This condition usually resolves with phototherapy or other treatments.
-    Sepsis or Other Systemic Infections: Infections can lead to hemolysis, liver dysfunction, or both, contributing to elevated indirect bilirubin levels.
-    Medications: Certain drugs, like chemotherapy agents, some antibiotics, and anti-inflammatory drugs, can contribute to hemolysis or liver damage, leading to higher indirect bilirubin levels.
-    Health Risks of High Indirect Bilirubin:
-    Jaundice: One of the most common symptoms of high indirect bilirubin is jaundice, which manifests as a yellowing of the skin and eyes. This occurs when the liver cannot efficiently process and excrete excess bilirubin.
-    Anemia: When hemolysis is the cause of elevated indirect bilirubin, the destruction of red blood cells can lead to anemia. Symptoms of anemia include fatigue, weakness, dizziness, and shortness of breath.
-    Liver Dysfunction: In cases where liver disease is causing high indirect bilirubin, liver function may decline, leading to symptoms such as nausea, loss of appetite, abdominal pain, and swelling.
-    Neurotoxicity in Neonates: In newborns, very high levels of indirect bilirubin (often referred to as "kernicterus") can cause brain damage. This condition is preventable and treatable when diagnosed early.
-    Fatigue and Weakness: If high indirect bilirubin is caused by hemolytic anemia, the excessive breakdown of red blood cells leads to fatigue, weakness, and overall reduced oxygen-carrying capacity in the blood.
+            <h3>Health Risks of High Indirect Bilirubin:</h3>
+            <ul>
+                <li><strong>Jaundice:</strong> Yellowing of the skin and eyes due to excess bilirubin.</li>
+                <li><strong>Anemia:</strong> Excessive red blood cell breakdown leads to symptoms like fatigue, weakness, and shortness of breath.</li>
+                <li><strong>Liver Dysfunction:</strong> Symptoms include nausea, loss of appetite, and abdominal pain.</li>
+                <li><strong>Neurotoxicity in Neonates:</strong> Extremely high levels in newborns can cause brain damage (kernicterus).</li>
+                <li><strong>Fatigue and Weakness:</strong> Often caused by anemia linked to hemolysis.</li>
+            </ul>
 
-Tips to Lower High Indirect Bilirubin Levels:
-    Treat Underlying Causes: The most effective way to reduce indirect bilirubin is to treat the underlying cause, whether it's managing hemolytic anemia, addressing liver dysfunction, or treating infections.
-    Address Hemolysis: If hemolysis is the cause, it’s important to manage the underlying condition causing the breakdown of red blood cells. This may involve:
-    Blood Transfusions: In severe cases, a blood transfusion may be necessary to replace destroyed red blood cells.
-    Immunosuppressive Therapy: In cases of autoimmune hemolytic anemia, corticosteroids or other immunosuppressive drugs may be used.
-    Iron Supplementation: If anemia is caused by blood loss or hemolysis, iron supplements may be necessary to restore red blood cell production.
-    Manage Liver Disease: If liver dysfunction is contributing to high indirect bilirubin, appropriate treatments may include antiviral medications for hepatitis, alcohol cessation for alcoholic liver disease, and other supportive therapies.
-    Avoid Stress and Fasting: For individuals with Gilbert’s syndrome, avoiding prolonged fasting, stress, or dehydration can help prevent further increases in bilirubin levels. It's important to maintain a well-balanced diet and avoid situations that can trigger elevated bilirubin.
-    Medications Adjustment: If medications are causing increased bilirubin, speak with a healthcare provider about switching to alternative drugs that do not affect bilirubin processing or cause hemolysis.
-    Monitor Bilirubin Levels in Newborns: For newborns, regular monitoring of bilirubin levels is essential. Phototherapy or exchange transfusion may be required to manage high indirect bilirubin and prevent brain damage.
+            <h3>Tips to Lower High Indirect Bilirubin Levels:</h3>
+            <ul>
+                <li><strong>Treat Underlying Causes:</strong> Address hemolytic anemia, liver dysfunction, or infections.</li>
+                <li><strong>Manage Hemolysis:</strong>
+                    <ul>
+                        <li>Blood Transfusions for severe anemia.</li>
+                        <li>Immunosuppressive therapy for autoimmune hemolytic anemia.</li>
+                        <li>Iron supplementation to restore red blood cell production.</li>
+                    </ul>
+                </li>
+                <li><strong>Manage Liver Disease:</strong> Treatments include antiviral medications for hepatitis or alcohol cessation for alcoholic liver disease.</li>
+                <li><strong>Avoid Stress and Fasting:</strong> Particularly important for Gilbert’s Syndrome patients.</li>
+                <li><strong>Monitor Bilirubin Levels in Newborns:</strong> Regular monitoring and treatments like phototherapy or exchange transfusion may be required.</li>
+                <li><strong>Adjust Medications:</strong> Consult healthcare providers to switch medications causing bilirubin elevation.</li>
+            </ul>
 
-Foods to Eat for High Indirect Bilirubin:
-    Liver-Supporting Foods: The liver is involved in processing bilirubin, so eating foods that support liver function can help. These include:
-    Leafy Greens: Spinach, kale, and other dark green vegetables contain antioxidants that support liver health and detoxification.
-    Cruciferous Vegetables: Broccoli, cauliflower, and Brussels sprouts are rich in compounds that help improve liver detoxification.
-    Garlic and Onions: These contain sulfur compounds that promote liver detoxification and improve bile flow.
-    Beets: Rich in antioxidants and fiber, beets help cleanse the liver and promote efficient bilirubin processing.
-    Turmeric: Contains curcumin, which supports liver health by reducing inflammation and promoting detoxification.
-    Green Tea: Packed with antioxidants, green tea helps the liver process toxins and supports overall liver function.
-    Berries: Blueberries, strawberries, and raspberries are high in antioxidants that help protect liver cells from oxidative damage.
-    Foods Rich in Vitamin C: Vitamin C supports liver function and detoxification. Include citrus fruits, strawberries, kiwi, and bell peppers in your diet.
-    Iron-Rich Foods: If hemolysis is contributing to anemia, eating iron-rich foods (such as red meat, lentils, and spinach) can help replenish red blood cells.
-    High-Fiber Foods: Fiber supports digestion and helps with detoxification, which can aid in reducing bilirubin levels. Include whole grains, oats, and legumes in your diet.
-    Healthy Fats: Healthy fats, such as those from avocados, olive oil, and fatty fish like salmon, reduce inflammation and support liver health.
+            <h3>Foods to Eat for High Indirect Bilirubin:</h3>
+            <ul>
+                <li><strong>Liver-Supporting Foods:</strong>
+                    <ul>
+                        <li>Leafy Greens: Spinach, kale, and other dark green vegetables.</li>
+                        <li>Cruciferous Vegetables: Broccoli, cauliflower, and Brussels sprouts.</li>
+                        <li>Garlic and Onions: Contain sulfur compounds that support liver detoxification.</li>
+                        <li>Beets: Rich in antioxidants and fiber.</li>
+                        <li>Turmeric: Contains curcumin, which reduces inflammation and supports detoxification.</li>
+                        <li>Green Tea: Packed with antioxidants to support liver function.</li>
+                        <li>Berries: High in antioxidants to protect liver cells.</li>
+                    </ul>
+                </li>
+                <li><strong>Foods Rich in Vitamin C:</strong> Citrus fruits, strawberries, and kiwi.</li>
+                <li><strong>Iron-Rich Foods:</strong> If hemolysis contributes to anemia, include red meat, lentils, and spinach.</li>
+                <li><strong>High-Fiber Foods:</strong> Whole grains, oats, and legumes aid digestion and detoxification.</li>
+                <li><strong>Healthy Fats:</strong> Avocados, olive oil, and fatty fish reduce inflammation and support liver health.</li>
+            </ul>
 
-Example Meal Plan for High Indirect Bilirubin:
-    Breakfast: Oatmeal with chia seeds, fresh berries, and a sprinkle of flaxseeds (fiber, antioxidants, and omega-3s).
-    Lunch: Grilled salmon with steamed broccoli, quinoa, and a spinach salad with olive oil and lemon (omega-3s, liver-friendly vegetables).
-    Snack: A handful of almonds and an orange (healthy fats and vitamin C).
-    Dinner: Grilled chicken breast with roasted beets, sautéed kale with garlic, and a side of brown rice (protein, liver support, and fiber).""")
+            <h3>Example Meal Plan for High Indirect Bilirubin:</h3>
+            <ul>
+                <li>Breakfast: Oatmeal with chia seeds, fresh berries, and a sprinkle of flaxseeds.</li>
+                <li>Lunch: Grilled salmon with steamed broccoli, quinoa, and a spinach salad with olive oil and lemon.</li>
+                <li>Snack: A handful of almonds and an orange.</li>
+                <li>Dinner: Grilled chicken breast with roasted beets, sautéed kale with garlic, and a side of brown rice.</li>
+            </ul>
+        """)
+
 
     # SGPT/ALT (range: 7-56 U/L)
     if "SGPT/ALT" in values:
         if values["SGPT/ALT"] > 50:
-            advice.append("""High SGPT/ALT (Serum Glutamic Pyruvic Transaminase / Alanine Aminotransferase)
+            advice.append("""
+      
+            <h2>High SGPT/ALT (Serum Glutamic Pyruvic Transaminase / Alanine Aminotransferase)</h2>
+            <h3>Root Cause:</h3>
+            <ul>
+                <li><strong>Liver Damage or Disease:</strong> SGPT/ALT is an enzyme found mainly in the liver. Elevated levels typically indicate liver injury or disease. Common causes include:
+                    <ul>
+                        <li><strong>Hepatitis:</strong> Both viral (Hepatitis B, C, A) and non-viral (autoimmune hepatitis) can lead to liver inflammation and elevated SGPT levels.</li>
+                        <li><strong>Fatty Liver Disease:</strong> Fat accumulation in liver cells causing non-alcoholic fatty liver disease (NAFLD).</li>
+                        <li><strong>Cirrhosis:</strong> Advanced liver scarring due to chronic liver conditions or excessive alcohol use.</li>
+                        <li><strong>Liver Toxicity from Medications:</strong> Drugs like acetaminophen, statins, some antibiotics, and antifungals.</li>
+                        <li><strong>Alcoholic Liver Disease:</strong> Excessive alcohol consumption leading to liver inflammation and cell damage.</li>
+                        <li><strong>Liver Cancer:</strong> Cancer causing liver cell breakdown.</li>
+                        <li><strong>Hemochromatosis:</strong> Excess iron accumulation leading to liver damage.</li>
+                        <li><strong>Wilson’s Disease:</strong> A genetic disorder causing copper buildup in the liver.</li>
+                        <li><strong>Mononucleosis (Infectious Mono):</strong> Viral infections causing liver inflammation.</li>
+                        <li><strong>Cholestasis (Bile Flow Blockage):</strong> Gallstones or bile duct obstructions causing liver stress.</li>
+                    </ul>
+                </li>
+            </ul>
 
-Root Cause:
-    Liver Damage or Disease: SGPT/ALT is an enzyme found mainly in the liver. Elevated levels typically indicate liver injury or disease, as this enzyme is released into the bloodstream when liver cells are damaged. Common causes include:
-    Hepatitis: Both viral (e.g., Hepatitis B, C, A) and non-viral (e.g., autoimmune hepatitis) can lead to liver inflammation and elevated SGPT levels.
-    Fatty Liver Disease: Fat accumulation in liver cells can cause non-alcoholic fatty liver disease (NAFLD), which may lead to elevated ALT/SGPT levels.
-    Cirrhosis: Advanced liver scarring (due to chronic liver conditions like hepatitis or excessive alcohol use) can cause high ALT levels.
-    Liver Toxicity from Medications: Certain drugs (like acetaminophen in large doses, statins, some antibiotics, and antifungals) can cause liver damage and elevated ALT levels.
-    Alcoholic Liver Disease: Excessive alcohol consumption can lead to liver inflammation, fat deposition, and liver cell damage, resulting in increased SGPT levels.
-    Liver Cancer: Cancer in the liver can cause liver cells to break down, releasing ALT into the bloodstream.
-    Hemochromatosis: This is a condition in which excess iron accumulates in the body, potentially leading to liver damage and elevated ALT levels.
-    Wilson’s Disease: A genetic disorder that causes copper buildup in the liver, leading to liver damage and increased SGPT/ALT levels.
-    Mononucleosis (Infectious Mono): Viral infections such as mononucleosis can lead to inflammation of the liver and elevated SGPT.
-    Cholestasis (Bile Flow Blockage): Conditions such as gallstones or bile duct obstruction can cause a buildup of bile, leading to liver stress and increased ALT levels.
-    Health Risks of High SGPT/ALT:
-    Liver Dysfunction: Persistently elevated SGPT/ALT levels may signal ongoing liver damage, which can lead to further liver complications such as cirrhosis or liver failure if untreated.
-    Jaundice: A sign of liver dysfunction, where bilirubin builds up in the bloodstream, causing yellowing of the skin and eyes.
-    Fatigue and Weakness: When the liver is inflamed or damaged, the body may have difficulty processing nutrients and toxins, leading to feelings of fatigue or weakness.
-    Ascites: A condition where fluid accumulates in the abdomen due to advanced liver disease, which can occur with high SGPT/ALT levels related to cirrhosis or liver failure.
-    Abdominal Pain: Liver inflammation or liver damage often causes discomfort in the upper right side of the abdomen.
+            <h3>Health Risks of High SGPT/ALT:</h3>
+            <ul>
+                <li><strong>Liver Dysfunction:</strong> Ongoing liver damage leading to complications like cirrhosis or liver failure.</li>
+                <li><strong>Jaundice:</strong> Yellowing of the skin and eyes due to bilirubin buildup.</li>
+                <li><strong>Fatigue and Weakness:</strong> Difficulty processing nutrients and toxins.</li>
+                <li><strong>Ascites:</strong> Fluid accumulation in the abdomen from advanced liver disease.</li>
+                <li><strong>Abdominal Pain:</strong> Discomfort in the upper right side of the abdomen.</li>
+            </ul>
 
-Tips to Lower High SGPT/ALT Levels:
-    Treat Underlying Liver Conditions: The key to lowering ALT levels is addressing the root cause of liver damage, whether it’s treating hepatitis, managing fatty liver disease, stopping alcohol consumption, or using specific treatments for liver-related conditions.
-    Antiviral Medications: For hepatitis infections, antiviral medications (like interferons or nucleoside analogs) may be prescribed.
-    Weight Loss: In cases of non-alcoholic fatty liver disease (NAFLD), gradual weight loss (5-10% of body weight) can reduce fat in the liver and lower ALT levels.
-    Control Blood Sugar: If diabetes or insulin resistance is contributing to fatty liver disease, controlling blood sugar through diet and medications (like metformin) can help reduce ALT levels.
-    Avoid Alcohol: Alcohol consumption exacerbates liver damage and can significantly increase ALT levels, especially in those with alcoholic liver disease or fatty liver disease.
-    Discontinue Medications that Harm the Liver: If medications are contributing to elevated ALT levels, consult a healthcare provider to adjust the treatment plan or switch to medications with fewer liver side effects.
-    Manage Iron Overload: For conditions like hemochromatosis, where excess iron damages the liver, therapeutic phlebotomy (blood removal) or iron chelation therapy can help reduce iron levels and protect the liver.
-    Reduce Liver Inflammation: Use of medications like corticosteroids or other immunosuppressive drugs may be necessary for autoimmune hepatitis or liver inflammation.
-    Follow a Liver-Friendly Diet: Certain foods can help support liver function and reduce ALT levels.
+            <h3>Tips to Lower High SGPT/ALT Levels:</h3>
+            <ul>
+                <li><strong>Treat Underlying Liver Conditions:</strong> Address the root cause, such as hepatitis, fatty liver disease, or alcohol use.</li>
+                <li><strong>Antiviral Medications:</strong> For hepatitis, medications like interferons or nucleoside analogs.</li>
+                <li><strong>Weight Loss:</strong> Gradual weight loss (5-10% of body weight) for NAFLD.</li>
+                <li><strong>Control Blood Sugar:</strong> For diabetes or insulin resistance, use diet and medications like metformin.</li>
+                <li><strong>Avoid Alcohol:</strong> Reduce liver damage by abstaining from alcohol.</li>
+                <li><strong>Discontinue Harmful Medications:</strong> Consult your doctor to adjust treatments.</li>
+                <li><strong>Manage Iron Overload:</strong> Therapeutic phlebotomy or iron chelation therapy for hemochromatosis.</li>
+                <li><strong>Reduce Liver Inflammation:</strong> Use corticosteroids or immunosuppressive drugs for autoimmune hepatitis.</li>
+                <li><strong>Follow a Liver-Friendly Diet:</strong> Support liver function with specific foods.</li>
+            </ul>
 
-Foods to Eat for High SGPT/ALT:
-    Antioxidant-Rich Foods: Antioxidants help reduce oxidative stress in the liver, improving liver function and supporting recovery:
-    Leafy Greens: Spinach, kale, and collard greens are rich in vitamins and minerals that promote liver health and detoxification.
-    Berries: Blueberries, strawberries, and raspberries provide antioxidants that reduce liver inflammation.
-    Beets: High in antioxidants and fiber, beets help detoxify the liver and support its natural cleansing processes.
-    Green Tea: Contains catechins, powerful antioxidants that help protect liver cells from damage and support liver function.
-    Healthy Fats: Fatty fish (like salmon and mackerel), olive oil, and flaxseeds contain omega-3 fatty acids that reduce liver inflammation and help repair liver cells.
-    Cruciferous Vegetables: Broccoli, Brussels sprouts, and cauliflower help improve liver detoxification and bile production.
-    Garlic and Onion: Rich in sulfur compounds, these foods help the liver detoxify and improve bile flow.
-    Turmeric: Contains curcumin, a powerful anti-inflammatory compound that supports liver health and reduces liver inflammation.
-    Fiber-Rich Foods: High-fiber foods like oats, legumes, and whole grains promote liver detoxification and reduce fat buildup in the liver.
-    Vitamin C-Rich Foods: Citrus fruits (oranges, lemons, grapefruits), bell peppers, and kiwi are all rich in vitamin C, which supports detoxification and liver health.
-    Fresh Ginger: Known for its anti-inflammatory properties, ginger can support the liver in reducing inflammation and promoting digestion.
+            <h3>Foods to Eat for High SGPT/ALT:</h3>
+            <ul>
+                <li><strong>Antioxidant-Rich Foods:</strong>
+                    <ul>
+                        <li>Leafy Greens: Spinach, kale, and collard greens.</li>
+                        <li>Berries: Blueberries, strawberries, and raspberries.</li>
+                        <li>Beets: High in antioxidants and fiber.</li>
+                        <li>Green Tea: Rich in catechins.</li>
+                    </ul>
+                </li>
+                <li><strong>Healthy Fats:</strong> Fatty fish (salmon, mackerel), olive oil, flaxseeds.</li>
+                <li><strong>Cruciferous Vegetables:</strong> Broccoli, Brussels sprouts, cauliflower.</li>
+                <li><strong>Garlic and Onion:</strong> Rich in sulfur compounds.</li>
+                <li><strong>Turmeric:</strong> Contains anti-inflammatory curcumin.</li>
+                <li><strong>Fiber-Rich Foods:</strong> Oats, legumes, whole grains.</li>
+                <li><strong>Vitamin C-Rich Foods:</strong> Oranges, lemons, grapefruits, kiwi.</li>
+                <li><strong>Fresh Ginger:</strong> Anti-inflammatory properties supporting digestion.</li>
+            </ul>
 
-Example Meal Plan for High SGPT/ALT:
-    Breakfast: Oatmeal with chia seeds, a handful of mixed berries (blueberries, strawberries), and a teaspoon of ground flaxseeds (fiber, antioxidants, omega-3s).
-    Lunch: Grilled salmon with steamed broccoli, quinoa, and a spinach salad with olive oil and lemon dressing (omega-3s, liver-friendly vegetables).
-    Snack: A handful of almonds and a cup of green tea (healthy fats and antioxidants).
-    Dinner: Stir-fried vegetables (beets, kale, and cauliflower) with garlic and turmeric, served with brown rice and a side of roasted chicken (detoxifying foods and lean protein).""")
+            <h3>Example Meal Plan for High SGPT/ALT:</h3>
+            <ul>
+                <li><strong>Breakfast:</strong> Oatmeal with chia seeds, a handful of mixed berries, and a teaspoon of ground flaxseeds.</li>
+                <li><strong>Lunch:</strong> Grilled salmon with steamed broccoli, quinoa, and a spinach salad with olive oil and lemon dressing.</li>
+                <li><strong>Snack:</strong> A handful of almonds and a cup of green tea.</li>
+                <li><strong>Dinner:</strong> Stir-fried vegetables (beets, kale, and cauliflower) with garlic and turmeric, served with brown rice and roasted chicken.</li>
+            </ul>
+        """)
 
     # SGOT/AST (range: 5-40 U/L)
     if "SGOT/AST" in values:
         if values["SGOT/AST"] > 50:
-            advice.append("""High SGOT/AST (Serum Glutamic Oxaloacetic Transaminase / Aspartate Aminotransferase)
+            advice.append("""
+    
+        
+            <h2>High SGOT/AST (Serum Glutamic Oxaloacetic Transaminase / Aspartate Aminotransferase)</h2>
+            <h3>Root Cause:</h3>
+            <ul>
+                <li><strong>Liver Damage or Disease:</strong> SGOT/AST is an enzyme found in the liver and other tissues, such as the heart, muscles, kidneys, and brain. Elevated AST levels indicate damage to these tissues, with the liver being the most common source.</li>
+                <li><strong>Hepatitis:</strong> Both viral (e.g., Hepatitis B, C, A) and non-viral (e.g., autoimmune hepatitis) can cause liver inflammation, leading to increased AST levels.</li>
+                <li><strong>Fatty Liver Disease (NAFLD):</strong> Non-alcoholic fatty liver disease is caused by fat buildup in the liver, which may lead to liver inflammation and elevated AST.</li>
+                <li><strong>Cirrhosis:</strong> Advanced liver scarring (from chronic conditions such as alcohol use or hepatitis) can cause a significant increase in AST levels.</li>
+                <li><strong>Alcoholic Liver Disease:</strong> Chronic alcohol consumption can damage liver cells, resulting in increased AST.</li>
+                <li><strong>Liver Cancer:</strong> Liver malignancy (either primary or metastasized) can damage liver cells, releasing AST into the bloodstream.</li>
+                <li><strong>Muscle Injury or Damage:</strong> AST is also present in muscles. Muscle injuries, trauma, or conditions like rhabdomyolysis (severe muscle breakdown) can cause AST to increase.</li>
+                <li><strong>Heart Conditions:</strong> AST is found in high concentrations in the heart, so conditions like myocardial infarction (heart attack) or heart failure can lead to elevated AST levels.</li>
+                <li><strong>Hemochromatosis:</strong> A condition characterized by excessive iron buildup in the body, leading to liver damage and higher AST levels.</li>
+                <li><strong>Wilson’s Disease:</strong> Genetic disorder leading to copper accumulation in the liver, which can cause AST to rise.</li>
+                <li><strong>Mononucleosis (Infectious Mono):</strong> Viral infections can lead to liver inflammation, causing elevated AST.</li>
+                <li><strong>Cholestasis:</strong> Obstruction in the bile ducts or gallstones can impair bile flow, stress the liver, and cause an increase in AST levels.</li>
+                <li><strong>Medications and Toxins:</strong> Drugs like acetaminophen (in overdose), statins, antibiotics, and antifungals can cause liver damage, raising AST levels.</li>
+            </ul>
 
-Root Cause:
-    Liver Damage or Disease: Like SGPT/ALT, SGOT/AST is an enzyme found in the liver and other tissues, such as the heart, muscles, kidneys, and brain. Elevated AST levels indicate damage to these tissues, with the liver being the most common source.
-    Hepatitis: Both viral (e.g., Hepatitis B, C, A) and non-viral (e.g., autoimmune hepatitis) can cause liver inflammation, leading to increased AST levels.
-    Fatty Liver Disease (NAFLD): Non-alcoholic fatty liver disease is caused by fat buildup in the liver, which may lead to liver inflammation and elevated AST.
-    Cirrhosis: Advanced liver scarring (from chronic conditions such as alcohol use or hepatitis) can cause a significant increase in AST levels.
-    Alcoholic Liver Disease: Chronic alcohol consumption can damage liver cells, resulting in increased AST.
-    Liver Cancer: Liver malignancy (either primary or metastasized) can damage liver cells, releasing AST into the bloodstream.
-    Muscle Injury or Damage: AST is also present in muscles. Muscle injuries, trauma, or conditions like rhabdomyolysis (severe muscle breakdown) can cause AST to increase.
-    Heart Conditions: AST is found in high concentrations in the heart, so conditions like myocardial infarction (heart attack) or heart failure can lead to elevated AST levels.
-    Hemochromatosis: A condition characterized by excessive iron buildup in the body, leading to liver damage and higher AST levels.
-    Wilson’s Disease: Genetic disorder leading to copper accumulation in the liver, which can cause AST to rise.
-    Mononucleosis (Infectious Mono): Viral infections can lead to liver inflammation, causing elevated AST.
-    Cholestasis: Obstruction in the bile ducts or gallstones can impair bile flow, stress the liver, and cause an increase in AST levels.
-    Medications and Toxins: Drugs like acetaminophen (in overdose), statins, antibiotics, and antifungals can cause liver damage, raising AST levels.
+            <h3>Health Risks of High SGOT/AST:</h3>
+            <ul>
+                <li><strong>Liver Dysfunction:</strong> High AST levels often suggest liver injury, which can lead to further liver damage if the underlying cause is not addressed.</li>
+                <li><strong>Muscle Damage:</strong> If elevated AST is due to muscle injury (e.g., rhabdomyolysis), it can lead to muscle weakness, pain, and potentially kidney failure.</li>
+                <li><strong>Heart Damage:</strong> Elevated AST levels due to heart-related issues (e.g., myocardial infarction) can indicate a heart attack or heart failure, requiring urgent medical attention.</li>
+                <li><strong>Fatigue and Weakness:</strong> Elevated AST levels associated with liver or muscle damage often lead to fatigue, muscle weakness, and overall reduced energy.</li>
+                <li><strong>Jaundice:</strong> Liver dysfunction associated with high AST levels can lead to jaundice, where the skin and eyes turn yellow due to an accumulation of bilirubin.</li>
+                <li><strong>Abdominal Pain:</strong> In liver diseases or gallbladder problems, high AST levels can be accompanied by abdominal pain or discomfort, especially in the upper right side.</li>
+            </ul>
 
-Health Risks of High SGOT/AST:
-    Liver Dysfunction: High AST levels often suggest liver injury, which can lead to further liver damage if the underlying cause is not addressed.
-    Muscle Damage: If elevated AST is due to muscle injury (e.g., rhabdomyolysis), it can lead to muscle weakness, pain, and potentially kidney failure.
-    Heart Damage: Elevated AST levels due to heart-related issues (e.g., myocardial infarction) can indicate a heart attack or heart failure, requiring urgent medical attention.
-    Fatigue and Weakness: Elevated AST levels associated with liver or muscle damage often lead to fatigue, muscle weakness, and overall reduced energy.
-    Jaundice: Liver dysfunction associated with high AST levels can lead to jaundice, where the skin and eyes turn yellow due to an accumulation of bilirubin.
-    Abdominal Pain: In liver diseases or gallbladder problems, high AST levels can be accompanied by abdominal pain or discomfort, especially in the upper right side.
+            <h3>Tips to Lower High SGOT/AST Levels:</h3>
+            <ul>
+                <li><strong>Treat Underlying Liver Conditions:</strong> Address the root cause of liver dysfunction.</li>
+                <li><strong>Antiviral Treatments:</strong> For hepatitis, antiviral medications (such as interferons or nucleoside analogs) may help reduce inflammation.</li>
+                <li><strong>Fatty Liver Management:</strong> Gradual weight loss (5-10% of body weight) can reduce liver fat and inflammation, lowering AST levels.</li>
+                <li><strong>Alcohol Cessation:</strong> Stopping alcohol consumption is critical if alcohol-related liver disease or cirrhosis is present.</li>
+                <li><strong>Managing Iron Overload:</strong> Treatment through phlebotomy (blood removal) or iron chelation therapy may help reduce iron buildup and lower AST.</li>
+                <li><strong>Medications Adjustment:</strong> Discontinuing or switching medications causing liver toxicity can prevent further elevation in AST.</li>
+                <li><strong>Heart Treatment:</strong> Treatments for heart disease, such as medications or interventions for myocardial infarction, may be needed.</li>
+                <li><strong>Muscle Injury Treatment:</strong> Rest, hydration, and care for conditions like rhabdomyolysis are necessary to prevent further damage.</li>
+                <li><strong>Avoid Toxins:</strong> Limit exposure to substances that harm the liver, like alcohol and certain drugs.</li>
+            </ul>
 
-Tips to Lower High SGOT/AST Levels:
-    Treat Underlying Liver Conditions: Addressing the root cause of liver dysfunction is essential in lowering AST levels.
-    Antiviral Treatments: If hepatitis is the cause of high AST levels, antiviral medications (such as interferons or nucleoside analogs) may help reduce inflammation.
-    Fatty Liver Management: Gradual weight loss (5-10% of body weight) can reduce liver fat and inflammation, lowering AST levels. A balanced diet, exercise, and managing insulin resistance can help.
-    Alcohol Cessation: Stopping alcohol consumption is critical if alcohol-related liver disease or cirrhosis is present.
-    Managing Iron Overload: If hemochromatosis is present, treatment through phlebotomy (blood removal) or iron chelation therapy may help reduce iron buildup and lower AST.
-    Medications Adjustment: Discontinuing or switching medications that may be causing liver toxicity can prevent further elevation in AST.
-    Heart Treatment: If high AST is due to heart damage, appropriate treatments for heart disease, such as medications for heart failure, or interventions for myocardial infarction, may be needed.
-    Muscle Injury Treatment: If muscle damage is contributing to elevated AST, rest, hydration, and appropriate medical care for conditions like rhabdomyolysis are necessary to prevent kidney damage and muscle breakdown.
-    Avoid Toxins and Harmful Substances: Avoid exposure to substances that could harm the liver, such as alcohol, certain drugs, and toxins.
+            <h3>Foods to Eat for High SGOT/AST:</h3>
+            <ul>
+                <li><strong>Liver-Supporting Foods:</strong>
+                    <ul>
+                        <li>Leafy Greens: Spinach, kale, and other greens rich in nutrients for liver detoxification.</li>
+                        <li>Cruciferous Vegetables: Broccoli, cauliflower, and Brussels sprouts to reduce fat buildup.</li>
+                        <li>Beets: High in antioxidants to cleanse the liver and reduce oxidative stress.</li>
+                        <li>Turmeric: Anti-inflammatory properties to reduce liver inflammation.</li>
+                        <li>Green Tea: Rich in antioxidants that detoxify the body.</li>
+                        <li>Berries: Blueberries, strawberries, and raspberries protect liver cells.</li>
+                        <li>Omega-3 Fatty Acids: Fatty fish, walnuts, and flaxseeds reduce liver inflammation.</li>
+                        <li>Garlic and Onion: Enhance liver detoxification and bile production.</li>
+                        <li>Fiber-Rich Foods: Oats, quinoa, and legumes to support digestion and detoxification.</li>
+                        <li>Vitamin C-Rich Foods: Citrus fruits, bell peppers, and kiwi for liver function support.</li>
+                        <li>Healthy Fats: Olive oil, avocados, and nuts to reduce inflammation.</li>
+                    </ul>
+                </li>
+            </ul>
 
-Foods to Eat for High SGOT/AST:
-    Liver-Supporting Foods: Focus on foods that promote liver health and detoxification:
-    Leafy Greens: Spinach, kale, and other greens are rich in nutrients that help detoxify the liver and improve its function.
-    Cruciferous Vegetables: Broccoli, cauliflower, and Brussels sprouts support liver detoxification and reduce fat buildup.
-    Beets: High in antioxidants, beets help cleanse the liver and reduce oxidative stress.
-    Turmeric: Contains curcumin, which has anti-inflammatory properties and helps reduce liver inflammation.
-    Green Tea: Rich in antioxidants, green tea supports liver health and helps detoxify the body.
-    Berries: Blueberries, strawberries, and raspberries are high in antioxidants, which help protect liver cells from oxidative damage.
-    Omega-3 Fatty Acids: Fatty fish (like salmon, mackerel, and sardines), walnuts, and flaxseeds provide omega-3 fatty acids, which reduce liver inflammation and support liver function.
-    Garlic and Onion: These contain sulfur compounds that enhance liver detoxification and promote bile production.
-    Fiber-Rich Foods: Oats, quinoa, and legumes are rich in fiber, which supports liver function by aiding digestion and improving detoxification processes.
-    Vitamin C-Rich Foods: Citrus fruits (oranges, grapefruits), bell peppers, and kiwi support liver function and act as antioxidants.
-    Healthy Fats: Incorporate healthy fats from olive oil, avocados, and nuts, which are good for liver health and help reduce inflammation.
-
-Example Meal Plan for High SGOT/AST:
-    Breakfast: Oatmeal topped with chia seeds, mixed berries (blueberries and strawberries), and a sprinkle of flaxseeds (fiber, antioxidants, and omega-3s).
-    Lunch: Grilled salmon with a side of steamed broccoli and quinoa, along with a spinach salad with olive oil and lemon (healthy fats, liver-friendly vegetables, and lean protein).
-    Snack: A handful of almonds and a cup of green tea (healthy fats and antioxidants).
-    Dinner: Stir-fried vegetables (beets, kale, and Brussels sprouts) with garlic and turmeric, served with brown rice and grilled chicken (detoxifying foods and protein).""")
-
+            <h3>Example Meal Plan for High SGOT/AST:</h3>
+            <ul>
+                <li><strong>Breakfast:</strong> Oatmeal with chia seeds, mixed berries, and flaxseeds.</li>
+                <li><strong>Lunch:</strong> Grilled salmon with steamed broccoli, quinoa, and a spinach salad with olive oil and lemon.</li>
+                <li><strong>Snack:</strong> A handful of almonds and a cup of green tea.</li>
+                <li><strong>Dinner:</strong> Stir-fried vegetables (beets, kale, Brussels sprouts) with garlic and turmeric, served with brown rice and grilled chicken.</li>
+            </ul>
+        
+        
+        """)
     # Alkaline Phosphatase (range: 44-147 U/L)
     if "Alkaline Phosphatase" in values:
         if values["Alkaline Phosphatase"] > 115:
-            advice.append("""High Alkaline Phosphatase (ALP)
+            advice.append("""
+    
+        
+            <h2>High Alkaline Phosphatase (ALP)</h2>
+            <h3>Root Cause:</h3>
+            <ul>
+                <li><strong>Liver Conditions:</strong>
+                    <ul>
+                        <li><strong>Bile Duct Obstruction (Cholestasis):</strong> Blockages in the bile ducts, such as from gallstones, tumors, or strictures, can cause elevated ALP due to its role in bile secretion. Conditions like primary biliary cirrhosis or primary sclerosing cholangitis may also raise ALP levels.</li>
+                        <li><strong>Hepatitis:</strong> Liver inflammation caused by viral or autoimmune hepatitis can elevate ALP.</li>
+                        <li><strong>Liver Tumors:</strong> Primary or metastatic liver cancer can lead to high ALP levels due to liver cell damage.</li>
+                        <li><strong>Fatty Liver Disease:</strong> Non-alcoholic fatty liver disease (NAFLD) can cause mild elevation in ALP levels due to liver inflammation.</li>
+                    </ul>
+                </li>
+                <li><strong>Bone Conditions:</strong>
+                    <ul>
+                        <li><strong>Osteomalacia and Rickets:</strong> Bone diseases caused by vitamin D deficiency, leading to abnormal bone mineralization and elevated ALP levels.</li>
+                        <li><strong>Paget’s Disease of Bone:</strong> A disorder involving abnormal bone remodeling, which can cause elevated ALP.</li>
+                        <li><strong>Bone Fractures or Healing:</strong> Temporary rise in ALP due to increased bone activity during healing.</li>
+                        <li><strong>Osteoporosis:</strong> In severe cases of bone loss, ALP may be elevated.</li>
+                        <li><strong>Bone Cancer or Metastasis:</strong> If cancer has spread to the bones, it can increase ALP production.</li>
+                    </ul>
+                </li>
+                <li><strong>Other Causes:</strong>
+                    <ul>
+                        <li><strong>Hyperparathyroidism:</strong> Overactivity of the parathyroid glands leading to increased calcium and ALP levels due to bone resorption.</li>
+                        <li><strong>Pregnancy:</strong> ALP levels often rise during the third trimester due to placental production.</li>
+                        <li><strong>Infections:</strong> Conditions like osteomyelitis (bone infection) or infectious mononucleosis can elevate ALP levels.</li>
+                    </ul>
+                </li>
+            </ul>
 
-Root Cause:
-    Liver Conditions:
-        Bile Duct Obstruction (Cholestasis): Blockages in the bile ducts, such as from gallstones, tumors, or strictures, can cause elevated ALP as it is involved in bile secretion. Conditions like primary biliary cirrhosis or primary sclerosing cholangitis may also raise ALP levels.
-        Hepatitis: Liver inflammation caused by viral or autoimmune hepatitis can elevate ALP.
-        Liver Tumors: Primary or metastatic liver cancer can lead to high ALP levels due to liver cell damage.
-        Fatty Liver Disease: Non-alcoholic fatty liver disease (NAFLD) can cause mild elevation in ALP levels due to liver inflammation.
-        Bone Conditions
-        Osteomalacia and Rickets: These are bone diseases caused by vitamin D deficiency, leading to abnormal bone mineralization and elevated ALP levels.
-        Paget’s Disease of Bone: This disorder involves abnormal bone remodeling, which can cause elevated ALP.
-        Bone Fractures or Healing: When bones are healing, ALP levels can temporarily rise due to increased bone activity.
-        Osteoporosis: In severe cases of bone loss, ALP may be elevated.
-        Bone Cancer or Metastasis: If cancer has spread to the bones, it can increase ALP production.
-    Other Causes:
-        Hyperparathyroidism: Overactivity of the parathyroid glands can lead to increased calcium and ALP levels due to bone resorption.
-        Pregnancy: ALP levels are often higher during pregnancy, particularly in the third trimester, due to placental production.
-        Infections: Some infections like osteomyelitis (bone infection) or infectious mononucleosis can elevate ALP levels.
-        Health Risks of High ALP:
-        Liver Dysfunction: Persistently high ALP may indicate liver damage or bile duct obstruction, leading to jaundice, abdominal pain, or more severe liver conditions.
-        Bone Weakness or Pain: If the cause of high ALP is related to bone disease (e.g., Paget's disease, osteomalacia), it can result in bone deformities, fractures, or pain.
-        Hypercalcemia: Conditions like hyperparathyroidism or osteolytic bone disease can lead to elevated calcium levels in the blood, causing symptoms like nausea, fatigue, kidney stones, and bone pain.
+            <h3>Health Risks of High ALP:</h3>
+            <ul>
+                <li><strong>Liver Dysfunction:</strong> Persistently high ALP may indicate liver damage or bile duct obstruction, leading to jaundice, abdominal pain, or severe liver conditions.</li>
+                <li><strong>Bone Weakness or Pain:</strong> High ALP related to bone disease can cause deformities, fractures, or pain.</li>
+                <li><strong>Hypercalcemia:</strong> Conditions like hyperparathyroidism or osteolytic bone disease can lead to elevated calcium levels, causing symptoms like nausea, fatigue, kidney stones, and bone pain.</li>
+            </ul>
 
-Tips to Lower High ALP:
-    Treat Underlying Liver Diseases: Address liver conditions, such as viral hepatitis, cirrhosis, or fatty liver disease, to prevent further liver damage and restore normal ALP levels.
-    Manage Bone Conditions: Correct vitamin D deficiency or manage diseases like Paget’s disease and osteomalacia with appropriate medications, supplements (like calcium or vitamin D), and lifestyle changes.
-    Surgical Intervention for Blockages: For bile duct obstructions (e.g., gallstones or tumors), surgical or non-surgical treatments to remove the blockage can help lower ALP levels.
-    Avoid Alcohol: Alcohol can worsen liver conditions and lead to higher ALP levels. Reducing alcohol consumption can help support liver health.
-    Calcium Regulation: If hyperparathyroidism or bone loss is the cause, treatment to normalize calcium levels (via medications or surgery) can lower ALP levels.
+            <h3>Tips to Lower High ALP:</h3>
+            <ul>
+                <li><strong>Treat Underlying Liver Diseases:</strong> Address liver conditions such as viral hepatitis, cirrhosis, or fatty liver disease to restore normal ALP levels.</li>
+                <li><strong>Manage Bone Conditions:</strong> Correct vitamin D deficiency and manage diseases like Paget’s disease or osteomalacia with medications, supplements (like calcium or vitamin D), and lifestyle changes.</li>
+                <li><strong>Surgical Intervention for Blockages:</strong> Remove bile duct obstructions (e.g., gallstones or tumors) through surgical or non-surgical methods to lower ALP levels.</li>
+                <li><strong>Avoid Alcohol:</strong> Reducing alcohol consumption supports liver health and prevents further elevation of ALP.</li>
+                <li><strong>Calcium Regulation:</strong> Normalize calcium levels through treatment for hyperparathyroidism or bone loss with appropriate interventions.</li>
+            </ul>
 
-Foods to Eat for High ALP:
-        Liver-Supportive Foods
-        Leafy Greens: Spinach, kale, and other dark leafy greens are excellent for supporting liver health.
-        Berries: Blueberries and strawberries contain antioxidants that protect the liver and reduce inflammation.
-        Garlic and Turmeric: Both are anti-inflammatory and help improve liver detoxification.
-        Fatty Fish: Omega-3-rich fish like salmon, mackerel, and sardines help reduce inflammation in the liver and bones.
-        Bone-Healthy Foods:
-        Dairy: Calcium-rich foods like milk, yogurt, and cheese support bone health.
-        Fortified Foods: Vitamin D-fortified foods (e.g., fortified cereals or plant-based milk) are essential for healthy bone metabolism.
-        Nuts and Seeds: Almonds, chia seeds, and flaxseeds provide magnesium, which supports both bone and muscle health.
-    """)
+            <h3>Foods to Eat for High ALP:</h3>
+            <ul>
+                <li><strong>Liver-Supportive Foods:</strong>
+                    <ul>
+                        <li><strong>Leafy Greens:</strong> Spinach, kale, and other dark leafy greens support liver health.</li>
+                        <li><strong>Berries:</strong> Blueberries and strawberries are rich in antioxidants that protect the liver and reduce inflammation.</li>
+                        <li><strong>Garlic and Turmeric:</strong> Anti-inflammatory properties improve liver detoxification.</li>
+                        <li><strong>Fatty Fish:</strong> Omega-3-rich fish like salmon, mackerel, and sardines help reduce inflammation in the liver and bones.</li>
+                    </ul>
+                </li>
+                <li><strong>Bone-Healthy Foods:</strong>
+                    <ul>
+                        <li><strong>Dairy:</strong> Calcium-rich foods like milk, yogurt, and cheese support bone health.</li>
+                        <li><strong>Fortified Foods:</strong> Vitamin D-fortified cereals or plant-based milk for healthy bone metabolism.</li>
+                        <li><strong>Nuts and Seeds:</strong> Almonds, chia seeds, and flaxseeds provide magnesium for bone and muscle health.</li>
+                    </ul>
+                </li>
+            </ul>
+        
+        
+        """)
+        elif values["Alkaline Phosphatase"] < 43:
+            advice.append("""
+    
+        
+            <h2>Low Alkaline Phosphatase (ALP)</h2>
+            <h3>Root Cause:</h3>
+            <ul>
+                <li><strong>Malnutrition:</strong> Inadequate intake of nutrients, especially protein, zinc, or vitamin C, can lower ALP levels.</li>
+                <li><strong>Hypothyroidism:</strong> An underactive thyroid can reduce metabolic activity, leading to decreased ALP production.</li>
+                <li><strong>Magnesium Deficiency:</strong> Low magnesium levels can impair enzyme function, including ALP.</li>
+                <li><strong>Wilson’s Disease:</strong> A rare genetic disorder causing copper accumulation in tissues can lower ALP levels.</li>
+                <li><strong>Pernicious Anemia:</strong> A deficiency of vitamin B12 or folate can contribute to low ALP.</li>
+                <li><strong>Severe Illness or Chronic Conditions:</strong> Chronic illnesses like celiac disease or inflammatory disorders may result in low ALP levels.</li>
+                <li><strong>Age:</strong> Lower ALP levels can naturally occur in older adults.</li>
+            </ul>
+
+            <h3>Health Risks of Low ALP:</h3>
+            <ul>
+                <li><strong>Bone Weakness:</strong> Insufficient ALP can impair bone mineralization, leading to weaker bones and a higher risk of fractures.</li>
+                <li><strong>Delayed Wound Healing:</strong> ALP is essential for proper cell turnover, so low levels may slow healing processes.</li>
+                <li><strong>Fatigue and Weakness:</strong> Nutritional deficiencies linked to low ALP can contribute to tiredness and muscle weakness.</li>
+            </ul>
+
+            <h3>Tips to Increase Low ALP:</h3>
+            <ul>
+                <li><strong>Improve Nutrition:</strong> Ensure a balanced diet rich in protein, zinc, vitamin C, and magnesium.</li>
+                <li><strong>Treat Underlying Conditions:</strong> Address thyroid issues, Wilson’s disease, or any other underlying medical conditions with appropriate treatments.</li>
+                <li><strong>Vitamin and Mineral Supplements:</strong> Take supplements for nutrients like zinc, magnesium, or vitamin B12 if deficiencies are diagnosed.</li>
+                <li><strong>Regular Exercise:</strong> Engage in weight-bearing exercises to promote bone health and overall metabolic activity.</li>
+            </ul>
+
+            <h3>Foods to Eat for Low ALP:</h3>
+            <ul>
+                <li><strong>Protein-Rich Foods:</strong> Include lean meats, fish, eggs, and legumes to improve overall enzyme function.</li>
+                <li><strong>Zinc-Rich Foods:</strong> Shellfish, nuts, seeds, and whole grains are excellent sources of zinc.</li>
+                <li><strong>Vitamin C-Rich Foods:</strong> Oranges, strawberries, bell peppers, and kiwi support overall health and enzyme production.</li>
+                <li><strong>Magnesium-Rich Foods:</strong> Dark leafy greens, nuts, seeds, and whole grains help boost enzyme activity.</li>
+                <li><strong>Fortified Foods:</strong> Include cereals and dairy products fortified with essential nutrients.</li>
+            </ul>
+        
+        
+        """)
 
     # Total Protein (range: 6.0-8.3 g/dL)
     if "Total Protein" in values:
         if values["Total Protein"] < 6.6:
-            advice.append("""Low Total Protein
-
-Root Cause:
-    Malnutrition or Poor Diet
-    Protein Deficiency: Inadequate protein intake from the diet can cause a reduction in total protein levels. This is common in malnutrition, eating disorders (e.g., anorexia nervosa), or insufficient dietary intake.
-    Starvation: Prolonged lack of food or calorie intake can result in a decrease in the body's ability to produce proteins.
-    Liver Cirrhosis: Severe liver damage from conditions like cirrhosis or hepatitis can impair the liver’s ability to produce proteins like albumin, leading to low total protein levels.
-    Acute Hepatitis: Acute liver inflammation can temporarily impair protein synthesis in the liver, causing a decrease in total protein levels.
-    Nephrotic Syndrome: A kidney condition in which protein is excessively lost through urine, leading to low protein levels in the blood (hypoalbuminemia).
-    Chronic Kidney Disease: Impaired kidney function can result in protein loss in urine, leading to low protein levels in the blood.
-    Malabsorption Syndromes: Conditions like celiac disease, Crohn’s disease, or chronic diarrhea can prevent the absorption of proteins and nutrients, leading to low total protein levels.
-    Protein-Losing Enteropathy: A condition in which proteins are lost through the intestines, leading to low protein levels in the blood.
-    Sepsis: Severe infections or systemic inflammation (such as in sepsis) can cause a decrease in total protein levels.
-    Burns or Trauma: Major injuries or burns can cause protein loss as the body uses proteins for tissue repair and healing.
-    Hypothyroidism:An underactive thyroid can sometimes lead to low total protein levels, affecting protein metabolism in the body.
-
-Health Risks of Low Total Protein:
-    Edema: One of the most common symptoms of low total protein, especially low albumin, is edema (fluid retention) in the legs, abdomen, and other areas.
-    Weak Immune Function: Proteins, especially antibodies, are crucial for immune function. Low protein levels can weaken the immune system, increasing susceptibility to infections.
-    Muscle Weakness: Protein is essential for muscle structure and function. Low total protein levels can result in muscle weakness, fatigue, and poor recovery after exertion.
-    Wound Healing Issues: Since proteins are key in tissue repair, low levels can delay healing after surgery or injury.
-    Malnutrition and Growth Problems: In children, low protein levels can impair growth and development, while in adults, it may lead to fatigue and other health issues.
-
-Tips to Raise Low Total Protein:
-    Increase Protein Intake: Ensure a diet rich in high-quality protein sources. Aim for sources such as lean meats, fish, eggs, dairy products, legumes, and nuts.
-    Lean Meats: Chicken, turkey, and lean cuts of beef are great protein-rich foods.
-    Legumes: Beans, lentils, and chickpeas are plant-based protein sources that can supplement the diet.
-    Dairy: Incorporating milk, cheese, and yogurt can help boost protein levels.
-    Eggs: Eggs are one of the most complete sources of protein and can easily be added to meals.
-    Address Malabsorption Issues: If gastrointestinal conditions like celiac disease or Crohn’s disease are contributing to protein deficiency, work with a healthcare provider to manage the condition and improve nutrient absorption.
-    Liver Disease: Treat liver conditions with appropriate medications or lifestyle changes (e.g., avoiding alcohol) to improve protein production.
-    Kidney Disease: If protein loss due to kidney disease is a concern, managing kidney function and using medications as prescribed will help retain protein in the body.
-    Hypothyroidism: Treatment with thyroid hormones (e.g., levothyroxine) can improve overall metabolism and protein production.
-
-Foods to Eat for Low Total Protein:
-    Eggs and Lean Meats: As mentioned, these are excellent sources of complete protein.
-    Fish and Shellfish: Salmon, tuna, and shrimp are all rich in protein and healthy fats.
-    Nuts and Seeds: Almonds, chia seeds, and sunflower seeds provide protein and healthy fats.
-    Dairy Products: Greek yogurt, milk, and cheese are protein-packed options.
-    Legumes: Lentils, black beans, and chickpeas are good plant-based proteins.
-    Vegetables and Fruits for Supporting Metabolism:
-    Leafy Greens: Kale, spinach, and Swiss chard help support overall health and protein metabolism.
-    Sweet Potatoes and Squash: High in carbohydrates and micronutrients, these can help boost overall nutrition.
-""")
-        elif values["Total Protein"] > 8.3:
-            advice.append("""High Total Protein
-
-Root Cause:
-    Chronic Infections (e.g., tuberculosis, HIV/AIDS) or inflammatory conditions (e.g., rheumatoid arthritis, systemic lupus erythematosus) can lead to an increase in the production of certain proteins like immunoglobulins (antibodies), which can elevate total protein levels.
-    Multiple Myeloma: A type of blood cancer that causes an abnormal increase in plasma cells, leading to high levels of immunoglobulins (particularly monoclonal proteins, or M-proteins).
-    Chronic Liver Disease: In some cases of chronic liver disease (e.g., cirrhosis), the liver may produce more proteins in an attempt to repair itself, resulting in high total protein levels.
-    Dehydration:Dehydration can cause a relative increase in total protein levels. When the body is dehydrated, there is less fluid in the blood, making the concentration of proteins appear higher than it actually is. It does not necessarily reflect an increase in protein production but rather a decreased volume of plasma.
-    Monoclonal Gammopathy:Monoclonal Gammopathy of Undetermined Significance (MGUS): A condition in which abnormal proteins (monoclonal proteins) are produced, leading to increased total protein levels without symptoms. Waldenström’s 
-    Macroglobulinemia: A rare type of cancer that causes high production of IgM (an antibody), resulting in increased total protein levels.
-    Liver Conditions:Liver cirrhosis or liver failure: In some cases, these conditions may lead to an increase in certain proteins, particularly the liver's production of clotting factors.
-    Hepatitis: Inflammation of the liver can also lead to an increase in protein levels in some cases.
-    Nephrotic Syndrome: This kidney disorder can cause the body to produce higher-than-normal levels of proteins, leading to elevated total protein levels.
+            advice.append("""
     
-Health Risks of High Total Protein:
-    Multiple Myeloma and Blood Disorders: High total protein due to abnormal immunoglobulin levels (M-proteins) can indicate plasma cell disorders, such as multiple myeloma or Waldenström’s macroglobulinemia.
-    Chronic Dehydration: Long-term dehydration can lead to electrolyte imbalances and kidney strain, affecting overall health.
-    Liver and Kidney Diseases: High protein levels in the blood may indicate worsening liver or kidney function and the need for treatment or closer monitoring.
+        
+            <h2>Low Total Protein</h2>
+            <h3>Root Cause:</h3>
+            <ul>
+                <li><strong>Malnutrition or Poor Diet:</strong> Inadequate protein intake due to malnutrition, eating disorders, or insufficient dietary intake.</li>
+                <li><strong>Starvation:</strong> Prolonged lack of calorie or nutrient intake can reduce protein production.</li>
+                <li><strong>Liver Conditions:</strong> Cirrhosis or hepatitis impairs the liver’s ability to produce proteins like albumin.</li>
+                <li><strong>Kidney Diseases:</strong> Chronic kidney disease or nephrotic syndrome leads to excessive protein loss in urine.</li>
+                <li><strong>Malabsorption Syndromes:</strong> Conditions like celiac disease or Crohn’s disease prevent proper protein absorption.</li>
+                <li><strong>Sepsis:</strong> Severe infections can decrease protein synthesis.</li>
+                <li><strong>Burns or Trauma:</strong> Protein loss occurs as the body uses proteins for healing and repair.</li>
+                <li><strong>Hypothyroidism:</strong> An underactive thyroid can lower protein metabolism and levels.</li>
+            </ul>
 
-Tips to Lower High Total Protein:
-    Address Underlying Conditions: Treatment for multiple myeloma, infections, liver disease, or dehydration is necessary to normalize protein levels.
-    Multiple Myeloma: Chemotherapy, stem cell therapy, or other treatments for blood cancers can help reduce the abnormal proteins.
-    Chronic Liver or Kidney Disease: Medications to manage liver or kidney function, or specific interventions (e.g., diuretics for fluid balance), may help.
-    Hydration: Proper hydration is essential to reduce apparent increases in total protein levels due to dehydration. Aim for 6-8 cups of water daily, or more depending on individual needs.
-    Monitor and Manage Inflammation: Anti-inflammatory medications may help control underlying inflammatory conditions that contribute to high protein levels.
+            <h3>Health Risks of Low Total Protein:</h3>
+            <ul>
+                <li><strong>Edema:</strong> Low albumin levels can cause fluid retention in the legs, abdomen, and other areas.</li>
+                <li><strong>Weak Immune Function:</strong> Proteins are essential for immune defense, and deficiencies weaken it.</li>
+                <li><strong>Muscle Weakness:</strong> Low protein levels contribute to fatigue and reduced muscle strength.</li>
+                <li><strong>Delayed Wound Healing:</strong> Proteins are crucial for tissue repair; deficiencies slow the healing process.</li>
+                <li><strong>Growth Issues:</strong> In children, low protein levels impair growth and development.</li>
+            </ul>
 
-Foods to Eat for High Total Protein:
-    Antioxidant-Rich Foods: Berries (e.g., blueberries, strawberries) and leafy greens (e.g., spinach, kale) may help reduce inflammation.
-    Anti-Inflammatory Fats: Omega-3-rich foods such as salmon, mackerel, walnuts, and flaxseeds may help reduce inflammation and support overall protein metabolism.
-    Hydration: Drink adequate water to help manage dehydration-related protein concentration.""")
+            <h3>Tips to Raise Low Total Protein:</h3>
+            <ul>
+                <li><strong>Increase Protein Intake:</strong> Include protein-rich foods such as lean meats, fish, eggs, dairy, legumes, and nuts in your diet.</li>
+                <li><strong>Address Malabsorption Issues:</strong> Treat conditions like celiac or Crohn’s disease to improve nutrient absorption.</li>
+                <li><strong>Manage Liver or Kidney Diseases:</strong> Use appropriate medications and lifestyle changes as advised by a healthcare provider.</li>
+                <li><strong>Treat Hypothyroidism:</strong> Hormone therapy can improve protein metabolism.</li>
+            </ul>
+
+            <h3>Foods to Eat for Low Total Protein:</h3>
+            <ul>
+                <li><strong>Eggs and Lean Meats:</strong> Chicken, turkey, and lean beef are excellent protein sources.</li>
+                <li><strong>Fish:</strong> Salmon, tuna, and shellfish provide high-quality protein and healthy fats.</li>
+                <li><strong>Legumes:</strong> Lentils, beans, and chickpeas are great plant-based options.</li>
+                <li><strong>Nuts and Seeds:</strong> Almonds, sunflower seeds, and chia seeds are rich in protein and healthy fats.</li>
+                <li><strong>Dairy Products:</strong> Milk, Greek yogurt, and cheese are high in protein.</li>
+            </ul>
+        
+        
+        """)
+
+        elif values["Total Protein"] > 8.3:
+            advice.append("""
+    
+        
+            <h2>High Total Protein</h2>
+            <h3>Root Cause:</h3>
+            <ul>
+                <li><strong>Chronic Infections or Inflammatory Conditions:</strong> Conditions like tuberculosis, HIV/AIDS, rheumatoid arthritis, or lupus can increase antibody production.</li>
+                <li><strong>Multiple Myeloma:</strong> A type of blood cancer causing abnormal plasma cell production of immunoglobulins.</li>
+                <li><strong>Dehydration:</strong> Reduced blood plasma volume can make protein concentration appear higher.</li>
+                <li><strong>Monoclonal Gammopathy:</strong> Disorders like MGUS or Waldenström’s macroglobulinemia increase abnormal protein levels.</li>
+                <li><strong>Liver Conditions:</strong> Chronic liver diseases, such as cirrhosis or hepatitis, can raise total protein levels.</li>
+                <li><strong>Nephrotic Syndrome:</strong> The body compensates for kidney-related protein loss by producing excess proteins.</li>
+            </ul>
+
+            <h3>Health Risks of High Total Protein:</h3>
+            <ul>
+                <li><strong>Multiple Myeloma:</strong> High protein levels may indicate plasma cell disorders like multiple myeloma or Waldenström’s macroglobulinemia.</li>
+                <li><strong>Dehydration:</strong> Prolonged dehydration can cause electrolyte imbalances and kidney strain.</li>
+                <li><strong>Liver or Kidney Damage:</strong> Elevated protein levels may reflect worsening liver or kidney conditions.</li>
+            </ul>
+
+            <h3>Tips to Lower High Total Protein:</h3>
+            <ul>
+                <li><strong>Address Underlying Conditions:</strong> Treat infections, inflammation, or blood cancers to normalize protein levels.</li>
+                <li><strong>Stay Hydrated:</strong> Proper hydration can reduce protein concentration related to dehydration.</li>
+                <li><strong>Manage Inflammation:</strong> Use anti-inflammatory medications or dietary changes to control inflammation.</li>
+            </ul>
+
+            <h3>Foods to Eat for High Total Protein:</h3>
+            <ul>
+                <li><strong>Antioxidant-Rich Foods:</strong> Berries and leafy greens help reduce inflammation.</li>
+                <li><strong>Omega-3-Rich Foods:</strong> Salmon, walnuts, and flaxseeds provide anti-inflammatory benefits.</li>
+                <li><strong>Hydration:</strong> Drink plenty of water to maintain proper fluid balance.</li>
+            </ul>
+        
+        
+        """)
 
     # Albumin (range: 3.5-5.0 g/dL)
     if "Albumin" in values:
         if values["Albumin"] < 3.5:
-            advice.append("""Low Albumin (Hypoalbuminemia)
+            advice.append("""
+    
+        
+            <h2>Low Albumin (Hypoalbuminemia)</h2>
+            <h3>Root Cause:</h3>
+            <ul>
+                <li><strong>Cirrhosis or Hepatitis:</strong> Chronic liver conditions impair albumin production.</li>
+                <li><strong>Acute Liver Failure:</strong> Sudden liver damage due to toxins, infections, or medications.</li>
+                <li><strong>Nephrotic Syndrome:</strong> A kidney disorder causing significant loss of albumin through urine.</li>
+                <li><strong>Chronic Kidney Disease:</strong> Progressive kidney damage reducing albumin retention.</li>
+                <li><strong>Protein Deficiency:</strong> Inadequate dietary protein intake due to malnutrition or eating disorders.</li>
+                <li><strong>Inflammation and Infection:</strong> Conditions like rheumatoid arthritis, lupus, or sepsis impair albumin synthesis.</li>
+                <li><strong>Malabsorption Syndromes:</strong> Issues like Celiac disease or Crohn’s disease impair protein absorption.</li>
+                <li><strong>Protein-Losing Enteropathy:</strong> Loss of protein through the intestines.</li>
+                <li><strong>Congestive Heart Failure:</strong> Fluid retention dilutes albumin levels.</li>
+                <li><strong>Burns or Trauma:</strong> Protein loss from severe injuries or burns.</li>
+            </ul>
 
-Root Cause:
-    Cirrhosis or Hepatitis: Chronic liver conditions can impair the liver’s ability to produce albumin, leading to low levels in the blood.
-    Acute Liver Failure: Sudden liver damage, possibly due to toxins, viral infections, or medications, can also cause a sharp drop in albumin production.
-    Nephrotic Syndrome: This kidney disorder leads to significant loss of albumin through urine. In nephrotic syndrome, the kidneys are damaged, allowing proteins like albumin to leak out.
-    Chronic Kidney Disease: Progressive kidney damage can also lead to decreased albumin levels as the kidneys cannot retain proteins.
-    Protein Deficiency: Inadequate intake of protein from the diet can result in decreased production of albumin, leading to low levels. This is commonly seen in cases of severe malnutrition or eating disorders.
-    Inflammation and Infection:
-    Chronic Inflammatory States: Conditions such as rheumatoid arthritis, systemic lupus erythematosus, or sepsis can lead to low albumin levels due to inflammatory cytokines reducing albumin synthesis.
-    Acute Infections: Severe infections can result in low albumin as part of the body’s acute-phase response.
-    Malabsorption Syndromes: Conditions like Celiac disease, Crohn's disease, and Chronic diarrhea can impair the absorption of nutrients and proteins, leading to low albumin levels.
-    Protein-Losing Enteropathy: A condition in which protein is lost through the intestines, leading to a decrease in albumin levels.
-    Congestive Heart Failure (CHF): This condition can cause fluid retention and edema, diluting albumin levels in the blood.
-    Extensive burns or trauma can lead to the loss of proteins, including albumin, from the blood and tissues, resulting in low levels.
+            <h3>Health Risks of Low Albumin:</h3>
+            <ul>
+                <li><strong>Edema:</strong> Swelling in legs, abdomen, or around the eyes due to fluid buildup.</li>
+                <li><strong>Weakened Immune System:</strong> Reduced albumin impairs immune response.</li>
+                <li><strong>Muscle Weakness:</strong> Fatigue and reduced muscle recovery.</li>
+                <li><strong>Impaired Wound Healing:</strong> Slower recovery from injuries or surgeries.</li>
+                <li><strong>Hypotension:</strong> Low blood pressure due to poor fluid retention in the bloodstream.</li>
+            </ul>
 
-Health Risks of Low Albumin:
-    Edema: Low albumin levels can lead to fluid buildup in the tissues, resulting in swelling (edema), particularly in the legs, abdomen (ascites), and around the eyes.
-    Weakened Immune System: Albumin carries essential immune factors. Low levels can impair immune function, leading to increased risk of infections.
-    Muscle Weakness: Reduced protein levels can affect muscle function, leading to weakness, fatigue, and delayed recovery after physical exertion or illness.
-    Impaired Wound Healing: Albumin is vital for tissue repair, and low levels may delay healing from injuries, surgeries, or illnesses.
-    Hypotension: Low albumin levels may lead to low blood pressure (hypotension), as the blood’s ability to retain fluid in the bloodstream is compromised.
+            <h3>Tips to Raise Low Albumin:</h3>
+            <ul>
+                <li><strong>Increase Protein Intake:</strong> Consume high-quality protein sources:
+                    <ul>
+                        <li>Animal-Based Proteins: Lean meats (chicken, turkey), fish, eggs, and dairy products.</li>
+                        <li>Plant-Based Proteins: Beans, lentils, quinoa, tofu, nuts, and seeds.</li>
+                    </ul>
+                </li>
+                <li><strong>Treat Underlying Liver or Kidney Diseases:</strong> Follow medical advice, including medications or lifestyle changes.</li>
+                <li><strong>Address Malabsorption or Inflammation:</strong> Manage conditions like celiac disease or Crohn’s disease.</li>
+                <li><strong>Hydration:</strong> Ensure adequate hydration but avoid overhydration in kidney or heart conditions.</li>
+            </ul>
 
-Tips to Raise Low Albumin:
-    Increase Protein Intake: Ensure a diet rich in high-quality protein sources to support albumin production.
-    Animal-Based Proteins: Include lean meats (chicken, turkey), fish, eggs, and dairy products (milk, yogurt, cheese).
-    Plant-Based Proteins: Beans, lentils, quinoa, tofu, nuts, and seeds are excellent protein sources.
-    Treat Underlying Liver or Kidney Diseases: If low albumin is due to liver or kidney disease, specific medical treatments such as medications, lifestyle changes (e.g., avoiding alcohol for liver disease), or dialysis (for kidney disease) may be necessary.
-    Address Malabsorption or Inflammatory Conditions: Work with a healthcare provider to manage conditions like celiac disease, Crohn’s disease, or inflammatory conditions that impair nutrient absorption and protein production.
-    Hydration: While dehydration is not a direct cause of low albumin, it can exacerbate symptoms of edema and low protein concentrations in the blood. Ensure adequate hydration but avoid excessive fluid intake in the case of kidney or heart conditions.
+            <h3>Foods to Eat for Low Albumin:</h3>
+            <ul>
+                <li><strong>Protein-Rich Foods:</strong> Eggs, lean meats, fish, and dairy products.</li>
+                <li><strong>Nuts and Seeds:</strong> Almonds, chia seeds, and sunflower seeds.</li>
+                <li><strong>Legumes:</strong> Lentils, chickpeas, and beans.</li>
+                <li><strong>Vitamins and Minerals:</strong> Leafy greens, sweet potatoes, carrots, and citrus fruits to support overall nutrition.</li>
+            </ul>
+        
+        
+        """)
 
-Foods to Eat for Low Albumin:
-    Protein-Rich Foods:Eggs, lean meats, fish, and dairy products (milk, cheese, yogurt) are some of the best sources of protein.
-    Nuts and Seeds (almonds, chia seeds, sunflower seeds) and legumes (lentils, chickpeas, beans) are also good plant-based protein options.
-    Vitamins and Minerals:Leafy greens like spinach and kale help improve overall nutrition.
-    Sweet potatoes, carrots, and citrus fruits provide antioxidants and micronutrients that support immune health and protein metabolism.""")
         elif values["Albumin"] > 5.2:
-            advice.append("""High Albumin (Hyperalbuminemia)
+            advice.append("""
+    
+        
+            <h2>High Albumin (Hyperalbuminemia)</h2>
+            <h3>Root Cause:</h3>
+            <ul>
+                <li><strong>Severe Dehydration:</strong> Loss of fluids due to vomiting, diarrhea, or sweating reduces blood volume and increases albumin concentration.</li>
+                <li><strong>Excessive Protein Intake:</strong> Rarely, very high protein intake can slightly elevate albumin levels.</li>
+                <li><strong>Gastrointestinal Bleeding:</strong> Blood loss reduces plasma volume, increasing albumin concentration.</li>
+                <li><strong>HIV/AIDS:</strong> In some cases, immune response to infections elevates albumin levels.</li>
+                <li><strong>Anabolic Steroid Use:</strong> Steroids or certain medications can increase albumin levels.</li>
+                <li><strong>Polycythemia Vera:</strong> A blood disorder causing increased red blood cells and reduced plasma volume.</li>
+            </ul>
 
-Root Cause:
-    Severe Dehydration: The most common cause of high albumin levels is dehydration. When the body loses fluid, such as in cases of excessive vomiting, diarrhea, or sweating, the concentration of albumin in the blood can increase because the blood volume decreases.
-    Excessive Protein Intake: In rare cases, very high levels of protein intake from supplements or food can contribute to slightly elevated albumin levels.
-    Gastrointestinal Bleeding:Blood Loss from the gastrointestinal tract can increase albumin levels due to a reduction in plasma volume, resulting in a relative increase in albumin concentration.
-    HIV/AIDS:In some cases, HIV/AIDS can cause elevated albumin levels due to the body's efforts to fight the infection and replenish proteins.
-    Anabolic Steroid Use:The use of anabolic steroids or excessive use of certain medications can lead to elevated protein levels in the blood, including albumin.
-    Certain Bone Marrow Disorders like Polycythemia Vera: A blood disorder causing an overproduction of red blood cells, which can result in a relative increase in albumin levels due to reduced plasma volume.
+            <h3>Health Risks of High Albumin:</h3>
+            <ul>
+                <li><strong>Dehydration:</strong> Chronic dehydration can lead to kidney stones, electrolyte imbalances, and kidney damage.</li>
+                <li><strong>Increased Blood Viscosity:</strong> Elevated albumin thickens blood, increasing the risk of clots and cardiovascular issues.</li>
+                <li><strong>Impaired Circulation:</strong> High albumin reduces oxygen and nutrient flow, potentially affecting organ function.</li>
+            </ul>
 
-Health Risks of High Albumin:
-    Dehydration: Chronic dehydration can lead to other health complications, such as kidney stones, electrolyte imbalances, and kidney damage.
-    Increased Blood Viscosity: Excessive albumin levels due to dehydration can increase blood viscosity (thickness), leading to higher risks of blood clot formation and cardiovascular complications.
-    Impaired Circulation: High albumin levels in the blood may reduce the flow of oxygen and nutrients to tissues, leading to poor circulation and possible organ dysfunction.
+            <h3>Tips to Lower High Albumin:</h3>
+            <ul>
+                <li><strong>Increase Fluid Intake:</strong> Rehydrate with water, coconut water, or herbal teas. Aim for 6-8 cups daily or more if needed.</li>
+                <li><strong>Monitor Protein Intake:</strong> Moderate excessive protein consumption, particularly from supplements.</li>
+                <li><strong>Address Underlying Conditions:</strong> Treat dehydration, bleeding, or other causes to normalize albumin levels.</li>
+            </ul>
 
-Tips to Lower High Albumin:
-    Increase Fluid Intake: Hydration is key in managing high albumin levels. Drink sufficient water, especially in cases of dehydration. A good target is 6-8 cups of water per day or more based on individual needs and health conditions.
-    Monitor Protein Intake: If excessive protein intake is contributing to high albumin, consider adjusting the amount of protein in your diet to more moderate levels, especially if you're taking protein supplements.
-    Address Underlying Conditions: Treat the underlying causes such as dehydration or gastrointestinal bleeding to normalize albumin levels.
-
-Foods to Eat for High Albumin:
-    Hydration: Focus on water, coconut water, and herbal teas to rehydrate.
-    Electrolyte-Rich Foods: Consider foods like bananas, oranges, spinach, and potatoes to help balance electrolytes and maintain proper hydration.
-""")
+            <h3>Foods to Eat for High Albumin:</h3>
+            <ul>
+                <li><strong>Hydration:</strong> Water, coconut water, and herbal teas help rehydrate.</li>
+                <li><strong>Electrolyte-Rich Foods:</strong> Bananas, oranges, spinach, and potatoes maintain fluid balance and hydration.</li>
+            </ul>
+        
+        
+        """)
 
     # Globulin (range: 2.0-3.5 g/dL)
     if "Globulin" in values:
         if values["Globulin"] < 1.8:
-            advice.append("""Low Globulin (Hypoglobulinemia)
-
-Root Cause:
-    Liver Cirrhosis: The liver produces most of the globulins. When the liver is damaged due to cirrhosis or hepatitis, its ability to produce these proteins may be impaired, leading to low globulin levels.
-    Acute Liver Failure: In severe liver damage, the liver may fail to produce enough globulins, contributing to low levels.
-    Nephrotic Syndrome: This kidney disorder causes significant protein loss through urine, including globulins, which results in low levels in the blood.
-    Gastrointestinal Disorders: Conditions like protein-losing enteropathy (where proteins are lost through the intestines) can result in low globulin levels.
-    Severe Burns or Trauma: Protein loss due to burns or trauma can also lower globulin levels as the body loses proteins needed for tissue repair.
-    Primary Immunodeficiencies: Some inherited conditions (like X-linked agammaglobulinemia) impair the production of globulins, particularly immunoglobulins (antibodies), resulting in low globulin levels.
-    Immunosuppressive Therapy: Medications used to suppress the immune system (e.g., for autoimmune diseases or organ transplants) can lead to decreased globulin production.
-    Protein Deficiency: Inadequate intake of protein or severe malnutrition can lead to a lack of building blocks required for globulin synthesis, resulting in low globulin levels.
-    Aplastic Anemia: This condition involves the bone marrow not producing enough blood cells, including the globulins, which can result in low globulin levels.
-    Acute and Chronic Infections:
-    Some infections, especially chronic ones, can affect the liver and immune system, leading to reduced globulin levels.
-    Chronic Inflammatory Diseases:Conditions like rheumatoid arthritis or lupus can lead to a decrease in globulin production over time due to altered immune function.
-
-Health Risks of Low Globulin:
-    Weakened Immune System: Globulins, especially immunoglobulins, are essential for immune defense. Low levels can leave the body more susceptible to infections.
-    Edema: Since globulins help maintain fluid balance, low globulin levels can lead to fluid accumulation in the tissues (edema), especially in the legs and abdomen.
-    Delayed Healing: Globulins, particularly the immunoglobulins (antibodies), are vital for infection defense and tissue repair, so low levels may result in delayed healing of wounds or injuries.
-    Increased Risk of Blood Clots: Globulins play a role in blood clotting. Low levels can affect the body’s ability to form proper blood clots, increasing the risk of bleeding.
-
-Tips to Raise Low Globulin:
-    Increase Protein Intake: Globulins are proteins, so increasing dietary protein intake can help the body produce more globulins.
-    Animal-Based Proteins: Include sources like lean meats, fish, eggs, and dairy products (milk, cheese, yogurt).
-    Plant-Based Proteins: Consider beans, lentils, quinoa, tofu, nuts, and seeds.
-    Treat Underlying Conditions:If liver disease, kidney disease, or a bone marrow disorder is causing low globulin levels, treatments for those conditions (e.g., antiviral therapy for hepatitis, dialysis for nephrotic syndrome, or immunosuppressive drugs for autoimmune diseases) may help improve globulin levels.
-    Malnutrition: A proper diet or nutritional supplements can help address protein deficiencies and support globulin production.
-    Immunoglobulin Replacement: In cases where there is a deficiency in immunoglobulins (such as in immunodeficiency disorders), immunoglobulin replacement therapy may be recommended by a healthcare provider.
-    Manage Inflammatory Conditions: Treat chronic inflammatory diseases (such as rheumatoid arthritis or lupus) with appropriate medications (e.g., anti-inflammatory drugs, biologics) to help restore normal globulin levels.
-
-Foods to Eat for Low Globulin:
-    Protein-Rich Foods: Eggs, lean meats, fish, poultry, tofu, and dairy products are good sources of protein to support globulin production.
-    Nuts (almonds, walnuts) and seeds (sunflower seeds, chia seeds) are also rich in protein.
-    Legumes (lentils, chickpeas, beans) and whole grains (quinoa, oats) provide plant-based protein.
-    Vitamins and Minerals:Leafy greens like spinach and kale, and fruits such as citrus fruits, provide antioxidants and vitamins that support the immune system.
-    """)
-        elif values["Globulin"] > 3.6:
-            advice.append("""High Globulin (Hyperglobulinemia)
-
-Root Cause:
-    Chronic Bacterial Infections: Infections such as tuberculosis, chronic sinusitis, or endocarditis can trigger the immune system to produce more globulins, especially antibodies (immunoglobulins).
-    Viral Infections: Some viral infections, including hepatitis, HIV, and chronic Epstein-Barr virus (EBV) infection, may lead to elevated globulin levels.
-    Rheumatoid Arthritis: This condition leads to chronic inflammation and immune system activation, resulting in elevated globulin levels.
-    Systemic Lupus Erythematosus (SLE): Lupus is another autoimmune disease that triggers increased production of globulins, especially immunoglobulins.
-    Multiple Myeloma:Multiple Myeloma is a type of cancer that affects plasma cells in the bone marrow, leading to overproduction of certain types of immunoglobulins (known as monoclonal proteins or M proteins), which can significantly increase globulin levels.
-    Chronic Liver Disease:Cirrhosis or other chronic liver conditions can lead to an increase in globulin production as part of the body’s response to ongoing inflammation and tissue damage.
-    Monoclonal Gammopathy:Monoclonal Gammopathy of Undetermined Significance (MGUS) is a condition in which abnormal proteins are produced, leading to elevated globulin levels without the typical symptoms of cancer.
-    Dehydration:Like other proteins, dehydration can cause a relative increase in globulin concentration due to a decreased plasma volume, making the globulins appear higher than they actually are.
-    Bone Marrow Disorders:Waldenström's Macroglobulinemia: A cancerous condition involving abnormal production of IgM immunoglobulin (macroglobulin) by plasma cells, which can increase globulin levels.
-    Polycythemia Vera: A blood disorder that can also lead to high globulin levels.
+            advice.append("""
     
-Health Risks of High Globulin:
-    Chronic Inflammation and Immune Dysregulation: Elevated globulin levels due to chronic infections or autoimmune diseases can lead to excessive immune system activity, potentially damaging tissues and organs.
-    Multiple Myeloma: High globulin levels due to excessive immunoglobulin production (particularly M proteins) can lead to kidney damage, bone pain, and anemia in multiple myeloma.
-    Blood Clotting Issues: High levels of immunoglobulins can alter blood viscosity, leading to increased clotting risks, particularly in conditions like Waldenström's macroglobulinemia.
+        
+            <h2>Low Globulin (Hypoglobulinemia)</h2>
+            <h3>Root Cause:</h3>
+            <ul>
+                <li><strong>Liver Cirrhosis:</strong> Impaired production of globulins due to liver damage.</li>
+                <li><strong>Acute Liver Failure:</strong> Severe liver damage reduces globulin synthesis.</li>
+                <li><strong>Nephrotic Syndrome:</strong> Kidney disorders leading to protein loss through urine.</li>
+                <li><strong>Gastrointestinal Disorders:</strong> Protein-losing enteropathy causing globulin loss through intestines.</li>
+                <li><strong>Severe Burns or Trauma:</strong> Protein loss from tissue repair needs.</li>
+                <li><strong>Primary Immunodeficiencies:</strong> Inherited conditions impairing immunoglobulin production.</li>
+                <li><strong>Immunosuppressive Therapy:</strong> Reduced globulin production due to immune-suppressing medications.</li>
+                <li><strong>Protein Deficiency:</strong> Inadequate dietary protein intake or malnutrition.</li>
+                <li><strong>Aplastic Anemia:</strong> Bone marrow not producing sufficient blood cells, including globulins.</li>
+                <li><strong>Acute and Chronic Infections:</strong> Reduced globulin levels due to immune and liver function impairment.</li>
+                <li><strong>Chronic Inflammatory Diseases:</strong> Conditions like lupus or rheumatoid arthritis affecting immune function.</li>
+            </ul>
 
-Tips to Lower High Globulin:
-    Treat Underlying Conditions:For chronic infections or autoimmune diseases, managing the root cause with medications (antibiotics, antivirals, immunosuppressants, or biologics) can help normalize globulin levels.
-    Cancer Treatment: If multiple myeloma or Waldenström's macroglobulinemia is the cause, chemotherapy, stem cell therapy, or targeted therapies may be necessary.
-    Manage Dehydration:Ensure proper hydration to dilute the concentration of globulins in the blood. Drink adequate amounts of water or electrolyte-rich beverages.
-    Monitor and Manage Chronic Conditions:If elevated globulins are due to chronic inflammatory conditions (e.g., rheumatoid arthritis, lupus), anti-inflammatory treatments or biologics may help normalize globulin levels.
-    Dialysis or Plasmapheresis:In some cases, particularly with blood disorders like multiple myeloma, plasmapheresis or dialysis may be needed to remove excess proteins from the blood.
+            <h3>Health Risks of Low Globulin:</h3>
+            <ul>
+                <li><strong>Weakened Immune System:</strong> Increased susceptibility to infections.</li>
+                <li><strong>Edema:</strong> Fluid accumulation in tissues due to reduced globulin levels.</li>
+                <li><strong>Delayed Healing:</strong> Impaired wound healing due to insufficient immunoglobulins.</li>
+                <li><strong>Bleeding Risks:</strong> Impaired blood clotting mechanisms.</li>
+            </ul>
 
-Foods to Eat for High Globulin:
-    Anti-Inflammatory Diet:Omega-3 fatty acids: Foods like salmon, walnuts, and flaxseeds help reduce inflammation.
-    Antioxidant-Rich Fruits and Vegetables: Berries, leafy greens, and cruciferous vegetables (broccoli, cauliflower) can help fight chronic inflammation.
-    Spices: Turmeric, ginger, and garlic have anti-inflammatory properties that may help manage chronic inflammation.""")
+            <h3>Tips to Raise Low Globulin:</h3>
+            <ul>
+                <li><strong>Increase Protein Intake:</strong> Add high-quality proteins such as lean meats, fish, eggs, beans, and dairy products.</li>
+                <li><strong>Treat Underlying Conditions:</strong> Address liver, kidney, or immune system disorders through medical intervention.</li>
+                <li><strong>Immunoglobulin Replacement:</strong> Consider therapy for immunoglobulin deficiencies under medical supervision.</li>
+                <li><strong>Manage Inflammatory Conditions:</strong> Use anti-inflammatory medications or biologics as prescribed.</li>
+            </ul>
 
+            <h3>Foods to Eat for Low Globulin:</h3>
+            <ul>
+                <li><strong>Protein-Rich Foods:</strong> Eggs, lean meats, fish, tofu, and legumes.</li>
+                <li><strong>Nuts and Seeds:</strong> Almonds, walnuts, chia seeds, and sunflower seeds.</li>
+                <li><strong>Whole Grains:</strong> Quinoa and oats for plant-based protein.</li>
+                <li><strong>Vitamins and Minerals:</strong> Leafy greens, citrus fruits, and berries to support immune function.</li>
+            </ul>
+        
+        
+        """)
+
+        elif values["Globulin"] > 3.6:
+            advice.append("""
+    
+        
+            <h2>High Globulin (Hyperglobulinemia)</h2>
+            <h3>Root Cause:</h3>
+            <ul>
+                <li><strong>Chronic Bacterial Infections:</strong> Persistent infections like tuberculosis or endocarditis triggering antibody production.</li>
+                <li><strong>Viral Infections:</strong> Conditions like hepatitis or HIV increasing globulin levels.</li>
+                <li><strong>Autoimmune Diseases:</strong> Rheumatoid arthritis or lupus causing elevated globulin production.</li>
+                <li><strong>Multiple Myeloma:</strong> Cancer of plasma cells leading to excess immunoglobulin production.</li>
+                <li><strong>Chronic Liver Disease:</strong> Liver damage increasing globulin levels due to inflammation.</li>
+                <li><strong>Monoclonal Gammopathy:</strong> Abnormal proteins causing increased globulin levels.</li>
+                <li><strong>Dehydration:</strong> Reduced plasma volume concentrating globulins.</li>
+                <li><strong>Bone Marrow Disorders:</strong> Conditions like Waldenström's macroglobulinemia producing excess immunoglobulins.</li>
+            </ul>
+
+            <h3>Health Risks of High Globulin:</h3>
+            <ul>
+                <li><strong>Chronic Inflammation:</strong> Tissue damage due to excessive immune response.</li>
+                <li><strong>Kidney Damage:</strong> Excessive immunoglobulins leading to kidney strain, particularly in multiple myeloma.</li>
+                <li><strong>Blood Clotting Risks:</strong> Increased blood viscosity elevating clotting risks.</li>
+            </ul>
+
+            <h3>Tips to Lower High Globulin:</h3>
+            <ul>
+                <li><strong>Treat Underlying Conditions:</strong> Use antibiotics, antivirals, or immunosuppressants as needed.</li>
+                <li><strong>Cancer Management:</strong> Chemotherapy or targeted therapies for conditions like multiple myeloma.</li>
+                <li><strong>Hydration:</strong> Ensure adequate water intake to normalize globulin concentration.</li>
+                <li><strong>Manage Chronic Inflammation:</strong> Use anti-inflammatory diets or prescribed medications.</li>
+                <li><strong>Plasmapheresis:</strong> Medical procedures to remove excess globulins in severe cases.</li>
+            </ul>
+
+            <h3>Foods to Eat for High Globulin:</h3>
+            <ul>
+                <li><strong>Anti-Inflammatory Foods:</strong> Omega-3 rich foods like salmon, walnuts, and flaxseeds.</li>
+                <li><strong>Antioxidant-Rich Foods:</strong> Berries, leafy greens, and cruciferous vegetables.</li>
+                <li><strong>Hydration:</strong> Water, coconut water, and electrolyte-rich drinks.</li>
+                <li><strong>Spices:</strong> Turmeric, ginger, and garlic to combat inflammation.</li>
+            </ul>
+        
+        
+        """)
 
         # Protein A/G Ratio (range: 1.0-2.5)
     if "Protein A/G Ratio" in values:
         if values["Protein A/G Ratio"] < 0.8:
-            advice.append("""Low Protein A/G Ratio
-A low A/G ratio occurs when the globulin levels are higher than albumin levels. This imbalance may indicate an underlying health problem.
+            advice.append("""
+        <div style="font-family: Arial, sans-serif; font-size: 14px;">
+            <h3 style="color: red;">Low Protein A/G Ratio</h3>
+            <p>A low A/G ratio occurs when the globulin levels are higher than albumin levels. This imbalance may indicate an underlying health problem.</p>
 
-Root Cause:
-    Chronic Inflammatory Diseases: Conditions like rheumatoid arthritis or systemic lupus erythematosus (SLE) may result in increased globulin levels due to chronic immune system activation and inflammation.
-    Chronic Infections: Tuberculosis, chronic hepatitis, or viral infections can increase globulin production (specifically immunoglobulins), leading to a decrease in the A/G ratio.
-    Cirrhosis: Cirrhosis and other chronic liver diseases can affect the liver’s ability to produce albumin, leading to lower albumin levels and, consequently, a reduced A/G ratio. At the same time, liver disease may lead to increased production of certain types of globulins.
-    Hepatitis: Hepatitis or liver inflammation may also contribute to a reduced albumin synthesis, lowering the A/G ratio.
-    Nephrotic Syndrome: In this condition, there is significant protein loss through the kidneys, particularly albumin. This can lead to a lower A/G ratio due to the relative increase in globulins compared to albumin.
-    Multiple Myeloma: A cancer of the plasma cells in the bone marrow, which produces immunoglobulins (antibodies), can significantly increase globulin levels, leading to a lower A/G ratio.
-    Waldenström's Macroglobulinemia: A condition that involves the production of excess immunoglobulin M (IgM), also elevates globulin levels and can result in a low A/G ratio.
-    Autoimmune Diseases:Lupus and Rheumatoid Arthritis: Autoimmune diseases trigger the immune system to produce more globulins (especially antibodies), which can overwhelm albumin production, leading to a low A/G ratio.
-    Protein Deficiency: Insufficient dietary protein intake can lead to low albumin production, while globulin levels may remain normal or even rise due to inflammation or immune response, lowering the A/G ratio.
-    Protein-Losing Enteropathy: Conditions like Crohn’s disease or celiac disease, which cause protein loss from the intestines, may result in decreased albumin levels while globulin levels remain normal or increase.
-    Acute Inflammatory Conditions: Acute infections or inflammatory conditions (e.g., sepsis) can cause a temporary drop in albumin levels while globulins rise as part of the body’s immune response.
+            <h4>Root Cause:</h4>
+            <ul>
+                <li><strong>Chronic Inflammatory Diseases:</strong> Conditions like rheumatoid arthritis or systemic lupus erythematosus (SLE) may result in increased globulin levels due to chronic immune system activation and inflammation.</li>
+                <li><strong>Chronic Infections:</strong> Tuberculosis, chronic hepatitis, or viral infections can increase globulin production (specifically immunoglobulins), leading to a decrease in the A/G ratio.</li>
+                <li><strong>Cirrhosis:</strong> Cirrhosis and other chronic liver diseases can affect the liver’s ability to produce albumin, leading to lower albumin levels and, consequently, a reduced A/G ratio.</li>
+                <li><strong>Hepatitis:</strong> Hepatitis or liver inflammation may also contribute to a reduced albumin synthesis, lowering the A/G ratio.</li>
+                <li><strong>Nephrotic Syndrome:</strong> In this condition, there is significant protein loss through the kidneys, particularly albumin. This can lead to a lower A/G ratio due to the relative increase in globulins compared to albumin.</li>
+                <li><strong>Multiple Myeloma:</strong> A cancer of the plasma cells in the bone marrow, which produces immunoglobulins (antibodies), can significantly increase globulin levels, leading to a lower A/G ratio.</li>
+                <li><strong>Waldenström's Macroglobulinemia:</strong> A condition that involves the production of excess immunoglobulin M (IgM), also elevates globulin levels and can result in a low A/G ratio.</li>
+                <li><strong>Autoimmune Diseases:</strong> Lupus and Rheumatoid Arthritis: Autoimmune diseases trigger the immune system to produce more globulins (especially antibodies), which can overwhelm albumin production, leading to a low A/G ratio.</li>
+                <li><strong>Protein Deficiency:</strong> Insufficient dietary protein intake can lead to low albumin production, while globulin levels may remain normal or even rise due to inflammation or immune response, lowering the A/G ratio.</li>
+                <li><strong>Protein-Losing Enteropathy:</strong> Conditions like Crohn’s disease or celiac disease, which cause protein loss from the intestines, may result in decreased albumin levels while globulin levels remain normal or increase.</li>
+                <li><strong>Acute Inflammatory Conditions:</strong> Acute infections or inflammatory conditions (e.g., sepsis) can cause a temporary drop in albumin levels while globulins rise as part of the body’s immune response.</li>
+            </ul>
 
-Health Risks of Low A/G Ratio:
-    Weakened Immune System: A high globulin level (due to chronic inflammation or infection) may indicate overactivation of the immune system, which can cause tissue damage.
-    Liver Dysfunction: Low albumin levels suggest impaired liver function, which can result in edema, ascites, and poor nutrient absorption.
-    Kidney Problems: Low albumin levels due to kidney conditions can lead to fluid retention, edema, and complications such as high blood pressure or heart failure.
-    Chronic Inflammation: A prolonged low A/G ratio may reflect persistent inflammatory or autoimmune disorders, which can lead to damage to tissues and organs.
+            <h4>Health Risks of Low A/G Ratio:</h4>
+            <ul>
+                <li><strong>Weakened Immune System:</strong> A high globulin level (due to chronic inflammation or infection) may indicate overactivation of the immune system, which can cause tissue damage.</li>
+                <li><strong>Liver Dysfunction:</strong> Low albumin levels suggest impaired liver function, which can result in edema, ascites, and poor nutrient absorption.</li>
+                <li><strong>Kidney Problems:</strong> Low albumin levels due to kidney conditions can lead to fluid retention, edema, and complications such as high blood pressure or heart failure.</li>
+                <li><strong>Chronic Inflammation:</strong> A prolonged low A/G ratio may reflect persistent inflammatory or autoimmune disorders, which can lead to damage to tissues and organs.</li>
+            </ul>
 
-Tips to Raise A/G Ratio (Normalize Albumin Levels):
-    Increase Protein Intake:Ensure a sufficient intake of high-quality proteins to boost albumin levels.
-    Animal-Based Proteins: Include eggs, lean meats (chicken, turkey), fish, and dairy products.
-    Plant-Based Proteins: Lentils, beans, tofu, quinoa, and nuts are good sources.
-    Manage Underlying Conditions:Treat liver diseases (e.g., hepatitis or cirrhosis) or kidney diseases (e.g., nephrotic syndrome) with appropriate medications.
-    For autoimmune diseases like lupus or rheumatoid arthritis, immunosuppressive drugs may help reduce inflammation and restore the A/G ratio.
-    Anti-Inflammatory Diet:Focus on anti-inflammatory foods such as fatty fish (salmon, mackerel), olive oil, and turmeric.
-    Avoid processed foods and excessive sugar intake to prevent chronic inflammation.
-    Hydration and Electrolyte Balance:Maintain proper hydration to support kidney and liver function, and to prevent fluid retention, which could affect albumin production.
+            <h4>Tips to Raise A/G Ratio (Normalize Albumin Levels):</h4>
+            <ul>
+                <li><strong>Increase Protein Intake:</strong> Ensure a sufficient intake of high-quality proteins to boost albumin levels.</li>
+                <li><strong>Animal-Based Proteins:</strong> Include eggs, lean meats (chicken, turkey), fish, and dairy products.</li>
+                <li><strong>Plant-Based Proteins:</strong> Lentils, beans, tofu, quinoa, and nuts are good sources.</li>
+                <li><strong>Manage Underlying Conditions:</strong> Treat liver diseases (e.g., hepatitis or cirrhosis) or kidney diseases (e.g., nephrotic syndrome) with appropriate medications.</li>
+                <li><strong>Anti-Inflammatory Diet:</strong> Focus on anti-inflammatory foods such as fatty fish (salmon, mackerel), olive oil, and turmeric.</li>
+                <li>Avoid processed foods and excessive sugar intake to prevent chronic inflammation.</li>
+                <li><strong>Hydration and Electrolyte Balance:</strong> Maintain proper hydration to support kidney and liver function, and to prevent fluid retention, which could affect albumin production.</li>
+            </ul>
 
-Foods to Eat for Low A/G Ratio:
-    Protein-Rich Foods: Chicken, fish, eggs, legumes (lentils, beans), tofu, quinoa, and nuts.
-    Anti-Inflammatory Foods: Leafy greens, citrus fruits, fatty fish, turmeric, and ginger.
-    Liver-Supportive Foods: Garlic, cruciferous vegetables (broccoli, cauliflower), and green tea.""")
+            <h4>Foods to Eat for Low A/G Ratio:</h4>
+            <ul>
+                <li><strong>Protein-Rich Foods:</strong> Chicken, fish, eggs, legumes (lentils, beans), tofu, quinoa, and nuts.</li>
+                <li><strong>Anti-Inflammatory Foods:</strong> Leafy greens, citrus fruits, fatty fish, turmeric, and ginger.</li>
+                <li><strong>Liver-Supportive Foods:</strong> Garlic, cruciferous vegetables (broccoli, cauliflower), and green tea.</li>
+            </ul>
+        </div>
+        """)
         elif values["Protein A/G Ratio"] > 2:
-            advice.append("""High Protein A/G Ratio
-A high A/G ratio occurs when the albumin levels are disproportionately higher than globulin levels, often because globulin levels are abnormally low.
+            advice.append("""
+        <div style="font-family: Arial, sans-serif; font-size: 14px;">
+            <h3 style="color: green;">High Protein A/G Ratio</h3>
+            <p>A high A/G ratio occurs when the albumin levels are disproportionately higher than globulin levels, often because globulin levels are abnormally low.</p>
 
-Root Cause:
-    Severe Dehydration: In cases of dehydration, the blood volume decreases, which can result in an increase in the concentration of albumin relative to globulins. This can cause a higher A/G ratio.
-    Chronic Liver Disease (in early stages):Early stages of liver disease may result in a decrease in globulin production while albumin production is maintained or slightly reduced, leading to a higher A/G ratio.
-    Malnutrition (with low globulin levels):Severe malnutrition or protein deficiency might lead to low globulin production, which can raise the A/G ratio if albumin levels are adequate.
-    Genetic Disorders:Certain rare genetic disorders, such as selective immunoglobulin deficiencies (e.g., IgA deficiency), may cause low globulin levels, leading to an elevated A/G ratio.
-    Kidney Disease (with protein loss):In some kidney diseases like Minimal Change Disease or Focal Segmental Glomerulosclerosis (FSGS), the loss of globulins from the body might lead to a higher A/G ratio, although this is rare.
-    Multiple Myeloma (Early Stages):In the early stages of multiple myeloma, there may be a relative decrease in globulins, especially in the absence of hyperviscosity symptoms, leading to an elevated A/G ratio.
-    Diabetes:In some cases of diabetes, particularly poorly managed diabetes, high albumin levels relative to globulins may be observed due to the body’s metabolic changes affecting protein levels.
-    Hyperthyroidism:In hyperthyroidism, where the metabolism is increased, albumin production may remain high while globulin levels may not increase as much, causing a higher A/G ratio.
+            <h4>Root Cause:</h4>
+            <ul>
+                <li><strong>Severe Dehydration:</strong> In cases of dehydration, the blood volume decreases, which can result in an increase in the concentration of albumin relative to globulins. This can cause a higher A/G ratio.</li>
+                <li><strong>Chronic Liver Disease (in early stages):</strong> Early stages of liver disease may result in a decrease in globulin production while albumin production is maintained or slightly reduced, leading to a higher A/G ratio.</li>
+                <li><strong>Malnutrition (with low globulin levels):</strong> Severe malnutrition or protein deficiency might lead to low globulin production, which can raise the A/G ratio if albumin levels are adequate.</li>
+                <li><strong>Genetic Disorders:</strong> Certain rare genetic disorders, such as selective immunoglobulin deficiencies (e.g., IgA deficiency), may cause low globulin levels, leading to an elevated A/G ratio.</li>
+                <li><strong>Kidney Disease (with protein loss):</strong> In some kidney diseases like Minimal Change Disease or Focal Segmental Glomerulosclerosis (FSGS), the loss of globulins from the body might lead to a higher A/G ratio, although this is rare.</li>
+                <li><strong>Multiple Myeloma (Early Stages):</strong> In the early stages of multiple myeloma, there may be a relative decrease in globulins, especially in the absence of hyperviscosity symptoms, leading to an elevated A/G ratio.</li>
+                <li><strong>Diabetes:</strong> In some cases of diabetes, particularly poorly managed diabetes, high albumin levels relative to globulins may be observed due to the body’s metabolic changes affecting protein levels.</li>
+                <li><strong>Hyperthyroidism:</strong> In hyperthyroidism, where the metabolism is increased, albumin production may remain high while globulin levels may not increase as much, causing a higher A/G ratio.</li>
+            </ul>
 
-Health Risks of High A/G Ratio:
-    Dehydration: The most common cause of a high A/G ratio, dehydration, can lead to complications like kidney stones, blood clots, and electrolyte imbalances.
-    Nutritional Deficiencies: If malnutrition is causing low globulin levels, this can increase the risk of infections and delayed healing due to an impaired immune system.
-    Immune Deficiencies: Low globulin levels can result in an increased risk of infections as there are fewer antibodies available to fight pathogens.
+            <h4>Health Risks of High A/G Ratio:</h4>
+            <ul>
+                <li><strong>Dehydration:</strong> The most common cause of a high A/G ratio, dehydration, can lead to complications like kidney stones, blood clots, and electrolyte imbalances.</li>
+                <li><strong>Nutritional Deficiencies:</strong> If malnutrition is causing low globulin levels, this can increase the risk of infections and delayed healing due to an impaired immune system.</li>
+                <li><strong>Immune Deficiencies:</strong> Low globulin levels can result in an increased risk of infections as there are fewer antibodies available to fight pathogens.</li>
+            </ul>
 
-Tips to Lower A/G Ratio (Normalize Globulin Levels):
-    Hydrate Properly:Drink adequate water to ensure proper fluid balance and to help prevent the concentration of albumin due to dehydration.
-    Address Malnutrition:If malnutrition or protein deficiency is the cause, ensure adequate intake of essential nutrients and proteins, focusing on protein-rich foods (like eggs, meats, legumes) to help normalize globulin levels.
-    Treat Underlying Conditions:Manage conditions like liver disease, kidney disease, and hyperthyroidism to ensure that globulin production is not impaired and the A/G ratio is normalized.
-    Manage Inflammatory or Immune Conditions:If autoimmune conditions or infections are causing changes in globulin levels, treat the underlying condition to bring globulin levels back to a normal range.
+            <h4>Tips to Lower A/G Ratio (Normalize Globulin Levels):</h4>
+            <ul>
+                <li><strong>Hydrate Properly:</strong> Drink adequate water to ensure proper fluid balance and to help prevent the concentration of albumin due to dehydration.</li>
+                <li><strong>Address Malnutrition:</strong> If malnutrition or protein deficiency is the cause, ensure adequate intake of essential nutrients and proteins, focusing on protein-rich foods (like eggs, meats, legumes) to help normalize globulin levels.</li>
+                <li><strong>Treat Underlying Conditions:</strong> Manage conditions like liver disease, kidney disease, and hyperthyroidism to ensure that globulin production is not impaired and the A/G ratio is normalized.</li>
+                <li><strong>Manage Inflammatory or Immune Conditions:</strong> If autoimmune conditions or infections are causing changes in globulin levels, treat the underlying condition to bring globulin levels back to a normal range.</li>
+            </ul>
 
-Foods to Eat for High A/G Ratio:
-    Hydration: Drink water, coconut water, and electrolyte-rich beverages.
-    Protein-Rich Foods: Increase protein intake with lean meats, fish, legumes, tofu, and nuts.
-    Anti-Inflammatory Foods: Incorporate foods like turmeric, ginger, and green leafy vegetables to help manage immune response and inflammation.
-    """)
+            <h4>Foods to Eat for High A/G Ratio:</h4>
+            <ul>
+                <li><strong>Hydration:</strong> Drink water, coconut water, and electrolyte-rich beverages.</li>
+                <li><strong>Protein-Rich Foods:</strong> Increase protein intake with lean meats, fish, legumes, tofu, and nuts.</li>
+                <li><strong>Anti-Inflammatory Foods:</strong> Incorporate foods like turmeric, ginger, and green leafy vegetables to help manage immune response and inflammation.</li>
+            </ul>
+        </div>
+        """)
 
     # Creatinine (range: 0.6-1.2 mg/dL)
     if "Creatinine" in values:
         if values["Creatinine"] < 0.7:
-            advice.append("""Low Creatinine (Hypocreatininemia)
-A low creatinine level is typically rare and is often associated with specific medical conditions or factors that affect muscle mass, kidney function, or hydration.
+            advice.append("""<h3>Low Creatinine (Hypocreatininemia)</h3>
+<p>A low creatinine level is typically rare and is often associated with specific medical conditions or factors that affect muscle mass, kidney function, or hydration.</p>
 
-Root Causes of Low Creatinine:
-    Reduced Muscle Mass
-    Aging: As people age, muscle mass tends to decrease, which can result in lower creatinine production.
-    Muscle Wasting Conditions: Diseases such as muscular dystrophy, sarcopenia (age-related muscle loss), or polymyositis can result in reduced muscle mass and, consequently, low creatinine production.
-    Malnutrition: Inadequate nutrition, particularly a deficiency in proteins and calories, can lead to muscle loss and lower creatinine levels.
-    Severe Weight Loss: Unintentional or rapid weight loss due to illness or extreme dieting can also reduce muscle mass, causing lower creatinine levels.
-    Pregnancy:Increased Blood Volume during pregnancy, blood volume increases, and the kidneys filter more blood. This can lead to a dilution of creatinine levels, causing them to appear lower than normal.
-    Chronic Liver Disease:In advanced liver cirrhosis or other liver conditions, muscle protein synthesis is often reduced, leading to lower muscle mass and lower creatinine production.
-    Overhydration:Excessive fluid intake or hyperhydration can dilute blood creatinine levels, making them appear lower than usual.
-    Acute and Chronic Kidney Disease (in very early stages):In rare cases, especially in the early stages of kidney disease, the kidneys may not filter creatinine efficiently, causing blood creatinine levels to remain at lower levels. However, this is less common as creatinine typically rises as kidney function worsens.
-    Use of Certain Medications:Corticosteroids or anabolic steroids can cause a shift in muscle mass and might lower creatinine levels, though this is not common.
-    Dietary Factors:A vegetarian or vegan diet might result in slightly lower creatinine levels because plant-based diets often contain less creatine than meat-based diets. Creatine is the precursor to creatinine, and without sufficient intake, creatinine production may be lower.
+<h4>Root Causes of Low Creatinine:</h4>
+<ul>
+    <li><strong>Reduced Muscle Mass:</strong>
+        <ul>
+            <li><strong>Aging:</strong> As people age, muscle mass tends to decrease, which can result in lower creatinine production.</li>
+            <li><strong>Muscle Wasting Conditions:</strong> Diseases such as muscular dystrophy, sarcopenia (age-related muscle loss), or polymyositis can result in reduced muscle mass and, consequently, low creatinine production.</li>
+            <li><strong>Malnutrition:</strong> Inadequate nutrition, particularly a deficiency in proteins and calories, can lead to muscle loss and lower creatinine levels.</li>
+            <li><strong>Severe Weight Loss:</strong> Unintentional or rapid weight loss due to illness or extreme dieting can also reduce muscle mass, causing lower creatinine levels.</li>
+        </ul>
+    </li>
+    <li><strong>Pregnancy:</strong> Increased Blood Volume during pregnancy, blood volume increases, and the kidneys filter more blood. This can lead to a dilution of creatinine levels, causing them to appear lower than normal.</li>
+    <li><strong>Chronic Liver Disease:</strong> In advanced liver cirrhosis or other liver conditions, muscle protein synthesis is often reduced, leading to lower muscle mass and lower creatinine production.</li>
+    <li><strong>Overhydration:</strong> Excessive fluid intake or hyperhydration can dilute blood creatinine levels, making them appear lower than usual.</li>
+    <li><strong>Acute and Chronic Kidney Disease (in very early stages):</strong> In rare cases, especially in the early stages of kidney disease, the kidneys may not filter creatinine efficiently, causing blood creatinine levels to remain at lower levels. However, this is less common as creatinine typically rises as kidney function worsens.</li>
+    <li><strong>Use of Certain Medications:</strong> Corticosteroids or anabolic steroids can cause a shift in muscle mass and might lower creatinine levels, though this is not common.</li>
+    <li><strong>Dietary Factors:</strong> A vegetarian or vegan diet might result in slightly lower creatinine levels because plant-based diets often contain less creatine than meat-based diets. Creatine is the precursor to creatinine, and without sufficient intake, creatinine production may be lower.</li>
+</ul>
 
-Health Risks of Low Creatinine:
-    Muscle Loss: Low creatinine levels can indicate decreased muscle mass, which can result in weakness, frailty, and decreased mobility, particularly in elderly individuals.
-    Nutritional Deficiencies: Chronic low creatinine levels due to poor nutrition can signal deficiencies in essential nutrients like protein.
-    Potential Kidney Dysfunction: Although less common, abnormally low creatinine can sometimes be seen in the early stages of kidney disease. This requires further investigation to determine the cause.
+<h4>Health Risks of Low Creatinine:</h4>
+<ul>
+    <li><strong>Muscle Loss:</strong> Low creatinine levels can indicate decreased muscle mass, which can result in weakness, frailty, and decreased mobility, particularly in elderly individuals.</li>
+    <li><strong>Nutritional Deficiencies:</strong> Chronic low creatinine levels due to poor nutrition can signal deficiencies in essential nutrients like protein.</li>
+    <li><strong>Potential Kidney Dysfunction:</strong> Although less common, abnormally low creatinine can sometimes be seen in the early stages of kidney disease. This requires further investigation to determine the cause.</li>
+</ul>
 
-Tips to Increase Creatinine Levels:
-    Increase Muscle Mass:Engage in strength training or resistance exercises to build muscle mass. This can naturally increase creatinine production.
-    Protein Intake:Ensure adequate protein intake to support muscle growth. Include animal-based proteins (like lean meats, eggs, and dairy) or plant-based proteins (like legumes, tofu, and quinoa) in your diet.
-    Balanced Nutrition:Focus on a nutrient-dense diet that includes vitamins and minerals to support muscle health and overall well-being.
-    Manage Hydration:While adequate hydration is important, avoid excessive fluid intake that may dilute creatinine levels.
-""")
+<h4>Tips to Increase Creatinine Levels:</h4>
+<ul>
+    <li><strong>Increase Muscle Mass:</strong> Engage in strength training or resistance exercises to build muscle mass. This can naturally increase creatinine production.</li>
+    <li><strong>Protein Intake:</strong> Ensure adequate protein intake to support muscle growth. Include animal-based proteins (like lean meats, eggs, and dairy) or plant-based proteins (like legumes, tofu, and quinoa) in your diet.</li>
+    <li><strong>Balanced Nutrition:</strong> Focus on a nutrient-dense diet that includes vitamins and minerals to support muscle health and overall well-being.</li>
+    <li><strong>Manage Hydration:</strong> While adequate hydration is important, avoid excessive fluid intake that may dilute creatinine levels.</li>
+</ul>""")
         elif values["Creatinine"] > 1.2:
-            advice.append("""High Creatinine (Hypercreatininemia)
-High creatinine levels are more commonly seen and typically indicate impaired kidney function or other factors that affect kidney health. The kidneys are responsible for filtering creatinine, so high levels are often a sign that the kidneys are not working properly.
+            advice.append("""<h3>High Creatinine (Hypercreatininemia)</h3>
+<p>High creatinine levels are more commonly seen and typically indicate impaired kidney function or other factors that affect kidney health. The kidneys are responsible for filtering creatinine, so high levels are often a sign that the kidneys are not working properly.</p>
 
-Root Causes of High Creatinine:
-    Acute Kidney Injury (AKI): Sudden damage to the kidneys (due to trauma, infection, or dehydration) can result in a rapid rise in creatinine levels.
-    Chronic Kidney Disease: Long-term kidney diseases, such as diabetic nephropathy or hypertensive nephropathy, impair kidney function, leading to elevated creatinine levels.
-    Dehydration:Inadequate Fluid Intake: When the body is dehydrated, the kidneys retain water to compensate, which can result in concentrated creatinine in the blood, causing elevated levels.
-    Rhabdomyolysis: This is a serious condition where muscle tissue breaks down rapidly due to injury, extreme physical exertion, or certain medications (e.g., statins), releasing creatine and creatinine into the bloodstream.
-    Severe Burns or Trauma: Extensive muscle damage from burns or trauma can lead to high creatinine levels as muscles release more creatinine into the blood.
-    Medications:Certain Drugs and Some medications, such as nonsteroidal anti-inflammatory drugs (NSAIDs), ACE inhibitors, and diuretics, can affect kidney function, leading to increased creatinine levels.
-    Chemotherapy: Chemotherapy drugs, especially in high doses, can cause kidney damage and elevate creatinine levels.
-    High Protein Diet:Excessive Meat Consumption: A high-protein diet, especially one rich in red meat, can increase the production of creatinine, as creatine (which is found in muscle tissues) is broken down into creatinine.
-    Heart Failure:Reduced Kidney Perfusion: In heart failure, the kidneys may not receive enough blood flow due to low cardiac output, which can impair their ability to filter waste and elevate creatinine levels.
-    Hypothyroidism: Low thyroid hormone levels can reduce kidney function, leading to elevated creatinine levels.
-    Cushing’s Syndrome: Elevated cortisol levels can impair kidney function, causing high creatinine levels.
-    Glomerulonephritis:Inflammation of the glomeruli (the filtering units of the kidneys) can impair kidney function and increase creatinine levels. This condition may be due to an autoimmune response or infection.
-    Kidney Dysfunction: High creatinine is one of the most important markers for kidney dysfunction. Elevated levels indicate that the kidneys are not filtering waste effectively, which can lead to a buildup of toxins in the body.
-    Fluid Imbalance: Poor kidney function can result in fluid retention, causing swelling, high blood pressure, and electrolyte imbalances.
-    Progression of Kidney Disease: Elevated creatinine levels can indicate the progression of kidney disease. Early intervention is critical to slow disease progression and prevent further damage.
-    Cardiovascular Risk: Chronic kidney disease and elevated creatinine levels are closely associated with an increased risk of cardiovascular events, such as heart attacks and strokes.
+<h4>Root Causes of High Creatinine:</h4>
+<ul>
+    <li><strong>Acute Kidney Injury (AKI):</strong> Sudden damage to the kidneys (due to trauma, infection, or dehydration) can result in a rapid rise in creatinine levels.</li>
+    <li><strong>Chronic Kidney Disease:</strong> Long-term kidney diseases, such as diabetic nephropathy or hypertensive nephropathy, impair kidney function, leading to elevated creatinine levels.</li>
+    <li><strong>Dehydration:</strong> Inadequate Fluid Intake: When the body is dehydrated, the kidneys retain water to compensate, which can result in concentrated creatinine in the blood, causing elevated levels.</li>
+    <li><strong>Rhabdomyolysis:</strong> This is a serious condition where muscle tissue breaks down rapidly due to injury, extreme physical exertion, or certain medications (e.g., statins), releasing creatine and creatinine into the bloodstream.</li>
+    <li><strong>Severe Burns or Trauma:</strong> Extensive muscle damage from burns or trauma can lead to high creatinine levels as muscles release more creatinine into the blood.</li>
+    <li><strong>Medications:</strong> Certain Drugs and Some medications, such as nonsteroidal anti-inflammatory drugs (NSAIDs), ACE inhibitors, and diuretics, can affect kidney function, leading to increased creatinine levels.</li>
+    <li><strong>Chemotherapy:</strong> Chemotherapy drugs, especially in high doses, can cause kidney damage and elevate creatinine levels.</li>
+    <li><strong>High Protein Diet:</strong> Excessive Meat Consumption: A high-protein diet, especially one rich in red meat, can increase the production of creatinine, as creatine (which is found in muscle tissues) is broken down into creatinine.</li>
+    <li><strong>Heart Failure:</strong> Reduced Kidney Perfusion: In heart failure, the kidneys may not receive enough blood flow due to low cardiac output, which can impair their ability to filter waste and elevate creatinine levels.</li>
+    <li><strong>Hypothyroidism:</strong> Low thyroid hormone levels can reduce kidney function, leading to elevated creatinine levels.</li>
+    <li><strong>Cushing’s Syndrome:</strong> Elevated cortisol levels can impair kidney function, causing high creatinine levels.</li>
+    <li><strong>Glomerulonephritis:</strong> Inflammation of the glomeruli (the filtering units of the kidneys) can impair kidney function and increase creatinine levels. This condition may be due to an autoimmune response or infection.</li>
+    <li><strong>Kidney Dysfunction:</strong> High creatinine is one of the most important markers for kidney dysfunction. Elevated levels indicate that the kidneys are not filtering waste effectively, which can lead to a buildup of toxins in the body.</li>
+    <li><strong>Fluid Imbalance:</strong> Poor kidney function can result in fluid retention, causing swelling, high blood pressure, and electrolyte imbalances.</li>
+    <li><strong>Progression of Kidney Disease:</strong> Elevated creatinine levels can indicate the progression of kidney disease. Early intervention is critical to slow disease progression and prevent further damage.</li>
+    <li><strong>Cardiovascular Risk:</strong> Chronic kidney disease and elevated creatinine levels are closely associated with an increased risk of cardiovascular events, such as heart attacks and strokes.</li>
+</ul>
 
-Tips to Lower Creatinine Levels:
-    Treat Kidney Disease:Work with a healthcare provider to manage underlying kidney disease, whether it’s diabetic nephropathy, hypertension, or glomerulonephritis. Proper medication, diet adjustments, and lifestyle changes can help manage creatinine levels.
-    Hydration:Stay adequately hydrated, but avoid excessive fluid intake, as this can stress the kidneys. Balance hydration with kidney health.
-    Limit Protein Intake:Reducing the intake of animal proteins and focusing on plant-based proteins can help reduce the workload on the kidneys and prevent further increases in creatinine levels.
-    Manage Blood Pressure and Blood Sugar:Controlling hypertension and diabetes is crucial in preventing kidney damage and managing creatinine levels. Aim for a healthy weight, exercise, and take prescribed medications.
-    Avoid Harmful Medications:Avoid medications or substances that can cause kidney damage, including certain over-the-counter pain relievers (NSAIDs) and some prescription medications. Always consult a healthcare provider before taking new medications.
-    Dietary Modifications:A kidney-friendly diet includes limiting salt intake, reducing phosphorus and potassium-rich foods (if advised by a healthcare provider), and eating foods that support overall kidney health, like blueberries, leafy greens, and whole grains.
-    """)
+<h4>Tips to Lower Creatinine Levels:</h4>
+<ul>
+    <li><strong>Treat Kidney Disease:</strong> Work with a healthcare provider to manage underlying kidney disease, whether it’s diabetic nephropathy, hypertension, or glomerulonephritis. Proper medication, diet adjustments, and lifestyle changes can help manage creatinine levels.</li>
+    <li><strong>Hydration:</strong> Stay adequately hydrated, but avoid excessive fluid intake, as this can stress the kidneys. Balance hydration with kidney health.</li>
+    <li><strong>Limit Protein Intake:</strong> Reducing the intake of animal proteins and focusing on plant-based proteins can help reduce the workload on the kidneys and prevent further increases in creatinine levels.</li>
+    <li><strong>Manage Blood Pressure and Blood Sugar:</strong> Controlling hypertension and diabetes is crucial in preventing kidney damage and managing creatinine levels. Aim for a healthy weight, exercise, and take prescribed medications.</li>
+    <li><strong>Avoid Harmful Medications:</strong> Avoid medications or substances that can cause kidney damage, including certain over-the-counter pain relievers (NSAIDs) and some prescription medications. Always consult a healthcare provider before taking new medications.</li>
+    <li><strong>Dietary Modifications:</strong> A kidney-friendly diet includes limiting salt intake, reducing phosphorus and potassium-rich foods (if advised by a healthcare provider), and eating foods that support overall kidney health, like blueberries, leafy greens, and whole grains.</li>
+</ul>""")
 
     # Blood Urea Nitrogen (BUN) (range: 7-20 mg/dL)
-    if "Blood Urea Nitrogen" in values:
-        if values["Blood Urea Nitrogen"] < 8:
-            advice.append("""Low BUN (Hypoazotemia)
-A low BUN level indicates that the kidneys are not filtering urea nitrogen properly or that there is an issue affecting protein breakdown. Though less common than high BUN levels, low levels can still point to specific health issues.
-
-Root Causes of Low BUN:
-    Malnutrition or Low Protein Intake:If the body does not have enough dietary protein to break down, urea production decreases, leading to low BUN levels. This can occur in cases of severe malnutrition, eating disorders (e.g., anorexia), or very low-protein diets.
-    Liver Disease:Since urea is produced in the liver, any condition that impairs liver function, such as cirrhosis or acute liver failure, can result in decreased urea production, leading to low BUN levels.
-    Overhydration:Excessive fluid intake or overhydration can dilute the blood, resulting in low concentrations of waste products, including urea, in the bloodstream.
-    Severe Anemia:Certain types of severe anemia, particularly those associated with a low red blood cell count, can lead to low BUN levels. Anemia decreases the body’s metabolic demand for protein, which results in less urea being produced.
-    Pregnancy:Pregnancy increases the blood volume, which can dilute waste products like BUN in the bloodstream. This is particularly common in the second and third trimesters.
-    Nephrotic Syndrome:In rare cases, nephrotic syndrome (a kidney disorder characterized by excessive protein loss in the urine) can result in a decreased BUN level due to altered kidney function and reduced urea production.
-    Excessive Anabolic Steroid Use:Anabolic steroids, which are used for muscle growth and recovery, can lower BUN levels by enhancing muscle protein synthesis, leading to reduced breakdown of proteins and, consequently, less urea production.
-    Diabetes (in the early stages):Although more commonly associated with high BUN, in the early stages of diabetes, low BUN can sometimes be observed, especially if the patient has experienced significant weight loss or poor nutrition.
-
-Health Risks of Low BUN:
-    Malnutrition: A low BUN level might indicate an insufficient intake of protein, leading to nutritional deficiencies and muscle wasting.
-    Liver Disease: Low BUN may indicate that the liver is not functioning properly, which can affect overall metabolic and detoxification processes.
-    Kidney Dysfunction: In some cases, kidney problems may contribute to low BUN, but it is less common than elevated levels.
-    Fluid Imbalance: Overhydration can result in diluted blood, which may mask other important biomarkers and distort the overall picture of kidney function.
-
-Tips to Increase BUN Levels:
-    Increase Protein Intake:Incorporate more lean meats, fish, eggs, and dairy products into the diet. For vegetarians, lentils, beans, and tofu are excellent sources of protein.
-    Address Nutritional Deficiencies:Consider working with a nutritionist to ensure you are getting an adequate, balanced diet to support overall health and liver function.
-    Monitor Hydration:While staying hydrated is important, avoid excessive fluid intake, especially in cases of low BUN due to overhydration.
-    Treat Liver Conditions:If liver disease is diagnosed, managing it with proper medical care, such as medications or lifestyle changes, may help increase BUN levels indirectly by improving liver function.
-    Exercise Regularly:Engage in regular physical activity to increase muscle mass and metabolism, which can increase urea production.
-""")
-        elif values["Blood Urea Nitrogen"] > 20:
-            advice.append("""High BUN (Azotemia)
-A high BUN level is more common and typically indicates that the kidneys are not functioning properly or that there are issues related to hydration, diet, or muscle metabolism.
-
-Root Causes of High BUN:
-    Chronic Kidney Disease (CKD), Acute Kidney Injury (AKI), or glomerulonephritis (inflammation of the kidney filters) can impair the kidneys' ability to filter out urea, causing a buildup in the blood.
-    Dehydration:Insufficient Fluid Intake: When a person is dehydrated, the kidneys conserve water, which results in the concentration of waste products like urea in the bloodstream.
-    Excessive Fluid Loss: Conditions that cause excessive fluid loss, such as vomiting, diarrhea, or fever, can lead to dehydration and a subsequent increase in BUN levels.
-    High Protein Diet:Consuming excessive amounts of protein, especially animal protein, increases the breakdown of proteins into amino acids, which in turn increases urea production. This can cause elevated BUN levels.
-    Heart Failure:Reduced Kidney Perfusion: In heart failure, the heart is unable to pump blood effectively, which reduces blood flow to the kidneys, impairing their ability to filter waste products like urea.
-    Gastrointestinal Bleeding:Internal Bleeding: When there is bleeding in the gastrointestinal tract (e.g., ulcers, varices, or gastric bleeding), proteins from the blood are digested in the intestines, leading to increased nitrogen levels and elevated BUN.
-    Shock:Sepsis or Hypovolemic Shock: A state of low blood pressure or shock reduces blood flow to the kidneys, which impairs their ability to filter waste products properly, leading to elevated BUN levels.
-    Diabetes:Uncontrolled Diabetes: When blood sugar levels are very high and the kidneys are under stress, kidney function may decline, causing high BUN levels.
-    Medication Use:Certain medications can cause kidney damage or dehydration, leading to increased BUN levels. Examples include NSAIDs, diuretics, and some antibiotics.
-    Increased Muscle Breakdown:Conditions like rhabdomyolysis, where there is significant muscle breakdown, can lead to a release of large amounts of urea nitrogen into the bloodstream, raising BUN levels.
-
-Health Risks of High BUN:
-    Kidney Dysfunction: Elevated BUN is often one of the first indicators of impaired kidney function. Long-term kidney issues, such as chronic kidney disease, need to be addressed to prevent progression to kidney failure.
-    Dehydration: Persistent dehydration can lead to kidney damage and elevated BUN, which can increase the risk of further complications like kidney stones.
-    Cardiovascular Risk: High BUN levels can be linked to heart disease, especially in people with existing heart or kidney conditions.
-    Gastrointestinal Problems: If high BUN is caused by gastrointestinal bleeding, it is a serious medical emergency and requires immediate treatment.
-
-Tips to Lower BUN Levels:
-    Improve Hydration:Stay well-hydrated by drinking an adequate amount of water throughout the day. However, be mindful of the recommended fluid intake if you have kidney disease or any fluid retention issues.
-    Manage Kidney Health:Control underlying conditions like hypertension, diabetes, or heart disease to prevent further damage to the kidneys.
-    Medications or lifestyle changes may be necessary to support kidney function and prevent BUN from rising.
-    Moderate Protein Intake:If BUN is high due to excessive protein intake, try to reduce your consumption of high-protein foods (particularly red meat) and focus on moderate portions of lean proteins, such as chicken, fish, or plant-based protein sources.
-    Treat Underlying Conditions:If high BUN is related to conditions like gastrointestinal bleeding, shock, or muscle breakdown, work with healthcare providers to treat the underlying cause promptly.
-    Monitor Kidney Function:If BUN levels are high and you have kidney disease or other risk factors, regular monitoring of kidney function is crucial to ensure proper treatment and avoid complications.""")
+    
 
     # Uric Acid (range: 3.5-7.2 mg/dL)
+    if "Blood Urea Nitrogen" in values:
+        if values["Blood Urea Nitrogen"] < 8:
+            advice.append("""
+        <h2>Low BUN (Hypoazotemia)</h2>
+        <p>A low BUN level indicates that the kidneys are not filtering urea nitrogen properly or that there is an issue affecting protein breakdown. Though less common than high BUN levels, low levels can still point to specific health issues.</p>
+        
+        <h3>Root Causes of Low BUN:</h3>
+        <ul>
+            <li><b>Malnutrition or Low Protein Intake:</b> If the body does not have enough dietary protein to break down, urea production decreases, leading to low BUN levels. This can occur in cases of severe malnutrition, eating disorders (e.g., anorexia), or very low-protein diets.</li>
+            <li><b>Liver Disease:</b> Since urea is produced in the liver, any condition that impairs liver function, such as cirrhosis or acute liver failure, can result in decreased urea production, leading to low BUN levels.</li>
+            <li><b>Overhydration:</b> Excessive fluid intake or overhydration can dilute the blood, resulting in low concentrations of waste products, including urea, in the bloodstream.</li>
+            <li><b>Severe Anemia:</b> Certain types of severe anemia, particularly those associated with a low red blood cell count, can lead to low BUN levels. Anemia decreases the body’s metabolic demand for protein, which results in less urea being produced.</li>
+            <li><b>Pregnancy:</b> Pregnancy increases the blood volume, which can dilute waste products like BUN in the bloodstream. This is particularly common in the second and third trimesters.</li>
+            <li><b>Nephrotic Syndrome:</b> In rare cases, nephrotic syndrome (a kidney disorder characterized by excessive protein loss in the urine) can result in a decreased BUN level due to altered kidney function and reduced urea production.</li>
+            <li><b>Excessive Anabolic Steroid Use:</b> Anabolic steroids, which are used for muscle growth and recovery, can lower BUN levels by enhancing muscle protein synthesis, leading to reduced breakdown of proteins and, consequently, less urea production.</li>
+            <li><b>Diabetes (in the early stages):</b> Although more commonly associated with high BUN, in the early stages of diabetes, low BUN can sometimes be observed, especially if the patient has experienced significant weight loss or poor nutrition.</li>
+        </ul>
+
+        <h3>Health Risks of Low BUN:</h3>
+        <ul>
+            <li><b>Malnutrition:</b> A low BUN level might indicate an insufficient intake of protein, leading to nutritional deficiencies and muscle wasting.</li>
+            <li><b>Liver Disease:</b> Low BUN may indicate that the liver is not functioning properly, which can affect overall metabolic and detoxification processes.</li>
+            <li><b>Kidney Dysfunction:</b> In some cases, kidney problems may contribute to low BUN, but it is less common than elevated levels.</li>
+            <li><b>Fluid Imbalance:</b> Overhydration can result in diluted blood, which may mask other important biomarkers and distort the overall picture of kidney function.</li>
+        </ul>
+
+        <h3>Tips to Increase BUN Levels:</h3>
+        <ul>
+            <li><b>Increase Protein Intake:</b> Incorporate more lean meats, fish, eggs, and dairy products into the diet. For vegetarians, lentils, beans, and tofu are excellent sources of protein.</li>
+            <li><b>Address Nutritional Deficiencies:</b> Consider working with a nutritionist to ensure you are getting an adequate, balanced diet to support overall health and liver function.</li>
+            <li><b>Monitor Hydration:</b> While staying hydrated is important, avoid excessive fluid intake, especially in cases of low BUN due to overhydration.</li>
+            <li><b>Treat Liver Conditions:</b> If liver disease is diagnosed, managing it with proper medical care, such as medications or lifestyle changes, may help increase BUN levels indirectly by improving liver function.</li>
+            <li><b>Exercise Regularly:</b> Engage in regular physical activity to increase muscle mass and metabolism, which can increase urea production.</li>
+        </ul>
+        """)
+        elif values["Blood Urea Nitrogen"] > 20:
+            advice.append("""
+        <h2>High BUN (Azotemia)</h2>
+        <p>A high BUN level is more common and typically indicates that the kidneys are not functioning properly or that there are issues related to hydration, diet, or muscle metabolism.</p>
+        
+        <h3>Root Causes of High BUN:</h3>
+        <ul>
+            <li><b>Chronic Kidney Disease (CKD):</b> Conditions like CKD, acute kidney injury, or glomerulonephritis impair the kidneys' ability to filter urea, causing a buildup in the blood.</li>
+            <li><b>Dehydration:</b> Insufficient fluid intake can lead to concentrated waste products like urea in the bloodstream.</li>
+            <li><b>Excessive Fluid Loss:</b> Conditions causing fluid loss, such as vomiting, diarrhea, or fever, can lead to dehydration and an increase in BUN levels.</li>
+            <li><b>High Protein Diet:</b> Consuming excessive amounts of protein increases urea production and may elevate BUN levels.</li>
+            <li><b>Heart Failure:</b> Reduced kidney perfusion from heart failure impairs the kidneys' ability to filter waste products like urea.</li>
+            <li><b>Gastrointestinal Bleeding:</b> Internal bleeding leads to increased nitrogen levels and elevated BUN.</li>
+            <li><b>Shock:</b> Low blood pressure or shock reduces blood flow to the kidneys, impairing their ability to filter waste products properly.</li>
+            <li><b>Uncontrolled Diabetes:</b> High blood sugar levels can stress the kidneys, causing high BUN levels.</li>
+            <li><b>Medication Use:</b> Drugs like NSAIDs, diuretics, or antibiotics can lead to kidney damage or dehydration, raising BUN levels.</li>
+            <li><b>Increased Muscle Breakdown:</b> Conditions like rhabdomyolysis release large amounts of urea nitrogen, raising BUN levels.</li>
+        </ul>
+
+        <h3>Health Risks of High BUN:</h3>
+        <ul>
+            <li><b>Kidney Dysfunction:</b> Elevated BUN is often a sign of impaired kidney function. Chronic kidney disease needs prompt treatment to avoid progression to kidney failure.</li>
+            <li><b>Dehydration:</b> Persistent dehydration may lead to kidney damage and other complications like kidney stones.</li>
+            <li><b>Cardiovascular Risk:</b> High BUN levels may indicate heart disease, particularly in individuals with existing heart or kidney conditions.</li>
+            <li><b>Gastrointestinal Problems:</b> High BUN caused by gastrointestinal bleeding is a medical emergency requiring immediate attention.</li>
+        </ul>
+
+        <h3>Tips to Lower BUN Levels:</h3>
+        <ul>
+            <li><b>Improve Hydration:</b> Stay hydrated by drinking an adequate amount of water. Adjust fluid intake based on any underlying conditions.</li>
+            <li><b>Manage Kidney Health:</b> Control conditions like hypertension, diabetes, or heart disease to protect kidney function.</li>
+            <li><b>Moderate Protein Intake:</b> Reduce high-protein food consumption, especially red meat, and focus on lean protein sources.</li>
+            <li><b>Treat Underlying Conditions:</b> Address issues like gastrointestinal bleeding, shock, or muscle breakdown promptly with medical care.</li>
+            <li><b>Monitor Kidney Function:</b> Regular check-ups can help detect issues early and guide treatment strategies.</li>
+        </ul>
+        """)
     if "Uric Acid" in values:
         if values["Uric Acid"] < 3.5:
-            advice.append("""Low Uric Acid (Hypouricemia)
-A low uric acid level is less common than a high level but can still be indicative of specific health issues.
-
-Root Causes of Low Uric Acid:
-    Kidney Dysfunction: Certain kidney diseases, particularly those that impair the renal tubules' ability to filter waste, can result in low uric acid levels in the blood. This happens because the kidneys might excrete too much uric acid rather than filtering and reabsorbing it.
-    Dietary Factors: A diet that is extremely low in purines (found in red meat, organ meats, and seafood) can result in low uric acid levels. This is uncommon but may occur in strict vegetarian or low-purine diets.
-    Overuse of Certain Medications:
-    Diuretics (e.g., Thiazides): Diuretic medications are used to treat conditions like high blood pressure or edema, and they can lead to low uric acid levels by increasing its excretion in the urine.
-    Losartan (blood pressure medication): Interestingly, Losartan, a medication used for managing hypertension, can lower uric acid levels.
-    Vitamin C Overuse: High doses of Vitamin C supplements can lower uric acid levels by increasing the renal clearance (excretion) of uric acid.
-    Low Estrogen: In women, low estrogen levels, especially during menopause, can result in decreased uric acid levels.
-    Fanconi Syndrome:This is a rare disorder that affects kidney function, leading to the loss of important substances, including uric acid, in urine.
-    Wilson's Disease:A genetic disorder that causes copper buildup in the body, which can lead to low uric acid levels due to impaired purine metabolism.
-    Health Risks of Low Uric Acid:
-    Kidney Dysfunction: Low uric acid can be a sign of kidney problems or renal tubular dysfunction.
-    Gout Prevention: While low uric acid is not typically linked to gout, it can sometimes reflect abnormal kidney function, which, if untreated, could lead to other complications.
-    Metabolic Problems: Decreased levels might indicate metabolic imbalances, such as issues with purine metabolism or absorption.
-
-Tips to Increase Uric Acid Levels:
-    Increase Purine-Rich Foods:Foods such as red meat, shellfish, organ meats, and alcohol (especially beer) are high in purines and can increase uric acid production in the body.
-    Proper Kidney Function:Ensure adequate hydration and proper kidney function to help maintain normal uric acid levels. Stay well-hydrated, but avoid excessive intake of fluids.
-    Monitor Medication Use:If you're taking diuretics or Vitamin C supplements, discuss with your doctor whether adjustments are needed.
-    Consult a Healthcare Provider:If low uric acid is related to conditions such as Wilson's disease or Fanconi syndrome, seek specialized care and treatment options.
-    """)
+            advice.append("""
+        <div>
+            <h2>Low Uric Acid (Hypouricemia)</h2>
+            <p>A low uric acid level is less common than a high level but can still be indicative of specific health issues.</p>
+            <h3>Root Causes of Low Uric Acid:</h3>
+            <ul>
+                <li><strong>Kidney Dysfunction:</strong> Certain kidney diseases, particularly those that impair the renal tubules' ability to filter waste, can result in low uric acid levels in the blood.</li>
+                <li><strong>Dietary Factors:</strong> A diet that is extremely low in purines (found in red meat, organ meats, and seafood) can result in low uric acid levels.</li>
+                <li><strong>Overuse of Certain Medications:</strong>
+                    <ul>
+                        <li>Diuretics (e.g., Thiazides): Can lead to low uric acid levels by increasing its excretion in the urine.</li>
+                        <li>Losartan (blood pressure medication): Known to lower uric acid levels.</li>
+                        <li>Vitamin C Overuse: High doses can increase the renal clearance of uric acid.</li>
+                    </ul>
+                </li>
+                <li><strong>Low Estrogen:</strong> In women, low estrogen levels, especially during menopause, can result in decreased uric acid levels.</li>
+                <li><strong>Fanconi Syndrome:</strong> A rare disorder that affects kidney function, leading to the loss of important substances, including uric acid.</li>
+                <li><strong>Wilson's Disease:</strong> A genetic disorder causing copper buildup, which can lead to low uric acid levels.</li>
+            </ul>
+            <h3>Health Risks of Low Uric Acid:</h3>
+            <ul>
+                <li><strong>Kidney Dysfunction:</strong> May indicate renal tubular dysfunction.</li>
+                <li><strong>Gout Prevention:</strong> Reflects abnormal kidney function, which could lead to complications if untreated.</li>
+                <li><strong>Metabolic Problems:</strong> Indicates imbalances such as issues with purine metabolism.</li>
+            </ul>
+            <h3>Tips to Increase Uric Acid Levels:</h3>
+            <ul>
+                <li><strong>Increase Purine-Rich Foods:</strong> Include red meat, shellfish, organ meats, and alcohol in moderation.</li>
+                <li><strong>Proper Kidney Function:</strong> Ensure adequate hydration but avoid excessive fluid intake.</li>
+                <li><strong>Monitor Medication Use:</strong> Discuss with your doctor about adjustments for diuretics or Vitamin C supplements.</li>
+                <li><strong>Consult a Healthcare Provider:</strong> Seek specialized care for conditions like Wilson's disease or Fanconi syndrome.</li>
+            </ul>
+        </div>
+        """)
         elif values["Uric Acid"] > 7.2:
-            advice.append("""High Uric Acid (Hyperuricemia)
-High uric acid levels are more commonly discussed and can result from various factors that either increase uric acid production or decrease its excretion. If left untreated, high uric acid can lead to gout, a form of arthritis caused by the crystallization of uric acid in the joints, as well as kidney stones.
-
-Root Causes of High Uric Acid:
-    Purine-Rich Foods: Excessive consumption of foods high in purines, such as red meat, seafood, organ meats, alcohol (especially beer), and sugary drinks, can increase uric acid levels. Alcohol inhibits uric acid excretion, and high sugar intake, especially fructose, can lead to higher uric acid production.
-    Kidney Impairment: The kidneys are responsible for excreting uric acid. If kidney function is impaired (as in CKD), uric acid may build up in the bloodstream.
-    Obesity:Increased Uric Acid Production: People who are overweight or obese often have higher levels of uric acid because excess body fat increases uric acid production and decreases its excretion through the kidneys.
-    Dehydration:Insufficient Fluid Intake: Dehydration or not drinking enough water leads to a more concentrated urine, reducing the kidneys' ability to excrete uric acid and contributing to elevated levels in the blood.
-    Genetic Factors:A family history of hyperuricemia or gout can increase the likelihood of having elevated uric acid levels. Certain genetic variations can affect the body's ability to process and excrete uric acid properly.
-    Medications:Diuretics (e.g., Thiazides): Although diuretics can lower uric acid in some cases, they are more commonly known to raise uric acid levels by causing dehydration and reducing renal clearance.
-    Aspirin and Immunosuppressants: These medications can also reduce uric acid excretion, contributing to higher levels.
-    Medical Conditions such as
-    Gout: This is a disorder where uric acid builds up in the joints and forms crystals, causing inflammation and severe pain.
-    Psoriasis: People with psoriasis may have higher rates of cell turnover, which increases the breakdown of purines and subsequently leads to higher uric acid production.
-    Hypothyroidism: Low thyroid hormone levels can decrease kidney clearance of uric acid, leading to increased blood levels.
-    Leukemia or Lymphoma: Certain cancers or blood disorders can increase cell turnover, leading to more purine breakdown and, consequently, higher uric acid production.
-    Lead Poisoning:Lead exposure can impair kidney function and raise uric acid levels, leading to hyperuricemia.
-
-Health Risks of High Uric Acid:
-    Gout: High uric acid levels can lead to the formation of crystals in the joints, causing painful gout attacks, usually affecting the big toe or other joints.
-    Kidney Stones: Uric acid can form crystals in the kidneys, contributing to the formation of uric acid kidney stones.
-    Cardiovascular Disease: Chronic hyperuricemia is associated with an increased risk of hypertension, heart disease, and stroke.
-    Kidney Damage: Long-term elevated uric acid can contribute to kidney disease and renal failure due to the deposition of uric acid crystals in kidney tissues.
-
-Tips to Lower Uric Acid Levels:
-    Limit Purine-Rich Foods:Avoid or limit the intake of foods high in purines, such as red meats, organ meats, seafood, and alcohol, especially beer.
-    Stay Hydrated:Drink plenty of water throughout the day to help the kidneys excrete uric acid efficiently. Aim for at least 8 glasses of water per day.
-    Limit Alcohol:Alcohol, especially beer, can increase uric acid production and impair kidney excretion. Limit alcohol consumption or avoid it altogether if you have gout or high uric acid levels.
-    Maintain a Healthy Weight:Losing weight, especially belly fat, can help reduce uric acid levels and the risk of developing gout and kidney stones. Engage in regular physical activity and eat a balanced, healthy diet.
-
-Medications:
-    If uric acid levels are high due to gout, kidney issues, or other medical conditions, medications such as allopurinol or febuxostat can help lower uric acid levels. Always consult a doctor before starting or adjusting medications.
-    Avoid Sugary Beverages:Fructose (found in sugary drinks and processed foods) increases uric acid production. Avoid sodas and other sugar-laden beverages to manage uric acid levels.
-    Manage Underlying Health Conditions:Effectively treat conditions like hypertension, diabetes, and kidney disease to help lower uric acid levels.
-    Eat More Low-Purine Foods:Incorporate foods that are lower in purines, such as low-fat dairy, whole grains, vegetables, and fruits (especially cherries, which may help reduce uric acid levels)""")
+            advice.append("""
+        <div>
+            <h2>High Uric Acid (Hyperuricemia)</h2>
+            <p>High uric acid levels are more common and can result from factors that increase production or decrease excretion. Left untreated, it can lead to gout or kidney stones.</p>
+            <h3>Root Causes of High Uric Acid:</h3>
+            <ul>
+                <li><strong>Purine-Rich Foods:</strong> Excessive consumption of red meat, seafood, organ meats, alcohol, and sugary drinks.</li>
+                <li><strong>Kidney Impairment:</strong> Impaired kidney function leads to a buildup of uric acid.</li>
+                <li><strong>Obesity:</strong> Excess body fat increases uric acid production and decreases its excretion.</li>
+                <li><strong>Dehydration:</strong> Reduces the kidneys' ability to excrete uric acid.</li>
+                <li><strong>Genetic Factors:</strong> Family history or genetic variations affecting uric acid processing.</li>
+                <li><strong>Medications:</strong>
+                    <ul>
+                        <li>Diuretics: Can raise uric acid levels by causing dehydration.</li>
+                        <li>Aspirin and Immunosuppressants: Reduce uric acid excretion.</li>
+                    </ul>
+                </li>
+                <li><strong>Medical Conditions:</strong>
+                    <ul>
+                        <li>Gout: Uric acid crystals in joints cause inflammation and pain.</li>
+                        <li>Psoriasis: Increased cell turnover elevates uric acid production.</li>
+                        <li>Hypothyroidism: Decreases kidney clearance of uric acid.</li>
+                        <li>Leukemia or Lymphoma: High cell turnover increases purine breakdown.</li>
+                        <li>Lead Poisoning: Impairs kidney function.</li>
+                    </ul>
+                </li>
+            </ul>
+            <h3>Health Risks of High Uric Acid:</h3>
+            <ul>
+                <li><strong>Gout:</strong> Painful attacks due to uric acid crystallization in joints.</li>
+                <li><strong>Kidney Stones:</strong> Uric acid can form kidney stones.</li>
+                <li><strong>Cardiovascular Disease:</strong> Associated with hypertension and heart disease.</li>
+                <li><strong>Kidney Damage:</strong> Long-term elevated levels can lead to renal failure.</li>
+            </ul>
+            <h3>Tips to Lower Uric Acid Levels:</h3>
+            <ul>
+                <li><strong>Limit Purine-Rich Foods:</strong> Reduce intake of red meats, seafood, and alcohol.</li>
+                <li><strong>Stay Hydrated:</strong> Drink at least 8 glasses of water daily.</li>
+                <li><strong>Limit Alcohol:</strong> Especially beer, which increases uric acid production.</li>
+                <li><strong>Maintain a Healthy Weight:</strong> Regular exercise and a balanced diet.</li>
+                <li><strong>Medications:</strong> Consult a doctor for options like allopurinol or febuxostat.</li>
+                <li><strong>Avoid Sugary Beverages:</strong> Reduce fructose consumption from sodas and processed foods.</li>
+                <li><strong>Manage Health Conditions:</strong> Treat hypertension, diabetes, and kidney disease effectively.</li>
+                <li><strong>Eat Low-Purine Foods:</strong> Include low-fat dairy, whole grains, vegetables, and cherries.</li>
+            </ul>
+        </div>
+        """)
 
     
     # Bilirubin (range: 0.1-1.2 mg/dL)
     if "Bilirubin" in values:
         if values["Bilirubin"] > 1.2:
-            advice.append("""High Bilirubin (Hyperbilirubinemia)
-High bilirubin levels can indicate a variety of health conditions, ranging from liver diseases to blood disorders. Jaundice (yellowing of the skin and eyes) is a visible symptom of high bilirubin levels.
+            advice.append("""
+        <div>
+            <h2>High Bilirubin (Hyperbilirubinemia)</h2>
+            <p>High bilirubin levels can indicate a variety of health conditions, ranging from liver diseases to blood disorders. Jaundice (yellowing of the skin and eyes) is a visible symptom of high bilirubin levels.</p>
+            <h3>Root Causes of High Bilirubin:</h3>
+            <ul>
+                <li><strong>Liver Disease:</strong> Conditions like hepatitis, cirrhosis, and liver failure impair the liver's ability to conjugate and excrete bilirubin, leading to elevated total bilirubin levels, especially the indirect form.</li>
+                <li><strong>Hemolysis (Increased Red Blood Cell Breakdown):</strong> Hemolytic anemia or sickle cell disease accelerates red blood cell breakdown, increasing indirect (unconjugated) bilirubin levels.</li>
+                <li><strong>Bile Duct Obstruction:</strong> Blockages (e.g., gallstones, bile duct cancer, pancreatitis) prevent proper excretion of bilirubin, causing direct (conjugated) bilirubin to accumulate in the bloodstream.</li>
+                <li><strong>Gilbert's Syndrome:</strong> A common inherited condition where the liver's ability to process bilirubin is reduced, causing mildly elevated indirect bilirubin. It's generally harmless.</li>
+                <li><strong>Neonatal Jaundice:</strong> Newborns, especially premature babies, may have high bilirubin due to an immature liver. This usually resolves on its own (physiological jaundice).</li>
+                <li><strong>Infections or Sepsis:</strong> Severe infections can disrupt liver function and red blood cell turnover, leading to increased bilirubin production and reduced excretion.</li>
+                <li><strong>Alcohol Consumption:</strong> Excessive drinking damages the liver, impairing bilirubin conjugation and leading to elevated levels.</li>
+                <li><strong>Hemoglobinopathies:</strong> Conditions like thalassemia and sickle cell anemia increase red blood cell breakdown, raising indirect bilirubin levels.</li>
+            </ul>
+            <h3>Health Risks of High Bilirubin:</h3>
+            <ul>
+                <li><strong>Jaundice:</strong> Yellowing of the skin and eyes due to bilirubin buildup in tissues.</li>
+                <li><strong>Liver Damage:</strong> Persistent high bilirubin, especially direct bilirubin, often indicates liver dysfunction, such as cirrhosis, hepatitis, or bile duct obstructions.</li>
+                <li><strong>Gallstones:</strong> High conjugated bilirubin levels can contribute to gallstone formation.</li>
+                <li><strong>Chronic Conditions:</strong> Prolonged high bilirubin may indicate underlying chronic conditions, such as hemolytic anemia, requiring management.</li>
+            </ul>
+            <h3>Tips to Lower Bilirubin Levels:</h3>
+            <ul>
+                <li><strong>Hydration:</strong> Staying well-hydrated helps the kidneys process excess bilirubin and reduces jaundice risk.</li>
+                <li><strong>Treat Underlying Conditions:</strong> Addressing liver disease, gallstones, or hemolysis with appropriate treatment (medications, lifestyle changes, or surgery) is essential.</li>
+                <li><strong>Avoid Alcohol:</strong> Reducing or eliminating alcohol consumption supports liver efficiency and lowers bilirubin production.</li>
+                <li><strong>Manage Hemolytic Conditions:</strong> Conditions like hemolytic anemia may require medications (e.g., folic acid supplements), immunosuppressive therapy, or blood transfusions.</li>
+                <li><strong>Phototherapy for Neonatal Jaundice:</strong> For newborns, light therapy is a standard treatment to break down excess bilirubin in the skin.</li>
+                <li><strong>Balanced Diet:</strong> A healthy diet with fruits, vegetables, whole grains, and lean proteins supports liver health and detoxification.</li>
+            </ul>
+            <h3>Medications:</h3>
+            <ul>
+                <li>Medications like ursodeoxycholic acid may be prescribed to improve bile flow and reduce bilirubin levels.</li>
+            </ul>
+            <h3>Monitor for Signs of Liver Damage:</h3>
+            <p>Regular liver function tests and imaging studies may be necessary to assess liver damage if bilirubin levels remain high due to liver disease.</p>
+        </div>
+        """)
 
-Root Causes of High Bilirubin:
-    Liver Disease:Hepatitis, cirrhosis, liver failure, and other liver conditions can impair the liver's ability to conjugate and excrete bilirubin, resulting in elevated levels of total bilirubin, especially the indirect form.
-    Hemolysis (Increased Red Blood Cell Breakdown):Hemolytic anemia or sickle cell disease causes an accelerated breakdown of red blood cells, which increases bilirubin production. The indirect (unconjugated) bilirubin levels rise as a result.
-    Bile Duct Obstruction:Blockages in the bile ducts, such as those caused by gallstones, bile duct cancer, or pancreatitis, can prevent bilirubin from being excreted properly, causing direct (conjugated) bilirubin to build up in the bloodstream.
-    Gilbert's Syndrome:This is a common, inherited condition in which the liver has a reduced ability to process bilirubin. It usually results in mildly elevated indirect bilirubin, but the condition is generally harmless.
-    Neonatal Jaundice:Newborns, especially premature babies, often experience elevated bilirubin levels because their liver is immature and less able to process bilirubin efficiently. This condition is called physiological jaundice and usually resolves on its own.
-    Infections or Sepsis:Severe infections can affect liver function and red blood cell turnover, leading to increased bilirubin production and reduced excretion.
-    Alcohol Consumption:Excessive alcohol consumption can damage the liver and impair its ability to conjugate bilirubin, leading to higher bilirubin levels.
-    Hemoglobinopathies:Disorders like thalassemia and sickle cell anemia can lead to increased red blood cell breakdown, raising bilirubin levels, particularly the indirect fraction.
-
-Health Risks of High Bilirubin:
-    Jaundice: The most common symptom of high bilirubin levels is jaundice, which manifests as yellowing of the skin and eyes. This is due to the accumulation of bilirubin in the tissues.
-    Liver Damage: Persistent high bilirubin levels, particularly the direct (conjugated) form, often indicate liver dysfunction and may be associated with conditions like cirrhosis, hepatitis, or bile duct obstructions.
-    Gallstones: A significant amount of conjugated bilirubin can form gallstones if it accumulates in the gallbladder.
-    Chronic Conditions: Long-term elevated bilirubin can indicate an underlying chronic condition, such as hemolytic anemia, that requires management.
-
-Tips to Lower Bilirubin Levels:
-    Hydration:Staying well-hydrated is essential to help the kidneys process excess bilirubin and reduce the risk of jaundice.
-    Treat Underlying Conditions:If the high bilirubin is due to liver disease, gallstones, or hemolysis, treating the underlying condition is crucial. This may involve medications, lifestyle changes, or in some cases, surgery.
-    Avoid Alcohol:Reducing or eliminating alcohol consumption can help the liver function more efficiently and reduce bilirubin production.
-    Manage Hemolytic Conditions:If high bilirubin is due to hemolytic anemia or other blood disorders, managing the condition with appropriate medications (such as folic acid supplementation or immunosuppressive therapy) and blood transfusions may be required.
-    Phototherapy for Neonatal Jaundice:For newborns with high bilirubin, phototherapy (light therapy) is commonly used to break down excess bilirubin in the skin. This is a standard treatment for neonatal jaundice.
-    Balanced Diet:A healthy diet rich in fruits, vegetables, whole grains, and lean proteins can support liver health and the overall detoxification process.
-
-Medications:
-    In some cases, medications like ursodeoxycholic acid may be prescribed to help improve bile flow and reduce bilirubin levels.
-    Monitor for Signs of Liver Damage:
-    If high bilirubin is linked to liver disease, regular monitoring of liver function tests and imaging studies may be necessary to assess the extent of liver damage.
-    """)
         # Gamma Glutamyl Transferase (range: 9-48 U/L)
     if "Gamma Glutamyl Transferase" in values:
         if values["Gamma Glutamyl Transferase"] < 9:
-            advice.append("""Low Gamma Glutamyl Transferase (GGT)
-While low GGT levels are less common and less frequently discussed, they can still occur under certain circumstances. Generally, low GGT levels are not typically a cause for concern, but they can indicate specific health scenarios.
+            advice.append("""
+        <div>
+            <h2>Low Gamma Glutamyl Transferase (GGT)</h2>
+            <p>While low GGT levels are less common and less frequently discussed, they can still occur under certain circumstances. Generally, low GGT levels are not typically a cause for concern, but they can indicate specific health scenarios.</p>
+            <h3>Root Causes of Low GGT:</h3>
+            <ul>
+                <li><strong>Hypothyroidism:</strong> Low thyroid function can decrease GGT production due to slower metabolic processes.</li>
+                <li><strong>Malnutrition or Protein Deficiency:</strong> Protein deficiency or inadequate nutrition affects GGT synthesis, as proper liver enzyme production depends on specific nutrients.</li>
+                <li><strong>Diabetes and Insulin Resistance:</strong> Though the connection isn't entirely clear, insulin resistance and diabetes may reduce GGT production.</li>
+                <li><strong>Certain Medications:</strong> Medications such as oral contraceptives or statins can indirectly lower GGT levels.</li>
+                <li><strong>Hypervitaminosis:</strong> Excessive intake of vitamins, especially Vitamin C, can lower GGT due to antioxidant effects on liver enzymes.</li>
+                <li><strong>Genetics:</strong> Naturally low GGT levels may be due to genetic factors, which aren't usually concerning unless accompanied by other health issues.</li>
+            </ul>
+            <h3>Health Implications of Low GGT:</h3>
+            <ul>
+                <li>Low GGT levels are generally not a major concern unless linked to underlying conditions like hypothyroidism, nutritional deficiencies, or liver dysfunction.</li>
+                <li>They can also be an indicator of good liver health, suggesting that the liver is functioning efficiently.</li>
+            </ul>
+            <h3>Tips to Maintain or Increase GGT Levels:</h3>
+            <ul>
+                <li><strong>Maintain Thyroid Health:</strong> Monitor thyroid function and address hypothyroidism with appropriate treatments.</li>
+                <li><strong>Proper Nutrition:</strong> Consume a balanced diet rich in proteins and essential nutrients. Include lean meats, fish, eggs, dairy, and legumes.</li>
+                <li><strong>Manage Diabetes:</strong> Regular exercise and a healthy diet help manage blood sugar levels, supporting metabolic health and enzyme balance.</li>
+                <li><strong>Avoid Excessive Vitamin Intake:</strong> Avoid over-consuming vitamins, especially Vitamin C, unless prescribed by a healthcare provider.</li>
+                <li><strong>Regular Check-Ups:</strong> Periodic health checks can help detect and address any underlying issues affecting GGT levels.</li>
+            </ul>
+        </div>
+        """)
 
-Root Causes of Low GGT:
-    Hypothyroidism:Low thyroid function (hypothyroidism) can result in a decrease in GGT production. This is often due to slower metabolic processes that occur when the thyroid gland is underactive.
-    Malnutrition or Protein Deficiency:
-    Protein deficiency or inadequate nutrition can reduce GGT levels. Since GGT is produced by the liver and requires certain nutrients to be synthesized properly, malnutrition can affect its levels.
-    Diabetes and Insulin Resistance:In some cases, insulin resistance and diabetes may be associated with low GGT levels, though the relationship is still not entirely clear. It might be related to changes in liver enzyme production or insulin's effects on liver function.
-    Certain Medications:Certain medications, such as oral contraceptives or statins, can result in lower GGT levels. These medications may have indirect effects on liver function and enzyme production.
-    Hypervitaminosis (Excessive Vitamin Intake):Excessive intake of certain vitamins, such as Vitamin C, can lower GGT levels due to the antioxidant effects on liver function and enzyme activity.
-    Genetics:Some individuals may naturally have lower GGT levels due to genetic factors. This is not necessarily a concern unless there are other signs of liver dysfunction.
-
-Health Implications of Low GGT:
-    Generally, low GGT levels are not of major concern unless they are associated with significant underlying conditions like hypothyroidism, nutritional deficiencies, or other liver issues.
-    Low GGT can be a marker of overall good liver health, indicating that the liver is not under stress and is functioning normally.
-
-Tips to Maintain or Increase GGT Levels:
-    Maintain Thyroid Health:Thyroid function should be monitored regularly, and any signs of hypothyroidism should be addressed through appropriate treatment.
-    Proper Nutrition:Eat a balanced diet rich in proteins, vitamins, and minerals to support liver function. Foods such as lean meats, fish, beans, eggs, and dairy products are important for enzyme production.
-    Manage Diabetes and Insulin Sensitivity:Regular physical activity and a healthy diet to manage blood sugar levels can help improve overall metabolic function and potentially maintain optimal GGT levels.
-    Avoid Excessive Vitamin Intake:Ensure you're not consuming excessive amounts of vitamins, especially Vitamin C, unless prescribed by a healthcare provider, as this can reduce GGT production.
-    Regular Medical Check-Ups:Regular health check-ups can help detect underlying conditions like hypothyroidism, diabetes, or liver diseases early and ensure you are following the appropriate treatment.
-    """)
         elif values["Gamma Glutamyl Transferase"] > 48:
-            advice.append("""High Gamma Glutamyl Transferase (GGT)
-Elevated GGT levels are more commonly observed and can be associated with a variety of conditions, particularly those involving the liver, bile ducts, and alcohol consumption. High GGT levels can serve as a marker for liver dysfunction, and its levels often correlate with the degree of liver damage.
-
-Root Causes of High GGT:
-    Hepatitis (inflammation of the liver), cirrhosis, fatty liver disease, and liver fibrosis can significantly elevate GGT levels due to liver cell damage and reduced liver function.
-    Liver tumors or liver metastasis from other cancers can also cause elevated GGT.
-    Bile Duct Obstruction:Blockages in the bile ducts (such as from gallstones, pancreatitis, or bile duct strictures) can cause a buildup of bile, leading to elevated GGT levels. This is particularly associated with cholestasis (impaired bile flow).
-    Alcohol Consumption:Chronic alcohol use is a major cause of elevated GGT levels. Even moderate drinking can raise GGT levels, but heavy drinking significantly elevates the enzyme.
-    Alcohol-induced liver damage can lead to conditions such as fatty liver or alcoholic hepatitis, which are associated with elevated GGT levels.
-    Non-Alcoholic Fatty Liver Disease (NAFLD):This condition, often related to obesity, diabetes, or metabolic syndrome, leads to the accumulation of fat in the liver, which can result in elevated GGT levels.
-    Medications:Certain medications, such as phenytoin (used for epilepsy), barbiturates, statins, antibiotics, and acetaminophen (paracetamol), can increase GGT levels due to their effects on liver metabolism.
-    Chronic Pancreatitis:Inflammation of the pancreas (often due to alcohol or gallstones) can lead to increased GGT levels as part of a broader liver-pancreas dysfunction.
-    Cardiovascular Disease:Elevated GGT levels have been associated with an increased risk of cardiovascular diseases such as heart attacks, strokes, and heart failure. This might be due to the enzyme’s role in oxidative stress and inflammation.
-    Diabetes and Obesity:Metabolic syndrome and insulin resistance, which are often associated with diabetes and obesity, can lead to increased GGT levels due to their impact on liver fat metabolism and bile flow.
-    Gilbert's Syndrome:This inherited disorder, which affects bilirubin processing in the liver, can lead to mild elevations in GGT levels.
-
-Health Implications of High GGT:
-    Liver Dysfunction: Elevated GGT levels are most commonly associated with liver diseases such as hepatitis, cirrhosis, fatty liver disease, and alcoholic liver disease.
-    Bile Duct Obstruction: High GGT is often seen in cholestasis or bile duct blockages, which prevent bile from flowing properly and can lead to damage.
-    Alcohol Abuse: Chronic alcohol consumption significantly raises GGT levels and is often used as an indicator of alcohol-induced liver damage.
-    Cardiovascular Disease Risk: Elevated GGT levels are associated with increased oxidative stress and inflammation, both of which are involved in cardiovascular disease.
-    Pancreatic Issues: Chronic pancreatitis can raise GGT levels as part of the broader dysfunction of the liver and pancreas.
-
-Tips to Lower High GGT Levels:
-    Stop or Reduce Alcohol Consumption:Limiting or completely avoiding alcohol is crucial in lowering GGT levels, especially if alcohol-related liver disease or fatty liver is contributing to the increase.
-    Healthy Diet:Focus on a liver-friendly diet rich in antioxidants, such as fruits, vegetables, and whole grains. Incorporating healthy fats (e.g., omega-3 fatty acids) and lean proteins can support liver function.
-    Avoid foods high in refined sugars and trans fats, which can worsen fatty liver and overall liver health.
-    Exercise and Weight Loss:Maintaining a healthy weight and engaging in regular physical activity can help reduce liver fat and improve overall liver function, lowering GGT levels in the process.
-    Aim for 150 minutes of moderate exercise per week.
-
-Treat Underlying Conditions:
-    If high GGT is due to diabetes, obesity, high cholesterol, or hypertension, treating these conditions effectively can help lower GGT levels.
-    Medications for conditions like fatty liver disease or cholestasis may be necessary, depending on the underlying cause.
-    Medication Management:If medications are contributing to elevated GGT, discuss alternatives with your doctor to reduce liver stress. Medications like statins or antiepileptic drugs may need to be adjusted or changed.
-    Regular Medical Check-Ups:Regular monitoring of GGT and other liver enzymes, especially in people with risk factors for liver disease (e.g., heavy drinkers, those with obesity or metabolic syndrome), can help detect liver issues early.
-    Hydration and Detox:Drinking plenty of water and consuming liver-supportive herbs like milk thistle or dandelion may help detoxify the liver and support normal enzyme function. However, always consult a healthcare provider before starting supplements.
-    """)
+            advice.append("""
+        <div>
+            <h2>High Gamma Glutamyl Transferase (GGT)</h2>
+            <p>Elevated GGT levels are more common and associated with various conditions involving the liver, bile ducts, and alcohol consumption. High GGT often indicates liver dysfunction and correlates with the extent of damage.</p>
+            <h3>Root Causes of High GGT:</h3>
+            <ul>
+                <li><strong>Liver Diseases:</strong> Hepatitis, cirrhosis, fatty liver, and liver fibrosis elevate GGT due to liver cell damage.</li>
+                <li><strong>Bile Duct Obstruction:</strong> Blockages (e.g., gallstones, pancreatitis) prevent proper bile flow, raising GGT levels.</li>
+                <li><strong>Alcohol Consumption:</strong> Chronic or heavy drinking significantly raises GGT levels due to liver damage.</li>
+                <li><strong>Non-Alcoholic Fatty Liver Disease (NAFLD):</strong> Obesity or metabolic syndrome can lead to fat accumulation in the liver, increasing GGT.</li>
+                <li><strong>Medications:</strong> Drugs like phenytoin, barbiturates, statins, and acetaminophen affect liver metabolism and raise GGT.</li>
+                <li><strong>Chronic Pancreatitis:</strong> Pancreas inflammation often linked to alcohol or gallstones can elevate GGT.</li>
+                <li><strong>Cardiovascular Disease:</strong> High GGT is associated with increased oxidative stress and cardiovascular risks.</li>
+                <li><strong>Diabetes and Obesity:</strong> Metabolic dysfunction due to these conditions elevates GGT.</li>
+            </ul>
+            <h3>Health Implications of High GGT:</h3>
+            <ul>
+                <li><strong>Liver Dysfunction:</strong> Often seen in liver diseases like hepatitis, cirrhosis, and alcoholic liver disease.</li>
+                <li><strong>Bile Duct Obstruction:</strong> High GGT suggests bile flow issues, potentially leading to damage.</li>
+                <li><strong>Alcohol Abuse:</strong> Indicates liver stress or damage from chronic alcohol use.</li>
+                <li><strong>Cardiovascular Risk:</strong> Linked to oxidative stress and inflammation, both factors in heart disease.</li>
+            </ul>
+            <h3>Tips to Lower High GGT Levels:</h3>
+            <ul>
+                <li><strong>Limit Alcohol:</strong> Reducing or avoiding alcohol is crucial for lowering GGT levels and supporting liver recovery.</li>
+                <li><strong>Healthy Diet:</strong> A liver-friendly diet with antioxidants (fruits, vegetables, whole grains) and healthy fats (e.g., omega-3) supports liver health.</li>
+                <li><strong>Exercise and Weight Loss:</strong> Regular activity and weight management reduce liver fat and improve function.</li>
+                <li><strong>Treat Underlying Conditions:</strong> Manage conditions like diabetes, obesity, and hypertension effectively.</li>
+                <li><strong>Medication Management:</strong> If medications are contributing to elevated GGT, discuss alternatives with a doctor.</li>
+                <li><strong>Regular Monitoring:</strong> Keep track of GGT and liver enzymes, especially in high-risk individuals.</li>
+                <li><strong>Hydration and Liver Support:</strong> Drink water and consider liver-supportive supplements like milk thistle (after consulting a healthcare provider).</li>
+            </ul>
+        </div>
+        """)
 
     # e-GFR (Glomerular Filtration Rate) (range: > 60 mL/min/1.73m²)
     if "e-GFR (Glomerular Filtration Rate)" in values:
         if values["e-GFR (Glomerular Filtration Rate)"] < 60:
-            advice.append("""Low e-GFR (Kidney Dysfunction)
-A low e-GFR generally suggests that the kidneys are not functioning optimally and may be at risk of progressing to chronic kidney disease (CKD). The lower the e-GFR, the worse the kidney function.
+            advice.append("""
+        <div style="font-family: Arial, sans-serif; line-height: 1.6;">
+            <h2 style="color: red;">Low e-GFR (Kidney Dysfunction)</h2>
+            <p>A low e-GFR generally suggests that the kidneys are not functioning optimally and may be at risk of progressing to chronic kidney disease (CKD). The lower the e-GFR, the worse the kidney function.</p>
+            
+            <h3>Root Causes of Low e-GFR:</h3>
+            <ul>
+                <li><b>Chronic Kidney Disease (CKD):</b> The most common cause of a low e-GFR is chronic kidney disease, often resulting from long-term conditions such as diabetes, high blood pressure (hypertension), or glomerulonephritis (inflammation of the kidney’s filtering units).</li>
+                <li><b>Acute Kidney Injury (AKI):</b> Sudden damage to the kidneys caused by severe dehydration, medications, infections, or trauma can temporarily drop e-GFR.</li>
+                <li><b>Diabetes:</b> Diabetic nephropathy is a common complication of diabetes, leading to gradual damage to the kidneys and reduced ability to filter waste effectively.</li>
+                <li><b>High Blood Pressure (Hypertension):</b> A major risk factor for kidney disease, hypertension can cause damage to the kidneys over time, resulting in reduced e-GFR levels.</li>
+                <li><b>Glomerulonephritis:</b> Inflammation of the kidneys’ filtering units, often caused by infections, autoimmune diseases, or medications.</li>
+                <li><b>Obstructions in the Urinary Tract:</b> Issues like kidney stones, prostate enlargement, or bladder problems obstructing urine flow.</li>
+                <li><b>Kidney Infections or Inflammation:</b> Conditions like pyelonephritis (kidney infection) can impair filtration and reduce e-GFR.</li>
+                <li><b>Age-Related Decline:</b> Natural decline in kidney function with age, even in the absence of major diseases.</li>
+                <li><b>Genetic Disorders:</b> Disorders like polycystic kidney disease (PKD) that lead to kidney damage over time.</li>
+            </ul>
 
-Root Causes of Low e-GFR:
-    Chronic Kidney Disease (CKD):The most common cause of a low e-GFR is chronic kidney disease, which often results from long-term conditions such as diabetes, high blood pressure (hypertension), or glomerulonephritis (inflammation of the kidney’s filtering units).
-    Acute Kidney Injury (AKI):Acute kidney injury, caused by sudden damage to the kidneys (e.g., from severe dehydration, medications, infections, or trauma), can cause a temporary drop in e-GFR.
-    Diabetes:Diabetic nephropathy is a common complication of diabetes and can lead to gradual damage to the kidneys, reducing their ability to filter waste products effectively, leading to a low e-GFR.
-    High Blood Pressure (Hypertension):Hypertension is another major risk factor for kidney disease and can cause damage to the kidneys over time, resulting in reduced e-GFR levels.
-    Glomerulonephritis:Inflammation of the glomeruli (the kidneys' filtering units) can reduce kidney function, leading to a drop in e-GFR. This may be caused by infections, autoimmune diseases, or certain medications.
-    Obstructions in the Urinary Tract:Conditions like kidney stones, prostate enlargement, or bladder problems that obstruct urine flow can reduce kidney function and lower the e-GFR.
-    Kidney Infections or Inflammation:Pyelonephritis (kidney infection) or other inflammatory conditions of the kidney can impair filtration and reduce e-GFR levels.
-    Age-Related Decline:Kidney function naturally declines with age. Older adults may have lower e-GFR due to age-related kidney changes, even in the absence of major diseases.
-    Genetic Disorders:Conditions such as polycystic kidney disease (PKD) can lead to kidney damage over time, lowering the e-GFR.
+            <h3>Health Implications of Low e-GFR:</h3>
+            <ul>
+                <li><b>Progression of Kidney Disease:</b> Persistently low e-GFR may indicate progression toward end-stage renal disease (ESRD).</li>
+                <li><b>Toxin Build-Up:</b> The kidneys may not filter waste effectively, leading to uremia (build-up of waste in the blood).</li>
+                <li><b>Electrolyte Imbalances:</b> May lead to complications like heart arrhythmias.</li>
+                <li><b>Fluid Retention:</b> Trouble excreting excess fluid can cause swelling in the legs, ankles, or other parts of the body.</li>
+            </ul>
 
-Health Implications of Low e-GFR:
-    Progression of Kidney Disease: A low e-GFR, especially if it’s persistently low, is a sign that kidney function is impaired and may be progressing toward end-stage renal disease (ESRD).
-    Toxin Build-Up: With a low e-GFR, the kidneys may not be able to filter out waste and toxins from the body effectively, leading to uremia (build-up of waste in the blood).
-    Electrolyte Imbalances: Reduced kidney function may cause imbalances in electrolytes like sodium, potassium, and calcium, which can lead to serious complications such as heart arrhythmias.
-    Fluid Retention: The kidneys may also have trouble excreting excess fluid, leading to swelling in the legs, ankles, and other parts of the body.
-
-Tips to Improve or Manage Low e-GFR:
-    Control Blood Sugar (Diabetes Management):Keep blood sugar levels under control if you have diabetes to reduce the risk of diabetic nephropathy and protect kidney function. Aim for tight glucose control through medication, diet, and exercise.
-    Control Blood Pressure:Manage blood pressure through a healthy diet, regular exercise, and medications such as ACE inhibitors, ARBs, or diuretics to protect kidney health.
-    Maintain a Kidney-Friendly Diet:Focus on a low-protein diet, as excessive protein can stress the kidneys.
-    Reduce sodium intake to help control blood pressure and reduce fluid retention.
-    Increase intake of fruits and vegetables rich in potassium and fiber to support kidney function.
-    Stay Hydrated:Drink plenty of water, but be mindful not to overhydrate if you have kidney disease with fluid retention issues. Follow your doctor’s advice on how much fluid to consume.
-    Avoid Smoking and Alcohol:Quit smoking and limit alcohol consumption, as these can worsen kidney function and contribute to hypertension and other kidney-damaging conditions.
-    Manage Underlying Health Conditions:Take medications as prescribed to treat underlying conditions such as high cholesterol, obesity, or heart disease that can contribute to kidney damage.
-    Monitor Kidney Function:Regularly monitor kidney function through blood tests (serum creatinine) and urine tests to detect any decline in e-GFR early. Early detection of kidney issues allows for timely intervention.
-    Avoid Nephrotoxic Drugs:Avoid overuse of medications that can harm the kidneys, such as non-steroidal anti-inflammatory drugs (NSAIDs), and consult your doctor before taking any new medications.
-    """)
+            <h3>Tips to Improve or Manage Low e-GFR:</h3>
+            <ul>
+                <li><b>Control Blood Sugar:</b> Keep blood sugar levels under control to reduce the risk of diabetic nephropathy.</li>
+                <li><b>Control Blood Pressure:</b> Manage blood pressure through diet, exercise, and medications to protect kidney health.</li>
+                <li><b>Maintain a Kidney-Friendly Diet:</b>
+                    <ul>
+                        <li>Focus on a low-protein diet to reduce kidney stress.</li>
+                        <li>Reduce sodium intake to control blood pressure.</li>
+                        <li>Increase potassium and fiber intake through fruits and vegetables.</li>
+                    </ul>
+                </li>
+                <li><b>Stay Hydrated:</b> Drink plenty of water, but follow medical advice if fluid retention is an issue.</li>
+                <li><b>Avoid Smoking and Alcohol:</b> Quit smoking and limit alcohol consumption to improve kidney function.</li>
+                <li><b>Monitor Kidney Function:</b> Regular testing of kidney function helps detect issues early for timely intervention.</li>
+                <li><b>Avoid Nephrotoxic Drugs:</b> Limit the use of NSAIDs and consult a doctor before taking new medications.</li>
+            </ul>
+        </div>
+        """)
         elif values["e-GFR (Glomerular Filtration Rate)"] > 90:
-            advice.append("""High e-GFR (Hyperfiltration)
-A high e-GFR is usually a sign of increased kidney filtration and can sometimes be indicative of excessive kidney function. Though less common, a high e-GFR may occur under certain conditions.
+            advice.append("""
+        <div style="font-family: Arial, sans-serif; line-height: 1.6;">
+            <h2 style="color: green;">High e-GFR (Hyperfiltration)</h2>
+            <p>A high e-GFR is usually a sign of increased kidney filtration and can sometimes indicate excessive kidney function. Though less common, a high e-GFR may occur under certain conditions.</p>
+            
+            <h3>Root Causes of High e-GFR:</h3>
+            <ul>
+                <li><b>Hyperfiltration in Early Kidney Disease:</b> The kidneys compensate for nephron loss by increasing filtration rates, leading to an initially high e-GFR.</li>
+                <li><b>Pregnancy:</b> Increased blood volume and kidney function during pregnancy can elevate e-GFR.</li>
+                <li><b>High Protein Intake:</b> A high-protein diet can temporarily increase kidney workload, raising e-GFR.</li>
+                <li><b>Exercise:</b> Strenuous physical activity temporarily increases e-GFR due to increased kidney blood flow.</li>
+                <li><b>Early-Stage Diabetes:</b> The kidneys may hyperfilter in response to excess glucose in the blood.</li>
+                <li><b>Severe Hypertension (Stage 1):</b> Increased fluid filtration due to high blood pressure can elevate e-GFR.</li>
+            </ul>
 
-Root Causes of High e-GFR:
-    Hyperfiltration in Early Kidney Disease:In the early stages of chronic kidney disease (CKD), the kidneys may compensate for the loss of nephrons (filtering units) by increasing their filtration rate. This results in an initially high e-GFR, which may be followed by a decline in kidney function over time.
-    Pregnancy:Pregnancy can lead to increased blood volume and changes in kidney function, leading to higher e-GFR values, especially in the second trimester. This is a normal physiological adaptation.
-    High Protein Intake:A high-protein diet can temporarily increase the workload on the kidneys, leading to a higher e-GFR as the kidneys filter more waste products. However, long-term high-protein intake may stress the kidneys, especially in people with preexisting kidney conditions.
-    Exercise:Strenuous physical activity can lead to temporary increases in e-GFR due to an increase in blood flow to the kidneys. This is usually short-term and resolves after exercise.
-    Increased Renal Blood Flow:Conditions that increase blood flow to the kidneys, such as arteriovenous fistulas (created for dialysis access) or renal artery dilation, can result in an elevated e-GFR.
-    Diabetes (Early Stage):In early-stage diabetes, the kidneys may experience hyperfiltration as they try to process the excess glucose in the blood. This can lead to a temporarily elevated e-GFR, though over time, this can contribute to kidney damage.
-    Severe Hypertension (Stage 1):Early stages of high blood pressure can cause the kidneys to filter more fluid in an attempt to cope with the increased systemic blood pressure, leading to a higher e-GFR.
+            <h3>Health Implications of High e-GFR:</h3>
+            <ul>
+                <li><b>Risk of Kidney Damage:</b> Prolonged hyperfiltration may damage nephrons over time.</li>
+                <li><b>Underlying Conditions:</b> A high e-GFR might indicate conditions like diabetes or high protein intake requiring attention.</li>
+                <li><b>Short-Term Effects:</b> In cases like pregnancy, high e-GFR is usually temporary and not a cause for concern.</li>
+            </ul>
 
-Health Implications of High e-GFR:
-    Potential Risk of Kidney Damage: Prolonged hyperfiltration can lead to kidney damage over time, as the kidneys are overworking to compensate for the loss of filtering capacity. This can eventually lead to nephron damage, worsening kidney function.
-    Underlying Health Conditions: High e-GFR values may be a sign of an underlying condition that requires monitoring and intervention, such as diabetes, high blood pressure, or high protein intake.
-    Short-Term Effects: In cases like pregnancy, high e-GFR is often temporary and not a cause for concern.
-
-Tips to Manage or Lower High e-GFR:
-    Monitor Kidney Function Regularly:Regular testing can help identify early signs of kidney damage and ensure timely intervention to prevent further complications.
-    Control Blood Sugar (For Diabetics):Maintain optimal blood sugar levels to prevent kidney hyperfiltration from progressing into diabetic nephropathy.
-    Control Blood Pressure:Lowering blood pressure to safe levels can reduce the strain on kidneys, especially in those with hypertension or early signs of kidney disease.
-    Adopt a Balanced Diet:Consider reducing protein intake if high protein consumption is contributing to kidney strain. A balanced diet that supports kidney health is crucial.
-    Avoid Overuse of Kidney-Stressing Substances:Avoid substances that can put extra strain on the kidneys, such as excessive alcohol or NSAIDs (non-steroidal anti-inflammatory drugs).
-    Weight Management:Maintaining a healthy weight can help reduce the risk of diabetes, hypertension, and kidney disease, all of which can affect kidney function and e-GFR.
-    Stay Hydrated:Drink plenty of water, especially if you're increasing protein intake or exercising regularly, to support kidney function and prevent dehydration.""")
+            <h3>Tips to Manage or Lower High e-GFR:</h3>
+            <ul>
+                <li><b>Monitor Kidney Function Regularly:</b> Early detection of hyperfiltration allows for timely intervention.</li>
+                <li><b>Control Blood Sugar:</b> Maintain optimal blood sugar levels to prevent kidney hyperfiltration.</li>
+                <li><b>Adopt a Balanced Diet:</b> Reduce protein intake if high protein consumption is stressing the kidneys.</li>
+                <li><b>Manage Weight:</b> Maintaining a healthy weight reduces risks associated with hypertension and diabetes.</li>
+                <li><b>Stay Hydrated:</b> Proper hydration supports kidney health and reduces dehydration risks.</li>
+            </ul>
+        </div>
+        """)
 
     # Urea (range: 7-20 mg/dL)
     if "Urea" in values:
         if values["Urea"] < 7:
-            advice.append("""Low Urea (Hypouremia)
-Low urea levels in the blood can occur due to several factors that influence its production or clearance.
+            advice.append("""
+        <div style="font-family: Arial, sans-serif; line-height: 1.6;">
+            <h2 style="color: red;">Low Urea (Hypouremia)</h2>
+            <p>Low urea levels in the blood can occur due to several factors that influence its production or clearance.</p>
 
-Root Causes of Low Urea:
-    Liver Disease:Liver dysfunction or diseases such as cirrhosis, hepatitis, or liver failure can result in low urea production. The liver is responsible for converting ammonia into urea, so if the liver is not functioning properly, this process is impaired, leading to lower urea levels.
-    Malnutrition:Malnutrition, particularly a protein-deficient diet, can result in low urea levels. This is because urea is produced from the breakdown of proteins, and insufficient protein intake leads to reduced urea production.
-    Overhydration:Excessive fluid intake (overhydration) can dilute the urea concentration in the blood, leading to a lower urea level. This is often seen in cases of polydipsia (excessive thirst) or excessive intravenous fluid administration.
-    Severe Bone Marrow Depression:Conditions that severely suppress the bone marrow, such as aplastic anemia or certain chemotherapies, may lead to low urea levels, as the breakdown of proteins in muscles and tissues is reduced.
-    Pregnancy:Pregnancy, particularly in the later stages, can lead to lower urea levels due to increased blood volume and the kidneys filtering more efficiently during pregnancy.
-    Acute or Chronic Renal Failure (rare):In rare cases, advanced kidney disease can lead to decreased production of urea due to reduced protein metabolism or other kidney dysfunctions.
-    High Carbohydrate Diet:A high carbohydrate diet with little protein intake may reduce urea production since carbohydrates are not metabolized into urea.
+            <h3>Root Causes of Low Urea:</h3>
+            <ul>
+                <li><b>Liver Disease:</b> Liver dysfunction or diseases such as cirrhosis, hepatitis, or liver failure can result in low urea production. The liver is responsible for converting ammonia into urea, so if the liver is not functioning properly, this process is impaired, leading to lower urea levels.</li>
+                <li><b>Malnutrition:</b> A protein-deficient diet can result in low urea levels because insufficient protein intake leads to reduced urea production.</li>
+                <li><b>Overhydration:</b> Excessive fluid intake can dilute the urea concentration in the blood, often seen in cases of polydipsia or excessive intravenous fluid administration.</li>
+                <li><b>Severe Bone Marrow Depression:</b> Conditions such as aplastic anemia or certain chemotherapies may lead to low urea levels due to reduced protein breakdown.</li>
+                <li><b>Pregnancy:</b> Increased blood volume and more efficient kidney filtration during pregnancy can lead to lower urea levels.</li>
+                <li><b>Acute or Chronic Renal Failure (rare):</b> Advanced kidney disease can lead to decreased urea production due to reduced protein metabolism or other kidney dysfunctions.</li>
+                <li><b>High Carbohydrate Diet:</b> A high carbohydrate, low protein diet reduces urea production as carbohydrates are not metabolized into urea.</li>
+            </ul>
 
-Health Implications of Low Urea:
-    Indication of Liver Dysfunction: Low urea levels may point to liver disease, as the liver produces urea. This can be indicative of significant liver damage or dysfunction.
-    Malnutrition: Extremely low urea levels can also be a sign of poor nutrition or malnutrition, where the body isn’t breaking down enough proteins.
-    Electrolyte Imbalance: In cases of overhydration, dilution of urea may be associated with disturbances in other electrolytes, which can have negative effects on the heart, muscles, and other organs.
+            <h3>Health Implications of Low Urea:</h3>
+            <ul>
+                <li><b>Indication of Liver Dysfunction:</b> Low urea levels may point to significant liver damage or dysfunction.</li>
+                <li><b>Malnutrition:</b> Extremely low urea levels can signal poor nutrition or malnutrition.</li>
+                <li><b>Electrolyte Imbalance:</b> Overhydration-related dilution of urea may disturb electrolyte balance, negatively affecting the heart, muscles, and other organs.</li>
+            </ul>
 
-Tips to Improve or Manage Low Urea:
-    Support Liver Health:Avoid alcohol and other substances that can damage the liver.
-    Follow a liver-healthy diet rich in antioxidants, fruits, vegetables, and healthy fats to support liver function.
-    Consult your doctor for regular liver function tests to catch liver problems early.
-    Improve Nutrition:Increase protein intake if malnutrition is the cause. Include lean meats, fish, eggs, legumes, and dairy in your diet to ensure sufficient protein.
-    A balanced, nutrient-rich diet supports overall health and urea production.
-    Monitor Fluid Intake:Avoid excessive water consumption. Drink fluids in moderation based on your body’s needs, especially if you're in a condition where fluid retention is not a concern.
-    Consult a Doctor for Kidney Function:If kidney dysfunction is suspected, monitoring kidney function with blood tests and urinalysis is crucial.""")
+            <h3>Tips to Improve or Manage Low Urea:</h3>
+            <ul>
+                <li><b>Support Liver Health:</b>
+                    <ul>
+                        <li>Avoid alcohol and other substances that can damage the liver.</li>
+                        <li>Follow a liver-healthy diet rich in antioxidants, fruits, vegetables, and healthy fats.</li>
+                        <li>Consult your doctor for regular liver function tests.</li>
+                    </ul>
+                </li>
+                <li><b>Improve Nutrition:</b>
+                    <ul>
+                        <li>Increase protein intake by including lean meats, fish, eggs, legumes, and dairy in your diet.</li>
+                        <li>Maintain a balanced, nutrient-rich diet to support overall health and urea production.</li>
+                    </ul>
+                </li>
+                <li><b>Monitor Fluid Intake:</b> Avoid excessive water consumption and drink fluids based on your body’s needs.</li>
+                <li><b>Consult a Doctor for Kidney Function:</b> Regular monitoring with blood tests and urinalysis is essential if kidney dysfunction is suspected.</li>
+            </ul>
+        </div>
+        """)
         elif values["Urea"] > 20:
-            advice.append("""High Urea (Hyperuremia)
-High urea levels in the blood typically indicate that the kidneys are not efficiently clearing urea from the bloodstream. It can also be a sign of excess protein breakdown in the body.
+            advice.append("""
+        <div style="font-family: Arial, sans-serif; line-height: 1.6;">
+            <h2 style="color: red;">High Urea (Hyperuremia)</h2>
+            <p>High urea levels in the blood typically indicate that the kidneys are not efficiently clearing urea or may signify excess protein breakdown.</p>
 
-Root Causes of High Urea:
-    Kidney Dysfunction (Chronic Kidney Disease CKD):Chronic kidney disease is the most common cause of high urea levels. As kidney function declines, the kidneys' ability to filter out waste products like urea is compromised, leading to elevated blood urea nitrogen (BUN) levels.
-    Dehydration:Dehydration leads to concentrated blood due to reduced fluid intake or excessive fluid loss (e.g., vomiting, diarrhea). In dehydrated states, the kidneys conserve water, but this can also result in higher urea levels in the bloodstream.
-    Excessive Protein Intake:High-protein diets, especially red meats, cheese, and protein supplements, can increase urea production, leading to elevated levels in the blood due to excess protein breakdown.
-    Acute Kidney Injury (AKI):Acute kidney injury can cause a sudden rise in urea levels due to kidney damage from dehydration, infections, medications, or other factors that impair kidney function.
-    Heart Failure:Heart failure can cause poor kidney perfusion (blood flow to the kidneys), which may lead to reduced kidney function and increased urea levels.
-    Gastrointestinal Bleeding:Gastrointestinal bleeding (such as in the stomach or intestines) can lead to increased protein breakdown in the digestive tract, raising urea levels.
-    Burns or Severe Trauma:Severe burns, trauma, or conditions that result in tissue breakdown can increase protein catabolism and, consequently, urea production.
-    High Blood Pressure (Hypertension):Uncontrolled hypertension can damage the kidneys over time, leading to reduced kidney filtration and high urea levels.
-    Medications:Some medications, such as diuretics and antibiotics, can lead to increased urea levels, either by promoting dehydration or by affecting kidney function.
-    Infections:Severe infections, particularly those affecting the kidneys (like pyelonephritis), can lead to kidney dysfunction and higher urea levels.
+            <h3>Root Causes of High Urea:</h3>
+            <ul>
+                <li><b>Kidney Dysfunction (CKD):</b> Chronic kidney disease reduces the kidneys' ability to filter out waste products like urea.</li>
+                <li><b>Dehydration:</b> Reduced fluid intake or excessive fluid loss concentrates blood, increasing urea levels.</li>
+                <li><b>Excessive Protein Intake:</b> High-protein diets can elevate urea levels due to increased protein breakdown.</li>
+                <li><b>Acute Kidney Injury (AKI):</b> Sudden kidney damage from dehydration, infections, or medications can cause elevated urea.</li>
+                <li><b>Heart Failure:</b> Poor kidney perfusion due to heart failure may lead to higher urea levels.</li>
+                <li><b>Gastrointestinal Bleeding:</b> Increased protein breakdown from digestive tract bleeding raises urea levels.</li>
+                <li><b>Burns or Severe Trauma:</b> Tissue breakdown increases protein catabolism, raising urea production.</li>
+                <li><b>High Blood Pressure:</b> Uncontrolled hypertension damages kidneys over time, leading to high urea levels.</li>
+                <li><b>Medications:</b> Diuretics, certain antibiotics, and other drugs can promote dehydration or impair kidney function, increasing urea.</li>
+                <li><b>Infections:</b> Severe infections, particularly of the kidneys, can impair kidney function and increase urea levels.</li>
+            </ul>
 
-Health Implications of High Urea:
-    Kidney Disease: High urea levels, especially if persistent, can indicate chronic kidney disease or acute kidney injury, where kidney filtration capacity is reduced.
-    Dehydration: Elevated urea levels may point to dehydration, which can lead to electrolyte imbalances, kidney damage, and other complications if not addressed.
-    Heart and Blood Pressure Issues: Conditions like heart failure or high blood pressure can lead to impaired kidney function and elevated urea levels.
-    
-Tips to Manage or Lower High Urea:
-    Hydration:Ensure adequate hydration, especially if dehydration is the cause of high urea. Drink enough water daily to maintain proper kidney function and help flush out toxins.
-    Manage Kidney Health:If kidney disease is diagnosed, follow your doctor’s advice for dialysis, medications, and lifestyle changes to slow down kidney deterioration.
-    Take medications as prescribed to help manage underlying conditions like hypertension, diabetes, or heart failure.
-    Dietary Modifications:Reduce protein intake to lower the metabolic burden on the kidneys. This is especially important for people with kidney disease or those on dialysis.
-    Limit salt and processed foods, as they can contribute to high blood pressure, which in turn can worsen kidney function and increase urea levels.
-    Control Blood Pressure:Keeping your blood pressure within normal limits can help prevent kidney damage and decrease urea levels. Regularly monitor your blood pressure and manage it with lifestyle changes and medications if necessary.
-    Avoid Nephrotoxic Substances:Avoid NSAIDs, certain antibiotics, and other nephrotoxic drugs that can worsen kidney function and increase urea levels. Always consult your doctor before taking any new medications.
-    Address Underlying Conditions:Manage conditions like heart failure, diabetes, or gastrointestinal bleeding, as they can contribute to elevated urea levels and kidney dysfunction.
-    """)
+            <h3>Health Implications of High Urea:</h3>
+            <ul>
+                <li><b>Kidney Disease:</b> Persistent high urea levels may indicate chronic kidney disease or acute kidney injury.</li>
+                <li><b>Dehydration:</b> Elevated urea levels may point to dehydration, which can lead to electrolyte imbalances and kidney damage.</li>
+                <li><b>Heart and Blood Pressure Issues:</b> Conditions like heart failure or high blood pressure can impair kidney function and elevate urea levels.</li>
+            </ul>
+
+            <h3>Tips to Manage or Lower High Urea:</h3>
+            <ul>
+                <li><b>Hydration:</b> Drink enough water daily to maintain proper kidney function and flush out toxins.</li>
+                <li><b>Manage Kidney Health:</b> Follow your doctor’s advice for medications, dialysis, and lifestyle changes.</li>
+                <li><b>Dietary Modifications:</b>
+                    <ul>
+                        <li>Reduce protein intake to lower the burden on kidneys.</li>
+                        <li>Limit salt and processed foods to control blood pressure.</li>
+                    </ul>
+                </li>
+                <li><b>Control Blood Pressure:</b> Regularly monitor blood pressure and manage it with medications or lifestyle changes.</li>
+                <li><b>Avoid Nephrotoxic Substances:</b> Avoid drugs that can worsen kidney function and consult your doctor before taking new medications.</li>
+                <li><b>Address Underlying Conditions:</b> Manage conditions like heart failure or diabetes to improve kidney function and reduce urea levels.</li>
+            </ul>
+        </div>
+        """)
 
     # T3 Total (range: 80-180 ng/dL)
     if "T3 Total" in values:
         if values["T3 Total"] < 0.6:
-            advice.append("""Low T3 Total (Hypothyroidism)
-Low levels of T3 can occur when the thyroid gland is underactive and fails to produce enough thyroid hormones. This condition is called hypothyroidism.
+            advice.append("""
+        <h2>Low T3 Total (Hypothyroidism)</h2>
+        <p>Low levels of T3 can occur when the thyroid gland is underactive and fails to produce enough thyroid hormones. This condition is called hypothyroidism.</p>
+        
+        <h3>Root Causes of Low T3 Total:</h3>
+        <ul>
+            <li><strong>Hypothyroidism:</strong> The most common cause of low T3 levels is hypothyroidism, where the thyroid gland doesn't produce enough hormones, including T3. This can be due to autoimmune diseases like Hashimoto's thyroiditis, iodine deficiency, or surgery that removes part or all of the thyroid.</li>
+            <li><strong>Severe Illness or Stress:</strong> Severe illnesses or high levels of physical stress can lead to low T3 levels. This is sometimes referred to as "non-thyroidal illness syndrome" or "sick euthyroid syndrome." In this case, T3 levels drop even though there is no thyroid dysfunction, often as a response to the body’s stress response.</li>
+            <li><strong>Pituitary Dysfunction:</strong> The pituitary gland produces thyroid-stimulating hormone (TSH), which regulates the thyroid’s hormone production. If the pituitary is not functioning properly, it can result in insufficient T3 production. This could be due to pituitary tumors or other pituitary disorders.</li>
+            <li><strong>Iodine Deficiency:</strong> Iodine deficiency is a common cause of hypothyroidism in certain parts of the world. The thyroid requires iodine to produce T3 and T4 hormones. A lack of iodine in the diet can lead to reduced T3 levels.</li>
+            <li><strong>Medications:</strong> Certain medications, such as amiodarone, lithium, and beta-blockers, can interfere with thyroid function and result in low T3 levels.</li>
+            <li><strong>Nutritional Deficiencies:</strong> Deficiencies in zinc, selenium, or iron can affect thyroid function and lead to low T3 levels, as these nutrients are necessary for optimal thyroid hormone production.</li>
+            <li><strong>Starvation or Extreme Weight Loss:</strong> In cases of starvation, extreme calorie restriction, or anorexia nervosa, the body may conserve energy by lowering the production of T3 to reduce metabolic rate.</li>
+        </ul>
+        
+        <h3>Health Implications of Low T3 Total:</h3>
+        <ul>
+            <li><strong>Slowed Metabolism:</strong> Low T3 levels can lead to a slower metabolic rate, causing symptoms like fatigue, weight gain, cold intolerance, constipation, and dry skin.</li>
+            <li><strong>Thyroid Disease:</strong> Prolonged low T3 levels are typically associated with hypothyroidism, which requires medical treatment to regulate hormone levels.</li>
+            <li><strong>Cardiovascular Risk:</strong> Severe hypothyroidism can lead to high cholesterol levels, heart disease, and other cardiovascular complications.</li>
+        </ul>
+        
+        <h3>Tips to Improve or Manage Low T3 Total:</h3>
+        <ul>
+            <li><strong>Thyroid Hormone Replacement:</strong> If you have hypothyroidism, your doctor may prescribe levothyroxine (synthetic T4) or liothyronine (synthetic T3) to normalize hormone levels. Follow your doctor’s advice and have your thyroid levels monitored regularly.</li>
+            <li><strong>Manage Stress:</strong> Chronic stress can contribute to low T3 levels. Implementing stress management techniques such as meditation, deep breathing exercises, yoga, or mindfulness can help improve your thyroid function.</li>
+            <li><strong>Improve Nutrition:</strong> Ensure adequate iodine intake by consuming iodized salt, seafood, and dairy products. Also, consider eating foods rich in selenium (such as Brazil nuts, sunflower seeds, and fish) and zinc (found in meat, shellfish, legumes, and seeds).</li>
+            <li><strong>Avoid Goitrogenic Foods:</strong> If you have thyroid problems, avoid excess intake of goitrogenic foods such as soy products, cruciferous vegetables (e.g., cabbage, cauliflower), and millet, which can interfere with thyroid hormone production.</li>
+            <li><strong>Regular Exercise:</strong> Engage in regular moderate exercise to help support metabolism and improve thyroid function. This can also help mitigate weight gain associated with hypothyroidism.</li>
+            <li><strong>Monitor Medications:</strong> If you are taking medications that affect thyroid function, such as beta-blockers or amiodarone, discuss alternatives or adjustments with your healthcare provider.</li>
+        </ul>
+        """)
 
-Root Causes of Low T3 Total:
-    Hypothyroidism:The most common cause of low T3 levels is hypothyroidism, where the thyroid gland doesn't produce enough hormones, including T3. This can be due to autoimmune diseases like Hashimoto's thyroiditis, iodine deficiency, or surgery that removes part or all of the thyroid.
-    Severe Illness or Stress:Severe illnesses or high levels of physical stress can lead to low T3 levels. This is sometimes referred to as "non-thyroidal illness syndrome" or "sick euthyroid syndrome." In this case, T3 levels drop even though there is no thyroid dysfunction, often as a response to the body’s stress response.
-    Pituitary Dysfunction:The pituitary gland produces thyroid-stimulating hormone (TSH), which regulates the thyroid’s hormone production. If the pituitary is not functioning properly, it can result in insufficient T3 production. This could be due to pituitary tumors or other pituitary disorders.
-    Iodine Deficiency:Iodine deficiency is a common cause of hypothyroidism in certain parts of the world. The thyroid requires iodine to produce T3 and T4 hormones. A lack of iodine in the diet can lead to reduced T3 levels.
-    Medications:Certain medications, such as amiodarone, lithium, and beta-blockers, can interfere with thyroid function and result in low T3 levels.
-    Nutritional Deficiencies:Deficiencies in zinc, selenium, or iron can affect thyroid function and lead to low T3 levels, as these nutrients are necessary for optimal thyroid hormone production.
-    Starvation or Extreme Weight Loss:In cases of starvation, extreme calorie restriction, or anorexia nervosa, the body may conserve energy by lowering the production of T3 to reduce metabolic rate.
-
-Health Implications of Low T3 Total:
-    Slowed Metabolism: Low T3 levels can lead to a slower metabolic rate, causing symptoms like fatigue, weight gain, cold intolerance, constipation, and dry skin.
-    Thyroid Disease: Prolonged low T3 levels are typically associated with hypothyroidism, which requires medical treatment to regulate hormone levels.
-    Cardiovascular Risk: Severe hypothyroidism can lead to high cholesterol levels, heart disease, and other cardiovascular complications.
-
-Tips to Improve or Manage Low T3 Total:
-    Thyroid Hormone Replacement:If you have hypothyroidism, your doctor may prescribe levothyroxine (synthetic T4) or liothyronine (synthetic T3) to normalize hormone levels. Follow your doctor’s advice and have your thyroid levels monitored regularly.
-    Manage Stress:Chronic stress can contribute to low T3 levels. Implementing stress management techniques such as meditation, deep breathing exercises, yoga, or mindfulness can help improve your thyroid function.
-    Improve Nutrition:Ensure adequate iodine intake by consuming iodized salt, seafood, and dairy products. Also, consider eating foods rich in selenium (such as Brazil nuts, sunflower seeds, and fish) and zinc (found in meat, shellfish, legumes, and seeds).
-    Ensure you are consuming sufficient amounts of protein to support thyroid hormone production.
-    Avoid Goitrogenic Foods:If you have thyroid problems, avoid excess intake of goitrogenic foods such as soy products, cruciferous vegetables (e.g., cabbage, cauliflower), and millet, which can interfere with thyroid hormone production.
-    Regular Exercise:Engage in regular moderate exercise to help support metabolism and improve thyroid function. This can also help mitigate weight gain associated with hypothyroidism.
-    Monitor Medications:If you are taking medications that affect thyroid function, such as beta-blockers or amiodarone, discuss alternatives or adjustments with your healthcare provider.
-    """)
         elif values["T3 Total"] > 1.81:
-            advice.append("""High T3 Total (Hyperthyroidism)
-High levels of T3 typically indicate an overactive thyroid, a condition known as hyperthyroidism.
-
-Root Causes of High T3 Total:
-    Graves' Disease:The most common cause of high T3 levels is Graves' disease, an autoimmune disorder where the body produces antibodies that stimulate the thyroid gland to produce excess T3 and T4 hormones.
-    Toxic Multinodular Goiter:In this condition, multiple nodules in the thyroid gland become overactive and secrete excess thyroid hormones, leading to elevated T3 levels.
-    Thyroiditis:Thyroiditis, including subacute thyroiditis and Hashimoto’s thyroiditis, can cause temporary increases in thyroid hormone production, including T3. This often occurs in the early stages of the condition before the thyroid becomes underactive (hypothyroidism).
-    Excessive Iodine Intake:Excessive iodine intake from supplements or foods (like iodine-rich seaweed) can cause an increase in thyroid hormone production, resulting in higher T3 levels.
-    Thyroid Cancer:Thyroid cancer can cause abnormal production of thyroid hormones, including high T3 levels.
-    Medications:Some medications, such as thyroid hormone replacement therapy (if overused) or amiodarone, can lead to excessive thyroid hormone levels, including high T3.
-    Pituitary Tumor:Rarely, pituitary tumors (e.g., thyrotropinoma) can cause overproduction of thyroid-stimulating hormone (TSH), leading to increased thyroid hormone production, including T3.
-
-Health Implications of High T3 Total:
-    Increased Metabolism: High T3 levels accelerate metabolism, leading to symptoms such as weight loss, nervousness, tremors, heat intolerance, increased heart rate, and high blood pressure.
-    Thyroid Storm: In severe cases, uncontrolled hyperthyroidism can lead to thyroid storm, a life-threatening condition that causes fever, confusion, and cardiovascular collapse.
-    Osteoporosis: Chronic high T3 levels can increase the risk of bone loss and osteoporosis.
-    Cardiovascular Issues: Hyperthyroidism increases the risk of heart conditions like atrial fibrillation and heart failure.
-
-Tips to Manage or Lower High T3 Total:
-    Antithyroid Medications:Methimazole or propylthiouracil can be prescribed to block thyroid hormone production in conditions like Graves' disease or toxic goiters. Follow your doctor’s guidance closely.
-    Radioactive Iodine Therapy:In cases of toxic multinodular goiter or Graves’ disease, radioactive iodine therapy may be used to shrink the thyroid or destroy overactive thyroid tissue.
-    Beta-Blockers:Beta-blockers (such as propranolol) may be used to control symptoms like increased heart rate and tremors associated with high T3 levels.
-    Thyroidectomy:In cases where medication and radioactive iodine therapy are ineffective, a partial or total thyroidectomy (removal of part or all of the thyroid) may be necessary.
-    Monitor Iodine Intake:If you have hyperthyroidism, avoid excessive intake of iodine, which can exacerbate the condition. Be cautious with iodine-rich supplements and foods like seaweed.
-    Stress Management:Stress can exacerbate hyperthyroidism, so managing stress through relaxation techniques and lifestyle changes is beneficial.
-    """)
+            advice.append("""
+        <h2>High T3 Total (Hyperthyroidism)</h2>
+        <p>High levels of T3 typically indicate an overactive thyroid, a condition known as hyperthyroidism.</p>
+        
+        <h3>Root Causes of High T3 Total:</h3>
+        <ul>
+            <li><strong>Graves' Disease:</strong> The most common cause of high T3 levels is Graves' disease, an autoimmune disorder where the body produces antibodies that stimulate the thyroid gland to produce excess T3 and T4 hormones.</li>
+            <li><strong>Toxic Multinodular Goiter:</strong> In this condition, multiple nodules in the thyroid gland become overactive and secrete excess thyroid hormones, leading to elevated T3 levels.</li>
+            <li><strong>Thyroiditis:</strong> Thyroiditis, including subacute thyroiditis and Hashimoto’s thyroiditis, can cause temporary increases in thyroid hormone production, including T3. This often occurs in the early stages of the condition before the thyroid becomes underactive (hypothyroidism).</li>
+            <li><strong>Excessive Iodine Intake:</strong> Excessive iodine intake from supplements or foods (like iodine-rich seaweed) can cause an increase in thyroid hormone production, resulting in higher T3 levels.</li>
+            <li><strong>Thyroid Cancer:</strong> Thyroid cancer can cause abnormal production of thyroid hormones, including high T3 levels.</li>
+            <li><strong>Medications:</strong> Some medications, such as thyroid hormone replacement therapy (if overused) or amiodarone, can lead to excessive thyroid hormone levels, including high T3.</li>
+            <li><strong>Pituitary Tumor:</strong> Rarely, pituitary tumors (e.g., thyrotropinoma) can cause overproduction of thyroid-stimulating hormone (TSH), leading to increased thyroid hormone production, including T3.</li>
+        </ul>
+        
+        <h3>Health Implications of High T3 Total:</h3>
+        <ul>
+            <li><strong>Increased Metabolism:</strong> High T3 levels accelerate metabolism, leading to symptoms such as weight loss, nervousness, tremors, heat intolerance, increased heart rate, and high blood pressure.</li>
+            <li><strong>Thyroid Storm:</strong> In severe cases, uncontrolled hyperthyroidism can lead to thyroid storm, a life-threatening condition that causes fever, confusion, and cardiovascular collapse.</li>
+            <li><strong>Osteoporosis:</strong> Chronic high T3 levels can increase the risk of bone loss and osteoporosis.</li>
+            <li><strong>Cardiovascular Issues:</strong> Hyperthyroidism increases the risk of heart conditions like atrial fibrillation and heart failure.</li>
+        </ul>
+        
+        <h3>Tips to Manage or Lower High T3 Total:</h3>
+        <ul>
+            <li><strong>Antithyroid Medications:</strong> Methimazole or propylthiouracil can be prescribed to block thyroid hormone production in conditions like Graves' disease or toxic goiters. Follow your doctor’s guidance closely.</li>
+            <li><strong>Radioactive Iodine Therapy:</strong> In cases of toxic multinodular goiter or Graves’ disease, radioactive iodine therapy may be used to shrink the thyroid or destroy overactive thyroid tissue.</li>
+            <li><strong>Beta-Blockers:</strong> Beta-blockers (such as propranolol) may be used to control symptoms like increased heart rate and tremors associated with high T3 levels.</li>
+            <li><strong>Thyroidectomy:</strong> In cases where medication and radioactive iodine therapy are ineffective, a partial or total thyroidectomy (removal of part or all of the thyroid) may be necessary.</li>
+            <li><strong>Monitor Iodine Intake:</strong> If you have hyperthyroidism, avoid excessive intake of iodine, which can exacerbate the condition. Be cautious with iodine-rich supplements and foods like seaweed.</li>
+            <li><strong>Stress Management:</strong> Stress can exacerbate hyperthyroidism, so managing stress through relaxation techniques and lifestyle changes is beneficial.</li>
+        </ul>
+        """)
 
     # T4 Total (range: 5.0-12.0 µg/dL)
     if "T4 Total" in values:
         if values["T4 Total"] < 3.2:
-            advice.append("""Low T4 Total (Hypothyroidism)
-Low levels of T4 can indicate an underactive thyroid (hypothyroidism), where the thyroid fails to produce adequate amounts of thyroid hormones.
+            advice.append("""
+        <h2>Low T4 Total (Hypothyroidism)</h2>
+        <p>Low levels of T4 can indicate an underactive thyroid (hypothyroidism), where the thyroid fails to produce adequate amounts of thyroid hormones.</p>
+        
+        <h3>Root Causes of Low T4 Total:</h3>
+        <ul>
+            <li><strong>Hypothyroidism (Primary):</strong> Primary hypothyroidism is the most common cause of low T4 levels. It occurs when the thyroid gland itself is not functioning properly. This can be due to autoimmune diseases like Hashimoto's thyroiditis, iodine deficiency, or thyroid surgery.</li>
+            <li><strong>Pituitary Dysfunction:</strong> Pituitary gland dysfunction can result in low T4 levels. The pituitary gland produces thyroid-stimulating hormone (TSH), which signals the thyroid to release T4. If the pituitary is not working properly (due to tumors, injury, or other disorders), it can lead to insufficient stimulation of the thyroid, causing low T4 levels.</li>
+            <li><strong>Iodine Deficiency:</strong> Iodine deficiency is a common cause of hypothyroidism, especially in regions where the diet lacks adequate iodine. Since iodine is a key component of T4 and T3 hormones, its deficiency can lead to low T4 levels.</li>
+            <li><strong>Medications:</strong> Certain medications, such as lithium, amiodarone, and antithyroid drugs like methimazole, can interfere with thyroid hormone production and cause low T4 levels.</li>
+            <li><strong>Thyroiditis:</strong> Inflammation of the thyroid (such as Hashimoto’s thyroiditis or subacute thyroiditis) can result in an initial increase in thyroid hormones followed by a drop in T4 levels.</li>
+            <li><strong>Starvation or Extreme Calorie Restriction:</strong> During periods of starvation or severe caloric restriction, the body reduces the production of T4 as part of a mechanism to conserve energy.</li>
+            <li><strong>Pregnancy (Hypothyroidism in Pregnancy):</strong> In pregnant women, especially during the first trimester, there may be an increased need for thyroid hormone, and insufficient thyroid production can lead to low T4 levels.</li>
+        </ul>
 
-Root Causes of Low T4 Total:
-    Hypothyroidism (Primary):Primary hypothyroidism is the most common cause of low T4 levels. It occurs when the thyroid gland itself is not functioning properly. This can be due to autoimmune diseases like Hashimoto's thyroiditis, iodine deficiency, or thyroid surgery.
-    Pituitary Dysfunction:Pituitary gland dysfunction can result in low T4 levels. The pituitary gland produces thyroid-stimulating hormone (TSH), which signals the thyroid to release T4. If the pituitary is not working properly (due to tumors, injury, or other disorders), it can lead to insufficient stimulation of the thyroid, causing low T4 levels.
-    Iodine Deficiency:Iodine deficiency is a common cause of hypothyroidism, especially in regions where the diet lacks adequate iodine. Since iodine is a key component of T4 and T3 hormones, its deficiency can lead to low T4 levels.
-    Medications:Certain medications, such as lithium, amiodarone, and antithyroid drugs like methimazole, can interfere with thyroid hormone production and cause low T4 levels.
-    Thyroiditis:Inflammation of the thyroid (such as Hashimoto’s thyroiditis or subacute thyroiditis) can result in an initial increase in thyroid hormones followed by a drop in T4 levels.
-    Starvation or Extreme Calorie Restriction:During periods of starvation or severe caloric restriction, the body reduces the production of T4 as part of a mechanism to conserve energy.
-    Pregnancy (Hypothyroidism in Pregnancy):In pregnant women, especially during the first trimester, there may be an increased need for thyroid hormone, and insufficient thyroid production can lead to low T4 levels.
+        <h3>Health Implications of Low T4 Total:</h3>
+        <ul>
+            <li><strong>Slowed Metabolism:</strong> Symptoms include weight gain, fatigue, cold intolerance, constipation, and dry skin.</li>
+            <li><strong>Mental Health:</strong> Low T4 can lead to depression, memory issues, and brain fog.</li>
+            <li><strong>Cardiovascular Impact:</strong> Low T4 may contribute to high cholesterol levels and an increased risk of cardiovascular disease.</li>
+            <li><strong>Growth and Development:</strong> In children, untreated hypothyroidism can result in delayed growth and cognitive development.</li>
+        </ul>
 
-Health Implications of Low T4 Total:
-    Slowed Metabolism: Symptoms include weight gain, fatigue, cold intolerance, constipation, and dry skin.
-    Mental Health: Low T4 can lead to depression, memory issues, and brain fog.
-    Cardiovascular Impact: Low T4 may contribute to high cholesterol levels and an increased risk of cardiovascular disease.
-    Growth and Development: In children, untreated hypothyroidism can result in delayed growth and cognitive development.
+        <h3>Tips to Improve or Manage Low T4 Total:</h3>
+        <ul>
+            <li><strong>Thyroid Hormone Replacement:</strong> Levothyroxine (synthetic T4) is the standard treatment for low T4 levels. It helps normalize hormone levels and alleviate symptoms of hypothyroidism. Regular blood tests to monitor T4 and TSH levels are essential to adjust the dosage.</li>
+            <li><strong>Nutrition:</strong>
+                <ul>
+                    <li><strong>Iodine:</strong> Ensure adequate iodine intake by consuming iodized salt, seafood, and dairy products.</li>
+                    <li><strong>Selenium:</strong> Foods such as Brazil nuts, fish, and seeds are good sources of selenium, which supports thyroid function.</li>
+                    <li><strong>Zinc:</strong> Meat, shellfish, and legumes are rich in zinc, another essential mineral for thyroid health.</li>
+                </ul>
+            </li>
+            <li><strong>Manage Stress:</strong> High levels of stress can negatively impact thyroid function. Incorporate stress management techniques such as yoga, meditation, and regular exercise.</li>
+            <li><strong>Avoid Goitrogens:</strong> Limit the intake of goitrogenic foods (e.g., soy, cruciferous vegetables) that may interfere with thyroid hormone production.</li>
+            <li><strong>Regular Monitoring:</strong> If you are on thyroid medication, ensure regular check-ups with your healthcare provider to monitor T4 and TSH levels and adjust treatment as needed.</li>
+        </ul>
+        """)
 
-Tips to Improve or Manage Low T4 Total:
-    Thyroid Hormone Replacement:Levothyroxine (synthetic T4) is the standard treatment for low T4 levels. It helps normalize hormone levels and alleviate symptoms of hypothyroidism. Regular blood tests to monitor T4 and TSH levels are essential to adjust the dosage.
-    Nutrition:
-    Iodine: Ensure adequate iodine intake by consuming iodized salt, seafood, and dairy products.
-    Selenium: Foods such as Brazil nuts, fish, and seeds are good sources of selenium, which supports thyroid function.
-    Zinc: Meat, shellfish, and legumes are rich in zinc, another essential mineral for thyroid health.
-    Manage Stress:High levels of stress can negatively impact thyroid function. Incorporate stress management techniques such as yoga, meditation, and regular exercise.
-    Avoid Goitrogens:Limit the intake of goitrogenic foods (e.g., soy, cruciferous vegetables) that may interfere with thyroid hormone production.
-    Regular Monitoring:If you are on thyroid medication, ensure regular check-ups with your healthcare provider to monitor T4 and TSH levels and adjust treatment as needed.
-    """)
         elif values["T4 Total"] > 12.6:
-            advice.append("""High T4 Total (Hyperthyroidism)
-High levels of T4 indicate an overactive thyroid (hyperthyroidism), where the thyroid produces excessive thyroid hormones, speeding up the body’s metabolic processes.
+            advice.append("""
+        <h2>High T4 Total (Hyperthyroidism)</h2>
+        <p>High levels of T4 indicate an overactive thyroid (hyperthyroidism), where the thyroid produces excessive thyroid hormones, speeding up the body’s metabolic processes.</p>
+        
+        <h3>Root Causes of High T4 Total:</h3>
+        <ul>
+            <li><strong>Graves' Disease:</strong> Graves' disease is the most common cause of hyperthyroidism. It’s an autoimmune disorder where the immune system produces antibodies that stimulate the thyroid gland to produce excessive amounts of T4.</li>
+            <li><strong>Toxic Multinodular Goiter:</strong> In a toxic multinodular goiter, multiple nodules in the thyroid become overactive and secrete excess thyroid hormones, leading to high T4 levels.</li>
+            <li><strong>Thyroiditis:</strong> Thyroiditis, especially subacute thyroiditis or Hashimoto’s thyroiditis, can cause a temporary increase in thyroid hormone production, including T4. This can occur in the early stages of thyroid inflammation before the thyroid becomes underactive.</li>
+            <li><strong>Excessive Iodine Intake:</strong> Excessive iodine intake, particularly from supplements or iodine-rich foods (such as seaweed), can lead to increased thyroid hormone production, causing high T4 levels.</li>
+            <li><strong>Thyroid Hormone Overuse:</strong> If you are on thyroid hormone replacement therapy (e.g., levothyroxine) and take too much, it can lead to high T4 levels.</li>
+            <li><strong>Pituitary Tumor (Thyrotropinoma):</strong> Rarely, pituitary tumors (thyrotropinoma) can produce excess thyroid-stimulating hormone (TSH), which in turn stimulates the thyroid to produce excess T4.</li>
+            <li><strong>Thyroid Cancer:</strong> Thyroid cancer can sometimes cause overproduction of thyroid hormones, leading to high T4 levels.</li>
+        </ul>
 
-Root Causes of High T4 Total:
-    Graves' Disease:Graves' disease is the most common cause of hyperthyroidism. It’s an autoimmune disorder where the immune system produces antibodies that stimulate the thyroid gland to produce excessive amounts of T4.
-    Toxic Multinodular Goiter:In a toxic multinodular goiter, multiple nodules in the thyroid become overactive and secrete excess thyroid hormones, leading to high T4 levels.
-    Thyroiditis:Thyroiditis, especially subacute thyroiditis or Hashimoto’s thyroiditis, can cause a temporary increase in thyroid hormone production, including T4. This can occur in the early stages of thyroid inflammation before the thyroid becomes underactive.
-    Excessive Iodine Intake:Excessive iodine intake, particularly from supplements or iodine-rich foods (such as seaweed), can lead to increased thyroid hormone production, causing high T4 levels.
-    Thyroid Hormone Overuse:If you are on thyroid hormone replacement therapy (e.g., levothyroxine) and take too much, it can lead to high T4 levels.
-    Pituitary Tumor (Thyrotropinoma):Rarely, pituitary tumors (thyrotropinoma) can produce excess thyroid-stimulating hormone (TSH), which in turn stimulates the thyroid to produce excess T4.
-    Thyroid Cancer:Thyroid cancer can sometimes cause overproduction of thyroid hormones, leading to high T4 levels.
+        <h3>Health Implications of High T4 Total:</h3>
+        <ul>
+            <li><strong>Increased Metabolism:</strong> Symptoms include weight loss, nervousness, tremors, heat intolerance, increased heart rate, and high blood pressure.</li>
+            <li><strong>Cardiovascular Issues:</strong> Hyperthyroidism can lead to arrhythmias (e.g., atrial fibrillation), high blood pressure, and increased risk of heart disease.</li>
+            <li><strong>Bone Health:</strong> Long-term hyperthyroidism can lead to osteoporosis and bone fractures due to increased metabolic activity.</li>
+            <li><strong>Thyroid Storm:</strong> In severe cases, thyroid storm (a life-threatening condition) can occur, causing fever, delirium, tachycardia, and heart failure.</li>
+        </ul>
 
-Health Implications of High T4 Total:
-    Increased Metabolism: Symptoms include weight loss, nervousness, tremors, heat intolerance, increased heart rate, and high blood pressure.
-    Cardiovascular Issues: Hyperthyroidism can lead to arrhythmias (e.g., atrial fibrillation), high blood pressure, and increased risk of heart disease.
-    Bone Health: Long-term hyperthyroidism can lead to osteoporosis and bone fractures due to increased metabolic activity.
-    Thyroid Storm: In severe cases, thyroid storm (a life-threatening condition) can occur, causing fever, delirium, tachycardia, and heart failure.
-
-Tips to Manage or Lower High T4 Total:
-    Antithyroid Medications:Methimazole or propylthiouracil can be prescribed to block thyroid hormone production. These medications help to control hyperthyroidism.
-    Radioactive Iodine Therapy:Radioactive iodine therapy may be used to shrink the thyroid or destroy overactive thyroid tissue, which reduces hormone production.
-    Beta-Blockers:Beta-blockers, such as propranolol, can be prescribed to control symptoms like tachycardia and tremors that occur with high T4 levels.
-    Surgical Treatment (Thyroidectomy):In cases of toxic multinodular goiter or Graves' disease that do not respond to medication or radioactive iodine, surgical removal of part or all of the thyroid may be necessary.
-    Monitor Iodine Intake:Limit excessive intake of iodine through supplements or foods like seaweed if you have hyperthyroidism, as this can worsen the condition.
-    Stress Management:Reducing stress can help manage hyperthyroid symptoms. Engage in relaxation techniques, yoga, and mindfulness practices.
-    """)
+        <h3>Tips to Manage or Lower High T4 Total:</h3>
+        <ul>
+            <li><strong>Antithyroid Medications:</strong> Methimazole or propylthiouracil can be prescribed to block thyroid hormone production. These medications help to control hyperthyroidism.</li>
+            <li><strong>Radioactive Iodine Therapy:</strong> Radioactive iodine therapy may be used to shrink the thyroid or destroy overactive thyroid tissue, which reduces hormone production.</li>
+            <li><strong>Beta-Blockers:</strong> Beta-blockers, such as propranolol, can be prescribed to control symptoms like tachycardia and tremors that occur with high T4 levels.</li>
+            <li><strong>Surgical Treatment (Thyroidectomy):</strong> In cases of toxic multinodular goiter or Graves' disease that do not respond to medication or radioactive iodine, surgical removal of part or all of the thyroid may be necessary.</li>
+            <li><strong>Monitor Iodine Intake:</strong> Limit excessive intake of iodine through supplements or foods like seaweed if you have hyperthyroidism, as this can worsen the condition.</li>
+            <li><strong>Stress Management:</strong> Reducing stress can help manage hyperthyroid symptoms. Engage in relaxation techniques, yoga, and mindfulness practices.</li>
+        </ul>
+        """)
 
     # TSH Ultrasensitive (range: 0.4-4.0 µIU/mL)
     if "TSH Ultrasensitive" in values:
         if values["TSH Ultrasensitive"] < 0.55:
-            advice.append("""Low TSH (Hypothyroidism or Secondary Hypothyroidism)
-A low TSH level typically indicates hyperthyroidism or thyroid overactivity, where the thyroid produces excessive amounts of thyroid hormones (T3 and T4). In rare cases, low TSH can also indicate secondary hypothyroidism, which occurs due to issues with the pituitary gland or hypothalamus.
-
-Root Causes of Low TSH:
-    Hyperthyroidism:Graves' disease, toxic multinodular goiter, and thyroiditis are common causes of hyperthyroidism. In this condition, excessive thyroid hormone production leads to a suppression of TSH secretion, resulting in low TSH levels.
-    Graves' disease: An autoimmune condition where the immune system mistakenly stimulates the thyroid to produce too much thyroid hormone.
-    Toxic Multinodular Goiter: A condition where multiple overactive thyroid nodules secrete excess thyroid hormones.
-    Thyroiditis: Inflammation of the thyroid gland can cause an initial surge in thyroid hormones (including T3 and T4), leading to low TSH levels.
-    Secondary Hypothyroidism (Pituitary or Hypothalamic Dysfunction):Secondary hypothyroidism occurs when the pituitary gland or hypothalamus fails to produce enough TSH or Thyroid-Releasing Hormone (TRH), leading to insufficient stimulation of the thyroid gland. This can result from pituitary tumors, pituitary surgery, or trauma.
-    Thyroid Hormone Overuse (Excessive Thyroid Medication):If someone is being treated for hypothyroidism (low thyroid function) and takes too much thyroid hormone replacement, it can suppress TSH production and result in low TSH levels.
-    Severe Illness or Stress (Non-thyroidal Illness Syndrome):Critical illness, severe stress, or surgery can lead to low TSH levels, even without thyroid dysfunction. This phenomenon is sometimes called non-thyroidal illness syndrome or sick euthyroid syndrome, where low TSH is observed as a response to the body's stress reaction.
-    Excessive Iodine Intake:In some cases, excessive iodine intake from supplements or foods can cause an increase in thyroid hormone production, leading to suppressed TSH levels.
-
-Health Implications of Low TSH:
-    Increased Metabolism: Symptoms of hyperthyroidism include weight loss, increased heart rate, nervousness, tremors, heat intolerance, and insomnia.
-    Cardiovascular Risks: Persistent low TSH due to hyperthyroidism increases the risk of arrhythmias (e.g., atrial fibrillation), high blood pressure, and heart failure.
-    Osteoporosis: Long-term hyperthyroidism can lead to bone loss and osteoporosis due to the accelerated metabolism of bone tissue.
-
-Tips to Manage Low TSH:
-    Treat Underlying Hyperthyroidism:Medications like methimazole or propylthiouracil (antithyroid drugs) can help reduce thyroid hormone production.
-    Radioactive iodine therapy may be used to shrink the thyroid or destroy overactive thyroid tissue.
-    In some cases, surgery (thyroidectomy) may be necessary for large goiters or unresponsive cases.
-    Beta-Blockers:Beta-blockers (e.g., propranolol) may be prescribed to manage symptoms like tremors, tachycardia, and anxiety.
-    Monitoring Thyroid Hormone Replacement:If taking thyroid hormone replacement for hypothyroidism, ensure you’re not taking an excessive dose. Regular monitoring of TSH and free T4 levels is essential to avoid overtreatment.
-    Stress Management:Since severe stress or illness can contribute to low TSH levels, consider stress reduction techniques such as meditation, yoga, and breathing exercises.
-    """)
+            advice.append("""
+<div style="font-family: Arial, sans-serif; line-height: 1.6;">
+    <h2>Low TSH (Hypothyroidism or Secondary Hypothyroidism)</h2>
+    <p>
+        A low TSH level typically indicates hyperthyroidism or thyroid overactivity, where the thyroid produces excessive amounts of thyroid hormones (T3 and T4). In rare cases, low TSH can also indicate secondary hypothyroidism, which occurs due to issues with the pituitary gland or hypothalamus.
+    </p>
+    <h3>Root Causes of Low TSH:</h3>
+    <ul>
+        <li><strong>Hyperthyroidism:</strong> Graves' disease, toxic multinodular goiter, and thyroiditis are common causes of hyperthyroidism. In this condition, excessive thyroid hormone production leads to a suppression of TSH secretion.</li>
+        <li><strong>Graves' Disease:</strong> An autoimmune condition where the immune system mistakenly stimulates the thyroid to produce too much thyroid hormone.</li>
+        <li><strong>Toxic Multinodular Goiter:</strong> A condition where multiple overactive thyroid nodules secrete excess thyroid hormones.</li>
+        <li><strong>Thyroiditis:</strong> Inflammation of the thyroid gland causing an initial surge in thyroid hormones.</li>
+        <li><strong>Secondary Hypothyroidism:</strong> Issues with the pituitary gland or hypothalamus failing to produce enough TSH or TRH.</li>
+        <li><strong>Thyroid Hormone Overuse:</strong> Excessive thyroid hormone replacement treatment can suppress TSH.</li>
+        <li><strong>Severe Illness or Stress:</strong> Stress reactions like non-thyroidal illness syndrome may suppress TSH levels.</li>
+        <li><strong>Excessive Iodine Intake:</strong> High iodine intake from supplements or foods can lead to suppressed TSH levels.</li>
+    </ul>
+    <h3>Health Implications of Low TSH:</h3>
+    <ul>
+        <li><strong>Increased Metabolism:</strong> Symptoms include weight loss, increased heart rate, nervousness, tremors, heat intolerance, and insomnia.</li>
+        <li><strong>Cardiovascular Risks:</strong> Increased risk of arrhythmias, high blood pressure, and heart failure.</li>
+        <li><strong>Osteoporosis:</strong> Long-term hyperthyroidism can cause bone loss.</li>
+    </ul>
+    <h3>Tips to Manage Low TSH:</h3>
+    <ul>
+        <li><strong>Treat Underlying Hyperthyroidism:</strong> Medications like methimazole or radioactive iodine therapy.</li>
+        <li><strong>Surgery:</strong> Thyroidectomy for large goiters or unresponsive cases.</li>
+        <li><strong>Beta-Blockers:</strong> Propranolol to manage symptoms like tremors and tachycardia.</li>
+        <li><strong>Monitoring:</strong> Regular testing for TSH and free T4 levels.</li>
+        <li><strong>Stress Management:</strong> Techniques such as yoga, meditation, and breathing exercises.</li>
+    </ul>
+</div>
+        """)
         elif values["TSH Ultrasensitive"] > 4.78:
-            advice.append("""High TSH (Hypothyroidism or Pituitary Overactivity)
-High TSH typically indicates an underactive thyroid (hypothyroidism), where the thyroid fails to produce enough thyroid hormones, and the pituitary gland compensates by producing more TSH in an attempt to stimulate thyroid hormone production. However, in some rare cases, high TSH may result from pituitary tumors or pituitary dysfunction.
-
-Root Causes of High TSH:
-    Primary Hypothyroidism:In primary hypothyroidism, the thyroid gland is not producing enough thyroid hormones (T3 and T4), leading the pituitary to produce more TSH in an attempt to stimulate the thyroid. This is the most common cause of high TSH.
-    Hashimoto's thyroiditis: An autoimmune disease in which the immune system attacks the thyroid, leading to its dysfunction and low thyroid hormone levels.
-    Iodine deficiency: Insufficient iodine intake can result in reduced thyroid hormone production, leading to elevated TSH levels.
-    Thyroidectomy: If part or all of the thyroid gland is removed, TSH levels may increase due to decreased thyroid hormone production.
-    Secondary Hypothyroidism (Pituitary Dysfunction):In some cases, a pituitary tumor or pituitary dysfunction may result in excessive production of TSH, leading to elevated TSH levels even when thyroid hormone levels are normal. This condition is known as thyrotropinoma.
-    Medications (Thyroid Hormone Withdrawal):Abrupt withdrawal of thyroid hormone therapy (e.g., levothyroxine) can cause an increase in TSH levels as the body tries to compensate for the lack of thyroid hormones.
-    Congenital Hypothyroidism:In rare cases, a newborn can be born with a non-functioning thyroid, leading to high TSH levels.
-
-Health Implications of High TSH:
-    Slowed Metabolism: Symptoms of hypothyroidism include weight gain, fatigue, cold intolerance, dry skin, constipation, and hair thinning.
-    Mental Health: High TSH levels can contribute to depression, memory issues, and difficulty concentrating.
-    Cardiovascular Risks: Chronic high TSH and low thyroid hormone levels can lead to high cholesterol and an increased risk of heart disease.
-
-Tips to Manage High TSH:
-    Thyroid Hormone Replacement:The most common treatment for high TSH levels due to hypothyroidism is levothyroxine, a synthetic form of T4. It helps normalize thyroid hormone levels and reduce TSH secretion.
-    Regular monitoring of TSH and free T4 is essential to ensure appropriate dosage adjustments.
-    Iodine Supplementation:If iodine deficiency is the cause of elevated TSH, iodine supplementation or dietary adjustments (e.g., consuming iodized salt or seafood) may be recommended.
-    Pituitary Tumor Management:If a pituitary tumor (thyrotropinoma) is causing elevated TSH levels, treatment may include surgery, radiation therapy, or medications (such as dopamine agonists).
-    Medication Review:If high TSH levels are due to withdrawal from thyroid hormone therapy, ensure you are taking the appropriate dosage of levothyroxine as prescribed by your healthcare provider.
-    Regular Monitoring:Regular check-ups with an endocrinologist are necessary to monitor thyroid function, especially if you are on thyroid hormone replacement therapy.
-    """)
+            advice.append("""
+<div style="font-family: Arial, sans-serif; line-height: 1.6;">
+    <h2>High TSH (Hypothyroidism or Pituitary Overactivity)</h2>
+    <p>
+        High TSH typically indicates an underactive thyroid (hypothyroidism), where the thyroid fails to produce enough thyroid hormones, and the pituitary gland compensates by producing more TSH in an attempt to stimulate thyroid hormone production. Rarely, it may result from pituitary dysfunction.
+    </p>
+    <h3>Root Causes of High TSH:</h3>
+    <ul>
+        <li><strong>Primary Hypothyroidism:</strong> Thyroid gland dysfunction leading to insufficient thyroid hormone production.</li>
+        <li><strong>Hashimoto's Thyroiditis:</strong> Autoimmune attack on the thyroid.</li>
+        <li><strong>Iodine Deficiency:</strong> Lack of iodine in the diet causing reduced thyroid hormone production.</li>
+        <li><strong>Thyroidectomy:</strong> Removal of part or all of the thyroid gland.</li>
+        <li><strong>Secondary Hypothyroidism:</strong> Pituitary tumors or dysfunction leading to excessive TSH production.</li>
+        <li><strong>Medications:</strong> Abrupt withdrawal of thyroid hormone therapy.</li>
+        <li><strong>Congenital Hypothyroidism:</strong> Non-functioning thyroid at birth.</li>
+    </ul>
+    <h3>Health Implications of High TSH:</h3>
+    <ul>
+        <li><strong>Slowed Metabolism:</strong> Symptoms include weight gain, fatigue, cold intolerance, and dry skin.</li>
+        <li><strong>Mental Health:</strong> Difficulty concentrating and memory issues.</li>
+        <li><strong>Cardiovascular Risks:</strong> High cholesterol and increased heart disease risk.</li>
+    </ul>
+    <h3>Tips to Manage High TSH:</h3>
+    <ul>
+        <li><strong>Thyroid Hormone Replacement:</strong> Levothyroxine to normalize thyroid hormone levels.</li>
+        <li><strong>Regular Monitoring:</strong> Regular TSH and free T4 tests to adjust dosage.</li>
+        <li><strong>Iodine Supplementation:</strong> If iodine deficiency is the cause, dietary adjustments are necessary.</li>
+        <li><strong>Pituitary Tumor Management:</strong> Surgery, radiation, or medications for pituitary tumors.</li>
+        <li><strong>Medication Review:</strong> Ensure correct dosage of thyroid hormone therapy.</li>
+    </ul>
+</div>
+        """)
 
     # Vitamin B12 (range: 200-900 pg/mL)
     if "Vitamin B12" in values:
         if values["Vitamin B12"] < 211:
-            advice.append("""Low Vitamin B12 (Cobalamin Deficiency)
-A low vitamin B12 level can lead to a range of health issues because B12 is essential for nerve health, blood cell formation, and the metabolism of homocysteine (an amino acid linked to heart disease). B12 deficiency can also cause neurological and cognitive symptoms.
-
-Root Causes of Low Vitamin B12:
-    Poor Dietary Intake:A vegetarian or vegan diet, which excludes animal-based foods, is a common cause of vitamin B12 deficiency because B12 is found primarily in animal products like meat, fish, eggs, and dairy.
-    Malabsorption Disorders:Celiac disease, Crohn’s disease, gastric bypass surgery, and other digestive conditions can impair the absorption of vitamin B12 in the intestines.
-    Atrophic gastritis (reduced stomach acid production) or pernicious anemia (an autoimmune disorder that affects the stomach's ability to produce intrinsic factor, which is necessary for B12 absorption) can also cause malabsorption.
-    Aging:As people age, the body's ability to absorb vitamin B12 from food can decline due to reduced stomach acid production or other digestive changes.
-    Medications:Certain medications, such as proton pump inhibitors (PPIs), H2 blockers, and metformin, can interfere with B12 absorption or utilization.
-    Alcoholism:Chronic alcohol consumption can impair vitamin B12 absorption and contribute to deficiency over time.
-    Pregnancy and Breastfeeding:Pregnant and breastfeeding women may have increased vitamin B12 requirements, and a deficiency can occur if their intake or absorption is insufficient.
-
-Symptoms of Low Vitamin B12:
-    Fatigue, weakness, and anemia (pale skin and shortness of breath)
-    Numbness, tingling, or burning sensations in hands and feet (due to nerve damage)
-    Cognitive issues such as memory loss, confusion, or difficulty concentrating
-    Depression or mood changes
-    Glossitis (inflamed, red tongue) and mouth ulcers
-    Vision problems due to nerve damage in the eyes (optic neuropathy)
-    Pale or jaundiced skin due to anemia
-
-Tips to Increase Vitamin B12:
-    Dietary Sources are as follows
-    Include more animal-based foods in the diet, such as:
-    Meat (especially liver and red meats)
-    Fish (salmon, tuna, mackerel)
-    Dairy products (milk, cheese, yogurt)
-    Eggs
-    For vegetarians and vegans, consider fortified foods such as:
-    Fortified cereals
-    Fortified plant-based milks (soy, almond, oat)
-    Nutritional yeast
-    Vitamin B12 Supplements:Oral B12 supplements are widely available, either as a daily pill or a sublingual (under-the-tongue) form.
-    Injections or nasal sprays may be recommended for severe deficiencies or those with malabsorption issues.
-    Address Malabsorption Issues:If you have a malabsorption disorder (e.g., celiac disease, Crohn’s disease), work with your healthcare provider to manage the condition and ensure proper absorption of nutrients.
-    Pernicious anemia may require B12 injections or high-dose oral supplements due to the body's inability to absorb B12.
-    Check Medications:If you're on medications like metformin, PPIs, or H2 blockers, speak with your healthcare provider to see if a B12 deficiency is contributing to symptoms.""")
+            advice.append("""
+<div style="font-family: Arial, sans-serif; line-height: 1.6;">
+    <h2>Low Vitamin B12 (Cobalamin Deficiency)</h2>
+    <p>
+        A low vitamin B12 level can lead to a range of health issues because B12 is essential for nerve health, blood cell formation, and the metabolism of homocysteine (an amino acid linked to heart disease). B12 deficiency can also cause neurological and cognitive symptoms.
+    </p>
+    <h3>Root Causes of Low Vitamin B12:</h3>
+    <ul>
+        <li><strong>Poor Dietary Intake:</strong> A vegetarian or vegan diet, which excludes animal-based foods, is a common cause of vitamin B12 deficiency because B12 is found primarily in animal products like meat, fish, eggs, and dairy.</li>
+        <li><strong>Malabsorption Disorders:</strong> Conditions like celiac disease, Crohn’s disease, or gastric bypass surgery can impair B12 absorption. Atrophic gastritis or pernicious anemia can also cause malabsorption.</li>
+        <li><strong>Aging:</strong> Reduced stomach acid production with age can lead to impaired B12 absorption.</li>
+        <li><strong>Medications:</strong> Proton pump inhibitors (PPIs), H2 blockers, and metformin can interfere with B12 absorption.</li>
+        <li><strong>Alcoholism:</strong> Chronic alcohol consumption can impair B12 absorption.</li>
+        <li><strong>Pregnancy and Breastfeeding:</strong> Increased requirements during pregnancy and breastfeeding can lead to deficiency if intake is insufficient.</li>
+    </ul>
+    <h3>Symptoms of Low Vitamin B12:</h3>
+    <ul>
+        <li>Fatigue, weakness, and anemia</li>
+        <li>Numbness, tingling, or burning sensations in hands and feet</li>
+        <li>Cognitive issues such as memory loss or difficulty concentrating</li>
+        <li>Depression or mood changes</li>
+        <li>Glossitis (inflamed tongue) and mouth ulcers</li>
+        <li>Vision problems due to nerve damage</li>
+        <li>Pale or jaundiced skin</li>
+    </ul>
+    <h3>Tips to Increase Vitamin B12:</h3>
+    <ul>
+        <li><strong>Dietary Sources:</strong> Include more animal-based foods like meat (especially liver), fish (salmon, tuna), dairy, and eggs. For vegetarians and vegans, opt for fortified cereals, plant-based milks, and nutritional yeast.</li>
+        <li><strong>Vitamin B12 Supplements:</strong> Take oral B12 supplements or consider sublingual forms. In severe cases, injections or nasal sprays may be necessary.</li>
+        <li><strong>Address Malabsorption Issues:</strong> Work with your healthcare provider if you have conditions like celiac disease or pernicious anemia.</li>
+        <li><strong>Check Medications:</strong> If you're on medications like metformin or PPIs, consult your doctor about potential B12 deficiency.</li>
+    </ul>
+</div>
+        """)
         elif values["Vitamin B12"] > 911:
-            advice.append("""High Vitamin B12 (Cobalamin Excess)
-While vitamin B12 toxicity is rare (since it is a water-soluble vitamin), high levels of B12 can sometimes be associated with certain medical conditions or excess supplementation. The body typically excretes excess B12 through urine.
-
-Root Causes of High Vitamin B12:
-    Excessive Supplementation:Taking high doses of B12 supplements without medical supervision can lead to high levels of vitamin B12 in the blood.
-    People using B12 injections or high-dose oral supplements should monitor their levels regularly to avoid excessive intake.
-    Liver Disease:Conditions such as liver cirrhosis or hepatitis can lead to high B12 levels, as the liver stores a large amount of vitamin B12 and releases it into the bloodstream when damaged.
-    Kidney Dysfunction:In cases of kidney disease or chronic renal failure, the body may have difficulty excreting excess B12, leading to elevated levels.
-    Leukemia or Myeloproliferative Disorders:Certain blood cancers, like leukemia or polycythemia vera, can cause high B12 levels due to the increased production of white blood cells, which consume and release B12.
-    Intestinal Issues:Certain intestinal conditions, such as small intestine bacterial overgrowth (SIBO), can alter the balance of vitamin B12 in the gut and lead to higher levels in the blood.
-    Excessive Intake of Animal Products:While it's uncommon, very high consumption of animal products (especially organ meats like liver) could lead to elevated B12 levels.
-
-Symptoms of High Vitamin B12:
-    Acne or skin rashes (rare but reported)
-    Nausea or vomiting
-    Headaches or dizziness
-    Fatigue or weakness (though high B12 itself typically doesn’t cause these symptoms directly, they could be related to the underlying condition causing elevated levels)
-    Increased risk of blood clots or cardiovascular issues (in some individuals with high B12 related to underlying conditions like liver disease or myeloproliferative disorders)
-
-Tips for Managing High Vitamin B12:
-    Review Supplementation:If you are taking B12 supplements, consider reducing the dose or stopping supplementation under the guidance of your healthcare provider.
-    Ensure your B12 intake is within the recommended daily allowance (RDA) unless instructed otherwise by a doctor.
-    Monitor Medical Conditions:If you have conditions like liver disease, kidney problems, or blood disorders, closely monitor your B12 levels and work with your healthcare provider to manage underlying conditions.
-    Test for Underlying Conditions:High B12 levels may indicate a serious underlying health condition, so it's important to consult your healthcare provider if you have elevated levels. Additional tests may be needed to rule out liver disease, kidney dysfunction, or hematologic disorders.""")
+            advice.append("""
+<div style="font-family: Arial, sans-serif; line-height: 1.6;">
+    <h2>High Vitamin B12 (Cobalamin Excess)</h2>
+    <p>
+        While vitamin B12 toxicity is rare (since it is a water-soluble vitamin), high levels of B12 can sometimes be associated with certain medical conditions or excess supplementation. The body typically excretes excess B12 through urine.
+    </p>
+    <h3>Root Causes of High Vitamin B12:</h3>
+    <ul>
+        <li><strong>Excessive Supplementation:</strong> High doses of B12 supplements or injections without medical supervision.</li>
+        <li><strong>Liver Disease:</strong> Conditions like liver cirrhosis or hepatitis can release stored B12 into the bloodstream.</li>
+        <li><strong>Kidney Dysfunction:</strong> Difficulty excreting excess B12 due to kidney problems.</li>
+        <li><strong>Blood Disorders:</strong> Conditions like leukemia or polycythemia vera can cause elevated B12 levels.</li>
+        <li><strong>Intestinal Issues:</strong> Small intestine bacterial overgrowth (SIBO) can alter B12 levels in the gut.</li>
+        <li><strong>Excessive Animal Products:</strong> High consumption of organ meats like liver can lead to elevated B12 levels.</li>
+    </ul>
+    <h3>Symptoms of High Vitamin B12:</h3>
+    <ul>
+        <li>Acne or skin rashes (rare but reported)</li>
+        <li>Nausea or vomiting</li>
+        <li>Headaches or dizziness</li>
+        <li>Fatigue or weakness (often related to underlying conditions)</li>
+        <li>Increased risk of blood clots or cardiovascular issues</li>
+    </ul>
+    <h3>Tips for Managing High Vitamin B12:</h3>
+    <ul>
+        <li><strong>Review Supplementation:</strong> Reduce or stop supplements under medical guidance.</li>
+        <li><strong>Monitor Medical Conditions:</strong> Work with your healthcare provider to manage underlying issues like liver or kidney disease.</li>
+        <li><strong>Test for Underlying Conditions:</strong> Elevated levels may indicate serious health concerns requiring further testing.</li>
+    </ul>
+</div>
+        """)
 
     # 25 (OH) Vitamin D2 (Ergocalciferol) (range: 20-50 ng/mL)
     if "25 (OH) Vitamin D2 (Ergocalciferol)" in values:
         if values["25 (OH) Vitamin D2 (Ergocalciferol)"] < 20:
-            advice.append("""Low 25(OH) Vitamin D2 (Deficiency)
-Low levels of 25(OH) Vitamin D2 can occur due to insufficient sunlight exposure, poor dietary intake, or conditions that impair absorption or metabolism of vitamin D. It can lead to vitamin D deficiency and associated health problems.
-
-Root Causes of Low Vitamin D2:
-    Inadequate Sunlight Exposure:Vitamin D is produced in the skin upon exposure to sunlight. Insufficient exposure to sunlight (e.g., in areas with long winters, indoor lifestyles, or use of sunscreen) can lead to low vitamin D levels.
-    Dietary Deficiency:Vitamin D2 is found in plant-based foods and fortified products, but it is not as readily available in the diet as Vitamin D3 (found in animal-based foods). If your diet is low in these sources, you might have low levels of D2.
-    Malabsorption Disorders:Celiac disease, Crohn’s disease, and other conditions that impair nutrient absorption in the gut can contribute to vitamin D deficiency.
-    Liver or Kidney Disease:The liver is responsible for converting vitamin D into its active form. Conditions like liver cirrhosis or chronic kidney disease can impair the conversion of vitamin D2 to its active form, leading to deficiency.
-    Obesity:Individuals with higher body fat may have lower circulating levels of vitamin D because vitamin D is fat-soluble and can become sequestered in fat tissue, reducing its availability in the bloodstream.
-    Age:Older adults have a reduced ability to synthesize vitamin D in the skin and absorb it efficiently from food, making them more vulnerable to deficiency.
-    Medications:Certain medications, such as antiepileptic drugs (e.g., phenytoin), steroids, and weight-loss surgery medications, can reduce vitamin D absorption or metabolism.
-
-Health Implications of Low Vitamin D2:
-    Bone Health: Osteomalacia (softening of bones) and osteoporosis (brittle bones), which increase the risk of fractures.
-    Muscle Weakness: Low vitamin D can cause muscle weakness and increase the risk of falls, especially in the elderly.
-    Immune Function: Vitamin D plays a role in immune system regulation, and deficiency may contribute to an increased risk of infections or autoimmune conditions.
-    Mood Disorders: Depression, fatigue, and other mood-related disorders have been linked to vitamin D deficiency.
-    Increased Risk of Chronic Diseases: Deficiency in vitamin D is associated with increased risks for cardiovascular disease, diabetes, and certain cancers.
-
-Tips to Increase Vitamin D2:
-    Sunlight Exposure:10-30 minutes of direct sunlight exposure several times a week, depending on skin tone and geographic location, is often enough to stimulate the production of vitamin D.
-    Vitamin D2-Rich Foods:Plant-based sources of vitamin D2 include:
-    Mushrooms (especially varieties exposed to UV light like maitake mushrooms).
-    Fortified foods such as fortified plant-based milks (soy, almond, oat), fortified orange juice, and fortified cereals.
-    Supplements:Vitamin D2 supplements can help restore levels, especially for those who have limited sunlight exposure or difficulty absorbing vitamin D from food.
-    Address Underlying Conditions:Treat or manage underlying conditions like malabsorption disorders and liver or kidney disease that can impair vitamin D absorption or activation.
-    Weight Management:Maintaining a healthy weight may improve the availability of vitamin D in the bloodstream, especially for people with obesity.
-    """)
+            advice.append("""
+<div style="font-family: Arial, sans-serif; line-height: 1.6;">
+    <h2>Low 25(OH) Vitamin D2 (Deficiency)</h2>
+    <p>
+        Low levels of 25(OH) Vitamin D2 can occur due to insufficient sunlight exposure, poor dietary intake, or conditions that impair absorption or metabolism of vitamin D. It can lead to vitamin D deficiency and associated health problems.
+    </p>
+    <h3>Root Causes of Low Vitamin D2:</h3>
+    <ul>
+        <li><strong>Inadequate Sunlight Exposure:</strong> Vitamin D is produced in the skin upon exposure to sunlight. Insufficient exposure to sunlight can lead to low vitamin D levels.</li>
+        <li><strong>Dietary Deficiency:</strong> Vitamin D2 is found in plant-based foods and fortified products, but it is not as readily available in the diet as Vitamin D3.</li>
+        <li><strong>Malabsorption Disorders:</strong> Conditions like celiac disease or Crohn’s disease can impair nutrient absorption in the gut.</li>
+        <li><strong>Liver or Kidney Disease:</strong> Impaired conversion of vitamin D2 to its active form due to liver or kidney issues can lead to deficiency.</li>
+        <li><strong>Obesity:</strong> Vitamin D can become sequestered in fat tissue, reducing its availability in the bloodstream.</li>
+        <li><strong>Age:</strong> Older adults have a reduced ability to synthesize vitamin D in the skin and absorb it efficiently.</li>
+        <li><strong>Medications:</strong> Certain drugs can reduce vitamin D absorption or metabolism.</li>
+    </ul>
+    <h3>Health Implications of Low Vitamin D2:</h3>
+    <ul>
+        <li>Bone Health: Osteomalacia and osteoporosis, increasing the risk of fractures.</li>
+        <li>Muscle Weakness: Increases the risk of falls, especially in the elderly.</li>
+        <li>Immune Function: Deficiency may contribute to an increased risk of infections or autoimmune conditions.</li>
+        <li>Mood Disorders: Depression and fatigue have been linked to vitamin D deficiency.</li>
+        <li>Increased Risk of Chronic Diseases: Deficiency is associated with cardiovascular disease, diabetes, and certain cancers.</li>
+    </ul>
+    <h3>Tips to Increase Vitamin D2:</h3>
+    <ul>
+        <li><strong>Sunlight Exposure:</strong> 10-30 minutes of direct sunlight exposure several times a week is often enough.</li>
+        <li><strong>Vitamin D2-Rich Foods:</strong> Include plant-based sources like mushrooms (exposed to UV light), fortified plant-based milks, fortified orange juice, and cereals.</li>
+        <li><strong>Supplements:</strong> Vitamin D2 supplements can help restore levels, especially for those with limited sunlight exposure.</li>
+        <li><strong>Address Underlying Conditions:</strong> Treat conditions like malabsorption disorders or liver disease to improve absorption.</li>
+        <li><strong>Weight Management:</strong> Maintaining a healthy weight can improve vitamin D availability in the bloodstream.</li>
+    </ul>
+</div>
+        """)
         elif values["25 (OH) Vitamin D2 (Ergocalciferol)"] > 50:
-            advice.append("""High 25(OH) Vitamin D2 (Toxicity or Excess)
-High levels of 25(OH) Vitamin D2 (known as vitamin D toxicity) are rare but can occur due to excessive supplementation or intake of vitamin D2.
-
-Root Causes of High Vitamin D2:
-    Excessive Supplementation:Taking too much vitamin D2 from supplements is the most common cause of vitamin D toxicity. Typically, high doses of supplements (often greater than 10,000 IU per day) are required to cause toxicity.
-    Excessive Fortified Foods:While fortified foods contain small amounts of vitamin D, consuming large quantities of these foods alongside supplements could contribute to elevated levels.
-    Supplementing with Vitamin D3:If a person is supplementing with vitamin D3 (another form of vitamin D) along with vitamin D2, the total vitamin D intake could lead to elevated levels.
-    Granulomatous Diseases:Certain conditions, such as sarcoidosis, tuberculosis, and histoplasmosis, can cause the body to convert more vitamin D into its active form, potentially leading to elevated levels of circulating vitamin D.
-    Hyperparathyroidism:Primary hyperparathyroidism, a condition where the parathyroid glands overproduce parathyroid hormone (PTH), can increase calcium absorption and lead to higher vitamin D levels.
-    Health Implications of High Vitamin D2:
-    Hypercalcemia: Excess vitamin D can lead to elevated levels of calcium in the blood, which can cause symptoms such as:
-    Nausea, vomiting
-    Fatigue, weakness
-    Confusion or disorientation
-    Kidney stones or kidney damage (due to excess calcium)
-    Bone pain and calcification of soft tissues
-    Risk of Cardiovascular Problems: Chronic hypercalcemia due to vitamin D toxicity can increase the risk of heart disease and arterial calcification.
-    Renal Dysfunction: Kidney damage or kidney stones may result from the excess calcium that accompanies vitamin D toxicity.
-
-Tips for Managing High Vitamin D2:
-    Discontinue Supplements:If you are taking high doses of vitamin D2 or vitamin D3, stop supplementation immediately and consult your healthcare provider to manage levels.
-    Monitor Blood Calcium Levels:Blood tests should be performed to check calcium levels. If calcium levels are high, further steps will be necessary to prevent kidney damage.
-    Hydration:Ensure adequate hydration and drink plenty of fluids to help flush excess calcium from the body.
-    Address Underlying Conditions:If vitamin D toxicity is linked to an underlying condition such as sarcoidosis or hyperparathyroidism, treat the underlying disease and manage vitamin D intake accordingly.
-    Gradual Reduction of Vitamin D Intake:In some cases, a gradual reduction in vitamin D intake might be recommended to safely lower vitamin D levels without causing further complications.""")
+            advice.append("""
+<div style="font-family: Arial, sans-serif; line-height: 1.6;">
+    <h2>High 25(OH) Vitamin D2 (Toxicity or Excess)</h2>
+    <p>
+        High levels of 25(OH) Vitamin D2 (known as vitamin D toxicity) are rare but can occur due to excessive supplementation or intake of vitamin D2.
+    </p>
+    <h3>Root Causes of High Vitamin D2:</h3>
+    <ul>
+        <li><strong>Excessive Supplementation:</strong> Taking too much vitamin D2 from supplements is the most common cause of toxicity.</li>
+        <li><strong>Excessive Fortified Foods:</strong> Consuming large amounts of fortified foods alongside supplements can contribute to elevated levels.</li>
+        <li><strong>Supplementing with Vitamin D3:</strong> Combined intake of D2 and D3 can lead to elevated total vitamin D levels.</li>
+        <li><strong>Granulomatous Diseases:</strong> Conditions like sarcoidosis or tuberculosis can increase the conversion of vitamin D into its active form.</li>
+        <li><strong>Hyperparathyroidism:</strong> Primary hyperparathyroidism can increase calcium absorption and vitamin D levels.</li>
+    </ul>
+    <h3>Health Implications of High Vitamin D2:</h3>
+    <ul>
+        <li>Hypercalcemia: Symptoms include nausea, vomiting, fatigue, and kidney stones.</li>
+        <li>Risk of Cardiovascular Problems: Chronic hypercalcemia can increase the risk of heart disease and arterial calcification.</li>
+        <li>Renal Dysfunction: Kidney damage or stones may result from excess calcium.</li>
+    </ul>
+    <h3>Tips for Managing High Vitamin D2:</h3>
+    <ul>
+        <li><strong>Discontinue Supplements:</strong> Stop taking high doses of vitamin D2 or D3 under medical guidance.</li>
+        <li><strong>Monitor Blood Calcium Levels:</strong> Blood tests should check for hypercalcemia.</li>
+        <li><strong>Hydration:</strong> Drink plenty of fluids to help flush excess calcium from the body.</li>
+        <li><strong>Address Underlying Conditions:</strong> Manage conditions like sarcoidosis or hyperparathyroidism appropriately.</li>
+        <li><strong>Gradual Reduction of Intake:</strong> Safely lower vitamin D intake to manage levels without complications.</li>
+    </ul>
+</div>
+        """)
 
     # 25 (OH) Vitamin D3 (Cholecalciferol) (range: 20-50 ng/mL)
+    
     if "25 (OH) Vitamin D3 (Cholecalciferol)" in values:
         if values["25 (OH) Vitamin D3 (Cholecalciferol)"] < 20:
-            advice.append("""Low 25(OH) Vitamin D3 (Deficiency)
-Low levels of 25(OH) Vitamin D3 can occur due to inadequate sun exposure, poor dietary intake, or conditions that impair the absorption or metabolism of vitamin D. This can lead to vitamin D deficiency, resulting in a range of health problems.
-
-Root Causes of Low Vitamin D3:
-    Inadequate Sunlight Exposure:Vitamin D3 is primarily produced in the skin when exposed to sunlight (UVB rays). Limited sun exposure, especially during the winter months, or living in northern latitudes, can lead to vitamin D3 deficiency.
-    Sunscreen can also block UVB rays, reducing the body’s ability to produce vitamin D3.
-    Dietary Deficiency:Vitamin D3 is found in animal-based foods such as:
-    Fatty fish (salmon, mackerel, tuna)
-    Egg yolks
-    Fortified dairy products
-    Liver
-    People who follow a strict vegetarian or vegan diet may be at risk for deficiency since vitamin D3 is mostly found in animal products.
-    Malabsorption Disorders:Conditions like celiac disease, Crohn's disease, celiac disease, and gastrointestinal surgeries can impair vitamin D absorption in the intestines.
-    Aging:Older adults may have a reduced ability to synthesize vitamin D from sunlight and absorb it from food.
-    Obesity:People with higher body fat percentages may experience lower circulating vitamin D levels because vitamin D is fat-soluble and can be stored in fat tissue, making it less available for the body to use.
-    Liver or Kidney Disease:Liver disease (cirrhosis) and kidney disease can affect the body’s ability to activate vitamin D3, resulting in low levels of circulating 25(OH) Vitamin D3.
-    Medications:Some medications, such as antiepileptic drugs and steroids, can affect vitamin D metabolism and lower its levels.
-
-Health Implications of Low Vitamin D3:
-    Bone Health: Deficiency in vitamin D3 can lead to osteomalacia (softening of bones) and osteoporosis (fragile bones), increasing the risk of fractures.
-    Muscle Weakness: Low vitamin D3 is associated with muscle weakness and an increased risk of falls, especially in older adults.
-    Weakened Immune System: Vitamin D3 plays a crucial role in regulating immune function. Deficiency may lead to an increased susceptibility to infections.
-    Mood Disorders: There is a correlation between low vitamin D3 and depression, anxiety, and other mood disorders.
-    Increased Risk of Chronic Diseases: Low vitamin D3 levels have been linked to cardiovascular diseases, type 2 diabetes, and autoimmune conditions like multiple sclerosis.
-
-Tips to Increase Vitamin D3:
-    Sunlight Exposure:Spend 10–30 minutes a few times a week in direct sunlight, depending on skin type and geographical location. Expose large areas of skin (arms, face, and legs) without sunscreen to facilitate vitamin D production.
-    Dietary Sources:Increase consumption of animal-based foods that are rich in vitamin D3, such as:
-    Fatty fish (salmon, sardines, mackerel)
-    Egg yolks
-    Fortified dairy and plant-based milks
-    Liver from animals
-    Supplements:Vitamin D3 supplements are often recommended for individuals at risk of deficiency. A healthcare provider can determine the appropriate dosage.
-    Treat Underlying Conditions:If you have conditions like malabsorption disorders (e.g., celiac disease) or liver/kidney disease, treating or managing these conditions may improve vitamin D absorption and activation.
-    Regular Monitoring:People at risk of deficiency, such as the elderly, those with darker skin, or those living in northern climates, should have their vitamin D3 levels checked regularly to prevent deficiency.
-    """)
+            advice.append("""
+<div style="font-family: Arial, sans-serif; line-height: 1.6;">
+    <h2>Low 25(OH) Vitamin D3 (Deficiency)</h2>
+    <p>
+        Low levels of 25(OH) Vitamin D3 can occur due to inadequate sun exposure, poor dietary intake, or conditions that impair the absorption or metabolism of vitamin D. This can lead to vitamin D deficiency, resulting in a range of health problems.
+    </p>
+    <h3>Root Causes of Low Vitamin D3:</h3>
+    <ul>
+        <li><strong>Inadequate Sunlight Exposure:</strong> Vitamin D3 is primarily produced in the skin when exposed to sunlight (UVB rays). Limited sun exposure, especially during winter months or in northern latitudes, can lead to deficiency. Sunscreen can also block UVB rays, reducing production.</li>
+        <li><strong>Dietary Deficiency:</strong> Vitamin D3 is found in animal-based foods such as fatty fish (salmon, mackerel, tuna), egg yolks, fortified dairy products, and liver. People on strict vegetarian or vegan diets may be at risk.</li>
+        <li><strong>Malabsorption Disorders:</strong> Conditions like celiac disease, Crohn's disease, and gastrointestinal surgeries can impair vitamin D absorption.</li>
+        <li><strong>Aging:</strong> Older adults may have a reduced ability to synthesize vitamin D from sunlight and absorb it from food.</li>
+        <li><strong>Obesity:</strong> Higher body fat percentages can lower circulating vitamin D levels as it becomes stored in fat tissue.</li>
+        <li><strong>Liver or Kidney Disease:</strong> Liver and kidney diseases can affect the activation of vitamin D3, resulting in low levels.</li>
+        <li><strong>Medications:</strong> Certain drugs, such as antiepileptics and steroids, can lower vitamin D levels.</li>
+    </ul>
+    <h3>Health Implications of Low Vitamin D3:</h3>
+    <ul>
+        <li><strong>Bone Health:</strong> Deficiency can lead to osteomalacia (soft bones) and osteoporosis (fragile bones), increasing fracture risk.</li>
+        <li><strong>Muscle Weakness:</strong> Associated with increased fall risk, especially in older adults.</li>
+        <li><strong>Weakened Immune System:</strong> Deficiency may increase susceptibility to infections.</li>
+        <li><strong>Mood Disorders:</strong> Linked to depression, anxiety, and other mood-related issues.</li>
+        <li><strong>Chronic Diseases:</strong> Low vitamin D3 levels are associated with cardiovascular disease, type 2 diabetes, and autoimmune conditions.</li>
+    </ul>
+    <h3>Tips to Increase Vitamin D3:</h3>
+    <ul>
+        <li><strong>Sunlight Exposure:</strong> Spend 10–30 minutes a few times a week in direct sunlight. Expose large areas of skin without sunscreen for optimal production.</li>
+        <li><strong>Dietary Sources:</strong> Consume animal-based foods rich in vitamin D3, such as fatty fish, egg yolks, fortified dairy/plant-based milks, and liver.</li>
+        <li><strong>Supplements:</strong> Consider vitamin D3 supplements, especially for those at risk of deficiency. Consult a healthcare provider for appropriate dosage.</li>
+        <li><strong>Address Underlying Conditions:</strong> Treat conditions like malabsorption disorders or liver/kidney diseases to improve absorption and activation.</li>
+        <li><strong>Regular Monitoring:</strong> At-risk individuals (e.g., elderly, those with darker skin, or living in northern climates) should have their vitamin D3 levels checked regularly.</li>
+    </ul>
+</div>
+        """)
         elif values["25 (OH) Vitamin D3 (Cholecalciferol)"] > 50:
-            advice.append("""High 25(OH) Vitamin D3 (Toxicity or Excess)
-High levels of 25(OH) Vitamin D3 can be caused by excessive supplementation or excessive consumption of fortified foods, leading to vitamin D toxicity. This is much less common than deficiency, but it can have serious health consequences.
-
-Root Causes of High Vitamin D3:
-    Excessive Supplementation:Taking high doses of vitamin D3 supplements (typically more than 4,000 IU per day) can lead to vitamin D toxicity. Very high doses (10,000 IU or more) can be dangerous and cause harmful effects.
-    Fortified Foods:While unlikely, excessive consumption of foods that are fortified with vitamin D3 (e.g., fortified cereals, milk, or juices) alongside high-dose supplements could lead to elevated levels.
-    Granulomatous Diseases:Conditions like sarcoidosis, tuberculosis, and histoplasmosis can cause an increase in vitamin D levels by enhancing the body’s ability to convert vitamin D into its active form, leading to elevated blood levels of 25(OH) Vitamin D3.
-    Hyperparathyroidism:In cases of primary hyperparathyroidism, the parathyroid glands overproduce parathyroid hormone (PTH), which can affect calcium and vitamin D metabolism, leading to elevated vitamin D levels.
-
-Health Implications of High Vitamin D3:
-    Hypercalcemia:High vitamin D3 levels can cause elevated calcium levels in the blood (hypercalcemia), leading to:
-    Nausea, vomiting
-    Weakness, fatigue
-    Confusion, and disorientation
-    Kidney stones or kidney damage due to calcium deposits.
-    Kidney Damage:Excess calcium can cause kidney stones and may lead to renal failure if not addressed.
-    Bone Pain:High vitamin D levels can cause bone pain or calcification of soft tissues, leading to pain and reduced flexibility.
-    Cardiovascular Problems:Prolonged high levels of vitamin D can lead to arterial calcification, heart disease, and an increased risk of stroke or other cardiovascular issues.
-
-Tips for Managing High Vitamin D3:
-    Discontinue Supplements:If you are taking high doses of vitamin D3 supplements, stop supplementation immediately and consult your healthcare provider for further evaluation.
-    Monitor Calcium Levels:Blood tests should be performed to check for elevated calcium levels (hypercalcemia). Treatment may involve fluids and medications to reduce calcium levels if necessary.
-    Hydration:Drink plenty of fluids to help flush excess calcium from the kidneys and reduce the risk of kidney stones.
-    Monitor for Underlying Conditions:If elevated vitamin D3 levels are caused by an underlying condition such as sarcoidosis or hyperparathyroidism, addressing the root cause is crucial. Treatment for these conditions may involve medications to manage calcium and vitamin D metabolism.
-    Gradual Reduction in Vitamin D Intake:If vitamin D toxicity is suspected, it may be necessary to gradually reduce vitamin D intake rather than stopping abruptly, under the supervision of a healthcare provider.""")
+            advice.append("""
+<div style="font-family: Arial, sans-serif; line-height: 1.6;">
+    <h2>High 25(OH) Vitamin D3 (Toxicity or Excess)</h2>
+    <p>
+        High levels of 25(OH) Vitamin D3 can be caused by excessive supplementation or consumption of fortified foods, leading to vitamin D toxicity. Though less common than deficiency, it can have serious health consequences.
+    </p>
+    <h3>Root Causes of High Vitamin D3:</h3>
+    <ul>
+        <li><strong>Excessive Supplementation:</strong> High doses of vitamin D3 supplements (typically more than 4,000 IU/day, or 10,000 IU/day in extreme cases) can lead to toxicity.</li>
+        <li><strong>Fortified Foods:</strong> Excessive consumption of fortified foods combined with high-dose supplements may contribute to elevated levels.</li>
+        <li><strong>Granulomatous Diseases:</strong> Conditions like sarcoidosis, tuberculosis, or histoplasmosis can enhance vitamin D conversion, leading to elevated blood levels.</li>
+        <li><strong>Hyperparathyroidism:</strong> Overproduction of parathyroid hormone (PTH) can disrupt calcium and vitamin D metabolism, causing elevated levels.</li>
+    </ul>
+    <h3>Health Implications of High Vitamin D3:</h3>
+    <ul>
+        <li><strong>Hypercalcemia:</strong> Excessive vitamin D3 can cause high calcium levels, resulting in nausea, vomiting, weakness, fatigue, and confusion.</li>
+        <li><strong>Kidney Damage:</strong> High calcium levels may lead to kidney stones or renal failure.</li>
+        <li><strong>Bone Pain:</strong> Elevated vitamin D3 can cause bone pain and calcification of soft tissues.</li>
+        <li><strong>Cardiovascular Problems:</strong> Prolonged high levels can lead to arterial calcification, heart disease, or stroke.</li>
+    </ul>
+    <h3>Tips for Managing High Vitamin D3:</h3>
+    <ul>
+        <li><strong>Discontinue Supplements:</strong> Stop high-dose vitamin D3 supplementation and consult a healthcare provider for further evaluation.</li>
+        <li><strong>Monitor Calcium Levels:</strong> Perform blood tests to check for hypercalcemia and take necessary steps to reduce calcium levels.</li>
+        <li><strong>Hydration:</strong> Drink plenty of fluids to help flush excess calcium from the kidneys.</li>
+        <li><strong>Address Underlying Conditions:</strong> Treat conditions like sarcoidosis or hyperparathyroidism to manage calcium and vitamin D metabolism.</li>
+        <li><strong>Gradual Reduction in Vitamin D Intake:</strong> Safely lower vitamin D intake under medical supervision to avoid complications.</li>
+    </ul>
+</div>
+        """)
 
     if "Vitamin D Total (D2 + D3)" in values:
         if values["Vitamin D Total (D2 + D3)"] < 20:
-            advice.append("""Low Vitamin D Total (D2 + D3) – Deficiency
-Low levels of Vitamin D Total (D2 + D3) indicate vitamin D deficiency, which can have a negative impact on bone health, immune function, and overall well-being.
-
-Root Causes of Low Vitamin D Total (D2 + D3):
-    Inadequate Sunlight Exposure:Sunlight is the most natural source of Vitamin D3. Lack of sun exposure—particularly in regions with long winters, or due to lifestyle factors like spending most of the time indoors—can result in low levels of Vitamin D.
-    Dietary Deficiency:Vitamin D-rich foods (like fatty fish, egg yolks, and fortified foods) may be lacking in the diet, leading to deficiency, particularly in people who avoid animal products or have strict vegan diets.
-    Malabsorption Disorders:Conditions like Crohn's disease, celiac disease, and IBS can interfere with the absorption of Vitamin D from the digestive tract.
-    Aging:As people age, their skin becomes less efficient at producing Vitamin D when exposed to sunlight, and their kidneys become less effective at converting Vitamin D to its active form.
-    Obesity:Vitamin D is fat-soluble, and in individuals with higher body fat, Vitamin D may be stored in fat tissue, rendering it less bioavailable to the body.
-    Liver or Kidney Disease:The liver and kidneys play a crucial role in converting Vitamin D to its active form. Liver diseases (like cirrhosis) or kidney diseases can impair this conversion, resulting in lower active Vitamin D levels in the body.
-    Medications:Certain medications, such as anticonvulsants or steroids, can interfere with Vitamin D metabolism and lower levels.
-
-Health Implications of Low Vitamin D Total:
-    Bone Health: Osteomalacia (softening of bones) and osteoporosis (fragile bones) can result from chronic Vitamin D deficiency.
-    Muscle Weakness: Low levels of Vitamin D can contribute to muscle weakness, especially in older adults.
-    Weakened Immune System: Insufficient Vitamin D impairs the immune system, increasing the risk of infections.
-    Mood Disorders: Vitamin D deficiency is linked to depression and anxiety.
-    Chronic Conditions: There may be an increased risk of developing chronic conditions, including cardiovascular diseases and type 2 diabetes.
-
-Tips to Increase Vitamin D Total (D2 + D3):
-    Increase Sun Exposure:Spend 10–30 minutes in direct sunlight several times a week, depending on skin type and geographical location. Ensure large areas of skin (face, arms, and legs) are exposed for optimal Vitamin D synthesis.
-    Dietary Sources:Incorporate Vitamin D-rich foods into your diet, such as:
-    Fatty fish (salmon, sardines, mackerel)
-    Egg yolks
-    Fortified foods (dairy products, plant-based milks, cereals)
-    Liver (chicken or beef)
-    Supplements:Vitamin D supplements (D3 is usually recommended over D2 for better efficacy) may be needed for individuals at risk of deficiency. A healthcare provider should determine the correct dosage.
-    Manage Malabsorption Conditions:If you have digestive disorders like celiac disease or Crohn's disease, addressing these conditions may improve your ability to absorb Vitamin D.
-    Monitor and Consult Healthcare Providers:Regular blood tests can help determine if you are getting sufficient Vitamin D, particularly if you are in a higher-risk category (e.g., elderly, obese, living in areas with limited sunlight).
-    """)
+            advice.append("""
+<div style="font-family: Arial, sans-serif; line-height: 1.6;">
+    <h2>Low Vitamin D Total (D2 + D3) – Deficiency</h2>
+    <p>
+        Low levels of Vitamin D Total (D2 + D3) indicate vitamin D deficiency, which can negatively impact bone health, immune function, and overall well-being.
+    </p>
+    <h3>Root Causes of Low Vitamin D Total (D2 + D3):</h3>
+    <ul>
+        <li><strong>Inadequate Sunlight Exposure:</strong> Lack of sun exposure, especially in regions with long winters or due to indoor lifestyles, can result in low Vitamin D levels.</li>
+        <li><strong>Dietary Deficiency:</strong> Diets low in Vitamin D-rich foods like fatty fish, egg yolks, and fortified foods can cause deficiency, particularly in vegans or vegetarians.</li>
+        <li><strong>Malabsorption Disorders:</strong> Conditions like Crohn's disease, celiac disease, or IBS can interfere with Vitamin D absorption.</li>
+        <li><strong>Aging:</strong> Older adults produce less Vitamin D when exposed to sunlight, and their kidneys may be less efficient at converting Vitamin D to its active form.</li>
+        <li><strong>Obesity:</strong> Vitamin D, being fat-soluble, can be stored in fat tissue, reducing its availability in the body.</li>
+        <li><strong>Liver or Kidney Disease:</strong> These organs are essential for converting Vitamin D to its active form. Diseases like cirrhosis or kidney dysfunction can impair this process.</li>
+        <li><strong>Medications:</strong> Certain drugs, like anticonvulsants or steroids, can disrupt Vitamin D metabolism and reduce its levels.</li>
+    </ul>
+    <h3>Health Implications of Low Vitamin D Total:</h3>
+    <ul>
+        <li><strong>Bone Health:</strong> Chronic deficiency can lead to osteomalacia (soft bones) or osteoporosis (fragile bones).</li>
+        <li><strong>Muscle Weakness:</strong> Low Vitamin D levels can contribute to muscle weakness, especially in older adults.</li>
+        <li><strong>Weakened Immune System:</strong> Deficiency impairs immune function, increasing infection risk.</li>
+        <li><strong>Mood Disorders:</strong> Linked to depression and anxiety.</li>
+        <li><strong>Chronic Conditions:</strong> Deficiency may raise the risk of cardiovascular diseases and type 2 diabetes.</li>
+    </ul>
+    <h3>Tips to Increase Vitamin D Total (D2 + D3):</h3>
+    <ul>
+        <li><strong>Increase Sun Exposure:</strong> Spend 10–30 minutes in direct sunlight several times a week, exposing large areas of skin (face, arms, legs).</li>
+        <li><strong>Dietary Sources:</strong> Include foods like fatty fish (salmon, sardines, mackerel), egg yolks, fortified dairy and plant-based milks, cereals, and liver (chicken or beef).</li>
+        <li><strong>Supplements:</strong> Vitamin D3 supplements may be needed for at-risk individuals. Consult a healthcare provider for dosage recommendations.</li>
+        <li><strong>Manage Malabsorption Conditions:</strong> Address digestive disorders like celiac disease or Crohn's disease to improve Vitamin D absorption.</li>
+        <li><strong>Regular Monitoring:</strong> Regular blood tests can help ensure sufficient Vitamin D levels, especially for high-risk groups (e.g., elderly or obese individuals).</li>
+    </ul>
+</div>
+        """)
         elif values["Vitamin D Total (D2 + D3)"] > 100:
-            advice.append("""High Vitamin D Total (D2 + D3) – Toxicity or Excess
-High levels of Vitamin D Total (D2 + D3) indicate Vitamin D toxicity or excessive intake, which is usually caused by excessive supplementation rather than food or sun exposure.
-
-Root Causes of High Vitamin D Total (D2 + D3):
-    Excessive Supplementation:The most common cause of high Vitamin D levels is taking high doses of supplements (typically above 4,000 IU per day), especially without medical supervision. Very high doses of Vitamin D3 (10,000 IU or more daily) can lead to toxicity.
-    Fortified Foods:Overconsumption of fortified foods—such as cereals, milk, or juices—alongside high-dose Vitamin D supplements can contribute to elevated Vitamin D levels.
-    Granulomatous Diseases:Certain diseases, like sarcoidosis, tuberculosis, or histoplasmosis, can increase the conversion of Vitamin D to its active form, raising blood levels beyond normal limits.
-    Hyperparathyroidism:In primary hyperparathyroidism, excessive parathyroid hormone (PTH) leads to an increase in calcium and Vitamin D levels.
-
-Health Implications of High Vitamin D Total:
-    Hypercalcemia: High Vitamin D levels can cause elevated calcium levels, leading to symptoms like:
-    Nausea, vomiting
-    Weakness, fatigue
-    Confusion, and disorientation
-    Kidney stones and calcification of soft tissues.
-    Kidney Damage: The excess calcium can cause kidney stones, and in severe cases, it can lead to kidney failure.
-    Bone Pain and Mineralization Issues: Prolonged excess Vitamin D can lead to bone pain or calcification of soft tissues like the kidneys, lungs, or blood vessels.
-    Cardiovascular Issues: High Vitamin D levels can lead to vascular calcification, increasing the risk of heart disease, stroke, and hypertension.
-
-Tips to Manage High Vitamin D Total (D2 + D3):
-    Stop Supplementation:If you suspect you are taking too much Vitamin D, stop supplements immediately and consult a healthcare provider. Do not attempt to correct high levels without professional guidance.
-    Monitor Calcium Levels:A blood test to check calcium levels (hypercalcemia) is crucial. Elevated calcium levels can indicate that the body is absorbing too much calcium due to high Vitamin D levels. Immediate steps might be needed to correct the imbalance.
-    Increase Fluid Intake:Stay hydrated to help flush out excess calcium through the kidneys and reduce the risk of kidney stones.
-    Treat Underlying Conditions:If the high Vitamin D levels are caused by an underlying condition like sarcoidosis or hyperparathyroidism, addressing the primary disease may help normalize vitamin D levels.
-    Gradual Reduction:In some cases, it may be necessary to gradually reduce the Vitamin D intake under medical supervision instead of stopping abruptly.""")
+            advice.append("""
+<div style="font-family: Arial, sans-serif; line-height: 1.6;">
+    <h2>High Vitamin D Total (D2 + D3) – Toxicity or Excess</h2>
+    <p>
+        High levels of Vitamin D Total (D2 + D3) indicate Vitamin D toxicity or excessive intake, often caused by over-supplementation rather than natural sources like food or sunlight.
+    </p>
+    <h3>Root Causes of High Vitamin D Total (D2 + D3):</h3>
+    <ul>
+        <li><strong>Excessive Supplementation:</strong> Taking high doses of supplements (above 4,000 IU daily, or 10,000 IU in extreme cases) without supervision can cause toxicity.</li>
+        <li><strong>Fortified Foods:</strong> Overconsumption of fortified foods alongside high-dose supplements may contribute to elevated levels.</li>
+        <li><strong>Granulomatous Diseases:</strong> Diseases like sarcoidosis or tuberculosis can increase Vitamin D conversion, raising blood levels.</li>
+        <li><strong>Hyperparathyroidism:</strong> Excessive parathyroid hormone (PTH) production can disrupt calcium and Vitamin D metabolism.</li>
+    </ul>
+    <h3>Health Implications of High Vitamin D Total:</h3>
+    <ul>
+        <li><strong>Hypercalcemia:</strong> Symptoms include nausea, vomiting, weakness, fatigue, confusion, kidney stones, and soft tissue calcification.</li>
+        <li><strong>Kidney Damage:</strong> Excess calcium can cause kidney stones or, in severe cases, lead to kidney failure.</li>
+        <li><strong>Bone Pain and Mineralization Issues:</strong> Prolonged high Vitamin D can cause bone pain and soft tissue calcification.</li>
+        <li><strong>Cardiovascular Issues:</strong> High Vitamin D levels may lead to vascular calcification, increasing the risk of heart disease and stroke.</li>
+    </ul>
+    <h3>Tips to Manage High Vitamin D Total (D2 + D3):</h3>
+    <ul>
+        <li><strong>Stop Supplementation:</strong> Discontinue high-dose Vitamin D supplements immediately and consult a healthcare provider.</li>
+        <li><strong>Monitor Calcium Levels:</strong> Check blood calcium levels for signs of hypercalcemia and take corrective measures as needed.</li>
+        <li><strong>Increase Fluid Intake:</strong> Stay hydrated to flush out excess calcium through the kidneys.</li>
+        <li><strong>Treat Underlying Conditions:</strong> Manage conditions like sarcoidosis or hyperparathyroidism to normalize Vitamin D levels.</li>
+        <li><strong>Gradual Reduction:</strong> Reduce Vitamin D intake under medical supervision to avoid complications.</li>
+    </ul>
+</div>
+        """)
 
     # Iron (range: 50-170 µg/dL)
     if "Iron" in values:
         if values["Iron"] < 70:
-            advice.append("""Low Iron – Iron Deficiency
-Low iron levels typically indicate iron deficiency, which can lead to various health complications.
-
-Root Causes of Low Iron:
-    Inadequate Dietary Intake:Iron is found in both heme (animal-based) and non-heme (plant-based) forms. A diet lacking in iron-rich foods, such as red meat, poultry, fish, legumes, and leafy greens, can cause low iron levels.
-    Blood Loss:Heavy menstruation or bleeding ulcers, gastric bleeding, or hemorrhoids can lead to blood loss, depleting iron levels over time. This can also occur with frequent blood donations.
-    Malabsorption:Conditions like celiac disease, Crohn's disease, or gastric bypass surgery can impair the body’s ability to absorb iron from food, leading to deficiencies.
-    Pregnancy:During pregnancy, the body’s demand for iron increases to support the growing fetus, often leading to iron deficiency if not supplemented.
-    Chronic Conditions:Chronic conditions like chronic kidney disease or heart failure can affect iron metabolism or cause blood loss, resulting in low iron levels.
-    Vegetarian or Vegan Diets:Non-heme iron, found in plant-based foods, is not absorbed as efficiently as heme iron from animal sources. Vegans and vegetarians are at higher risk of iron deficiency without careful dietary planning.
-    Health Implications of Low Iron:Iron-deficiency anemia: Fatigue, weakness, and paleness due to reduced hemoglobin production.
-    Impaired oxygen transport: Leads to shortness of breath, dizziness, and heart palpitations.
-    Weakened immune system: Iron deficiency can impair immune function, leading to increased susceptibility to infections.
-    Hair loss: Insufficient iron may result in hair thinning or brittle hair.
-    Cold intolerance: Low iron levels may make you feel colder than usual due to decreased blood flow.
-
-Tips to Increase Iron Levels:
-    Increase Iron-Rich Foods such as
-    Heme iron (animal-based sources) is more easily absorbed:
-    Red meat, poultry, fish, and shellfish
-    Non-heme iron (plant-based sources) include:
-    Spinach, lentils, beans, tofu, quinoa, fortified cereals
-    Iron-fortified bread and pasta
-    Pair with Vitamin C-rich foods (like citrus fruits, tomatoes, and bell peppers) to enhance iron absorption.
-    Iron Supplements:Iron supplements (usually in the form of ferrous sulfate) may be necessary for individuals with severe deficiency or malabsorption issues. Always take supplements under the guidance of a healthcare provider to avoid iron overload.
-    Cook in Cast Iron Pans:Cooking acidic foods (e.g., tomatoes) in cast iron pans can increase the iron content of meals.
-    Avoid Iron Blockers:Limit the intake of substances that inhibit iron absorption, such as:
-    Coffee and tea (due to tannins)
-    Calcium-rich foods (when consumed with iron-rich meals)
-    High-fiber foods (when eaten in excess with iron-rich foods)
-    Manage Menstrual Flow:If heavy periods are causing significant blood loss, consult a doctor about potential treatment options (e.g., hormone therapy, iron supplementation).""")
+            advice.append("""
+<div style="font-family: Arial, sans-serif; line-height: 1.6;">
+    <h2>Low Iron – Iron Deficiency</h2>
+    <p>Low iron levels typically indicate iron deficiency, which can lead to various health complications.</p>
+    <h3>Root Causes of Low Iron:</h3>
+    <ul>
+        <li><strong>Inadequate Dietary Intake:</strong> A diet lacking in iron-rich foods like red meat, poultry, fish, legumes, and leafy greens can cause low iron levels.</li>
+        <li><strong>Blood Loss:</strong> Heavy menstruation, bleeding ulcers, gastric bleeding, or frequent blood donations can deplete iron levels over time.</li>
+        <li><strong>Malabsorption:</strong> Conditions like celiac disease, Crohn's disease, or gastric bypass surgery can impair iron absorption.</li>
+        <li><strong>Pregnancy:</strong> Increased iron demand during pregnancy often leads to deficiency if not supplemented.</li>
+        <li><strong>Chronic Conditions:</strong> Chronic kidney disease or heart failure can affect iron metabolism, causing low iron levels.</li>
+        <li><strong>Vegetarian or Vegan Diets:</strong> Non-heme iron from plant sources is less efficiently absorbed than heme iron from animal sources.</li>
+    </ul>
+    <h3>Health Implications of Low Iron:</h3>
+    <ul>
+        <li><strong>Iron-Deficiency Anemia:</strong> Fatigue, weakness, and paleness due to reduced hemoglobin production.</li>
+        <li><strong>Impaired Oxygen Transport:</strong> Leads to shortness of breath, dizziness, and heart palpitations.</li>
+        <li><strong>Weakened Immune System:</strong> Increased susceptibility to infections.</li>
+        <li><strong>Hair Loss:</strong> May cause hair thinning or brittle hair.</li>
+        <li><strong>Cold Intolerance:</strong> Low iron levels can cause cold sensitivity due to decreased blood flow.</li>
+    </ul>
+    <h3>Tips to Increase Iron Levels:</h3>
+    <ul>
+        <li><strong>Increase Iron-Rich Foods:</strong> 
+            <ul>
+                <li><strong>Heme Iron:</strong> Red meat, poultry, fish, and shellfish.</li>
+                <li><strong>Non-Heme Iron:</strong> Spinach, lentils, beans, tofu, quinoa, fortified cereals, and iron-fortified bread and pasta.</li>
+            </ul>
+            Pair with Vitamin C-rich foods (like citrus fruits, tomatoes, and bell peppers) to enhance absorption.
+        </li>
+        <li><strong>Iron Supplements:</strong> Use supplements like ferrous sulfate under medical guidance to avoid iron overload.</li>
+        <li><strong>Cook in Cast Iron Pans:</strong> Cooking acidic foods in cast iron pans increases iron content in meals.</li>
+        <li><strong>Avoid Iron Blockers:</strong> Limit substances that inhibit absorption:
+            <ul>
+                <li>Coffee and tea (tannins).</li>
+                <li>Calcium-rich foods (when consumed with iron-rich meals).</li>
+                <li>High-fiber foods (in excess with iron-rich foods).</li>
+            </ul>
+        </li>
+        <li><strong>Manage Menstrual Flow:</strong> Consult a doctor for heavy periods to reduce blood loss.</li>
+    </ul>
+</div>
+        """)
         elif values["Iron"] > 180:
-            advice.append("""High Iron – Iron Overload (Hemochromatosis)
-High iron levels can indicate iron overload, a condition where too much iron accumulates in the body, potentially causing damage to organs.
-
-Root Causes of High Iron:
-    Hereditary Hemochromatosis:A genetic disorder where the body absorbs excessive amounts of iron from food. This leads to iron buildup in tissues and organs such as the liver, heart, and pancreas, causing long-term damage.
-    Excessive Iron Supplementation:Overuse of iron supplements or taking supplements without proper medical supervision can lead to iron toxicity. This is particularly common in individuals who don’t have a deficiency but consume excess iron.
-    Frequent Blood Transfusions:Individuals with anemia or other blood disorders who require frequent blood transfusions (e.g., thalassemia or sickle cell anemia) can accumulate excess iron.
-    Liver Disease:Certain liver conditions, such as chronic hepatitis or cirrhosis, can result in impaired iron metabolism and iron overload.
-    Chronic Alcoholism:Excessive alcohol consumption can cause liver damage, affecting iron metabolism and leading to iron buildup.
-    Health Implications of High Iron:Liver Damage: Accumulated iron can damage the liver, leading to conditions like cirrhosis, liver fibrosis, or even liver cancer.
-    Heart Problems: Excessive iron can accumulate in the heart, causing conditions like arrhythmias, heart failure, and cardiomyopathy.
-    Diabetes: High iron levels can impair the pancreas and interfere with insulin production, potentially leading to diabetes.
-    Joint Pain: Iron buildup in joints can lead to arthritis and joint pain.
-    Endocrine Disorders: Excess iron can also affect other organs, including the thyroid, adrenal glands, and pituitary gland, disrupting hormone production and leading to other health issues.
-
-Tips to Manage High Iron Levels:
-    Phlebotomy (Blood Donation):For individuals with hereditary hemochromatosis or iron overload, regular blood donation or therapeutic phlebotomy can help reduce iron levels.
-    Iron Chelation Therapy:For people who cannot donate blood (e.g., those with anemia), iron chelation therapy (using medications like deferoxamine or deferasirox) may be necessary to help the body excrete excess iron.
-    Avoid Iron-Rich Foods and Supplements:Limit the consumption of iron-rich foods, such as red meat, liver, and iron-fortified cereals, if your iron levels are high.
-    Avoid iron supplements unless advised by a healthcare provider.
-    Limit Vitamin C Intake:Vitamin C increases iron absorption, so avoid high amounts of Vitamin C with iron-rich meals if you're dealing with iron overload.
-    Avoid Alcohol:Excessive alcohol can worsen liver damage, so it's essential to limit alcohol intake if dealing with high iron levels.
-    Monitor Iron Levels Regularly:Regular monitoring of serum ferritin and transferrin saturation is essential for individuals with iron overload conditions or those at risk, to prevent damage to organs.
-    """)
+            advice.append("""
+<div style="font-family: Arial, sans-serif; line-height: 1.6;">
+    <h2>High Iron – Iron Overload (Hemochromatosis)</h2>
+    <p>High iron levels indicate iron overload, where excessive iron accumulates in the body, potentially damaging organs.</p>
+    <h3>Root Causes of High Iron:</h3>
+    <ul>
+        <li><strong>Hereditary Hemochromatosis:</strong> A genetic disorder causing excessive iron absorption, leading to tissue and organ damage.</li>
+        <li><strong>Excessive Iron Supplementation:</strong> Overuse of supplements without medical supervision can cause toxicity.</li>
+        <li><strong>Frequent Blood Transfusions:</strong> Individuals with anemia or blood disorders may accumulate excess iron from transfusions.</li>
+        <li><strong>Liver Disease:</strong> Conditions like chronic hepatitis or cirrhosis impair iron metabolism, causing overload.</li>
+        <li><strong>Chronic Alcoholism:</strong> Excessive alcohol consumption damages the liver, affecting iron metabolism.</li>
+    </ul>
+    <h3>Health Implications of High Iron:</h3>
+    <ul>
+        <li><strong>Liver Damage:</strong> Can lead to cirrhosis, fibrosis, or liver cancer.</li>
+        <li><strong>Heart Problems:</strong> Iron accumulation in the heart may cause arrhythmias, heart failure, and cardiomyopathy.</li>
+        <li><strong>Diabetes:</strong> High iron levels may impair insulin production, causing diabetes.</li>
+        <li><strong>Joint Pain:</strong> Excess iron in joints can lead to arthritis.</li>
+        <li><strong>Endocrine Disorders:</strong> Iron overload may disrupt hormones by affecting glands like the thyroid and adrenal glands.</li>
+    </ul>
+    <h3>Tips to Manage High Iron Levels:</h3>
+    <ul>
+        <li><strong>Phlebotomy (Blood Donation):</strong> Regular blood donation or therapeutic phlebotomy helps reduce iron levels in individuals with hereditary hemochromatosis.</li>
+        <li><strong>Iron Chelation Therapy:</strong> Medications like deferoxamine or deferasirox help excrete excess iron for those unable to donate blood.</li>
+        <li><strong>Avoid Iron-Rich Foods and Supplements:</strong> Limit foods like red meat, liver, and iron-fortified cereals. Avoid supplements unless prescribed.</li>
+        <li><strong>Limit Vitamin C Intake:</strong> Avoid high Vitamin C with iron-rich meals to reduce absorption.</li>
+        <li><strong>Avoid Alcohol:</strong> Reduce alcohol intake to prevent further liver damage.</li>
+        <li><strong>Regular Monitoring:</strong> Monitor serum ferritin and transferrin saturation levels to prevent organ damage.</li>
+    </ul>
+</div>
+        """)
 
     # Transferrin Saturation (range: 20-50%)
     if "Transferrin Saturation" in values:
         if values["Transferrin Saturation"] < 18:
-            advice.append("""Low Transferrin Saturation – Iron Deficiency
-Low transferrin saturation indicates that the amount of iron bound to transferrin is lower than normal, which usually suggests iron deficiency. This is the most common cause of low transferrin saturation.
-
-Root Causes of Low Transferrin Saturation:
-    Iron Deficiency:Inadequate dietary intake of iron or poor absorption can result in iron deficiency anemia, leading to low transferrin saturation.
-    Chronic Blood Loss:Conditions that cause chronic bleeding, such as heavy menstruation, gastric ulcers, or hemorrhoids, can lead to a decrease in iron levels, causing low transferrin saturation.
-    Malabsorption Syndromes:Diseases like celiac disease, Crohn’s disease, or gastric bypass surgery can impair the absorption of iron, leading to low iron levels and low transferrin saturation.
-    Pregnancy:Increased iron requirements during pregnancy can cause a decrease in transferrin saturation, especially if iron intake is insufficient.
-    Acute or Chronic Inflammation:Inflammatory conditions (e.g., infections, chronic kidney disease, or rheumatoid arthritis) can lead to anemia of chronic disease, which often presents with low transferrin saturation. This occurs because the body prioritizes iron storage and limits iron availability in the bloodstream.
-    Hypoproteinemia:Conditions causing low protein levels (such as liver disease or malnutrition) can reduce transferrin production, leading to a decrease in transferrin saturation.
-    Health Implications of Low Transferrin Saturation:Iron-Deficiency Anemia: Symptoms of fatigue, paleness, shortness of breath, dizziness, and headaches.
-    Weak Immune System: Iron is essential for immune function, and deficiency can lead to increased susceptibility to infections.
-    Hair Loss: Insufficient iron can cause brittle hair and hair thinning.
-    Cognitive Impairments: Prolonged low transferrin saturation may result in concentration problems and memory difficulties.
-
-Tips to Increase Transferrin Saturation (for Iron Deficiency):
-    Increase Iron-Rich Foods such as
-    Heme iron (from animal sources) is more readily absorbed by the body:
-    Red meat, poultry, fish, shellfish
-    Non-heme iron (from plant-based sources) can also improve iron status:
-    Spinach, lentils, tofu, beans, quinoa, and fortified cereals
-    Pair iron-rich foods with Vitamin C (e.g., citrus fruits, tomatoes) to enhance absorption.
-    Iron Supplements:For more severe deficiencies, iron supplements (usually in the form of ferrous sulfate) may be necessary. Always consult a healthcare provider for appropriate dosage and form.
-    Cook with Cast Iron Cookware:Cooking acidic foods (like tomatoes) in a cast iron pan can increase the iron content of meals.
-    Treat Underlying Conditions:If there are issues like chronic blood loss (heavy periods, ulcers), addressing the root cause can help improve iron levels.
-    """)
+            advice.append("""
+<div style="font-family: Arial, sans-serif; line-height: 1.6;">
+    <h2>Low Transferrin Saturation – Iron Deficiency</h2>
+    <p>Low transferrin saturation indicates that the amount of iron bound to transferrin is lower than normal, which usually suggests iron deficiency.</p>
+    <h3>Root Causes of Low Transferrin Saturation:</h3>
+    <ul>
+        <li><strong>Iron Deficiency:</strong> Inadequate dietary intake of iron or poor absorption can result in iron deficiency anemia.</li>
+        <li><strong>Chronic Blood Loss:</strong> Conditions like heavy menstruation, gastric ulcers, or hemorrhoids can lead to decreased iron levels.</li>
+        <li><strong>Malabsorption Syndromes:</strong> Diseases like celiac disease, Crohn’s disease, or gastric bypass surgery can impair absorption.</li>
+        <li><strong>Pregnancy:</strong> Increased iron requirements during pregnancy may cause low transferrin saturation if iron intake is insufficient.</li>
+        <li><strong>Acute or Chronic Inflammation:</strong> Conditions like chronic kidney disease or rheumatoid arthritis can result in anemia of chronic disease.</li>
+        <li><strong>Hypoproteinemia:</strong> Low protein levels from liver disease or malnutrition can reduce transferrin production.</li>
+    </ul>
+    <h3>Health Implications of Low Transferrin Saturation:</h3>
+    <ul>
+        <li><strong>Iron-Deficiency Anemia:</strong> Symptoms include fatigue, paleness, dizziness, and headaches.</li>
+        <li><strong>Weak Immune System:</strong> Increased susceptibility to infections due to low iron.</li>
+        <li><strong>Hair Loss:</strong> Insufficient iron can cause brittle hair and hair thinning.</li>
+        <li><strong>Cognitive Impairments:</strong> May lead to concentration problems and memory difficulties.</li>
+    </ul>
+    <h3>Tips to Increase Transferrin Saturation (for Iron Deficiency):</h3>
+    <ul>
+        <li><strong>Increase Iron-Rich Foods:</strong>
+            <ul>
+                <li><strong>Heme Iron:</strong> Red meat, poultry, fish, and shellfish.</li>
+                <li><strong>Non-Heme Iron:</strong> Spinach, lentils, tofu, beans, quinoa, and fortified cereals.</li>
+            </ul>
+            Pair with Vitamin C (e.g., citrus fruits, tomatoes) to enhance absorption.
+        </li>
+        <li><strong>Iron Supplements:</strong> For severe deficiencies, use supplements like ferrous sulfate under medical guidance.</li>
+        <li><strong>Cook with Cast Iron Cookware:</strong> Cooking acidic foods (e.g., tomatoes) in cast iron pans can increase iron content.</li>
+        <li><strong>Treat Underlying Conditions:</strong> Address issues like chronic blood loss or inflammation to improve iron levels.</li>
+    </ul>
+</div>
+        """)
         elif values["Transferrin Saturation"] > 40:
-            advice.append("""High Transferrin Saturation – Iron Overload
-High transferrin saturation suggests that a larger percentage of transferrin is bound to iron, which could indicate iron overload. This may be seen in conditions where the body has too much iron, such as hereditary hemochromatosis.
-
-Root Causes of High Transferrin Saturation:
-    Hereditary Hemochromatosis:A genetic disorder where excessive iron is absorbed from the diet, leading to iron overload and high transferrin saturation. Iron builds up in organs such as the liver, heart, and pancreas, causing damage.
-    Excessive Iron Supplementation:Overuse of iron supplements or taking iron supplements unnecessarily can lead to high transferrin saturation.
-    Frequent Blood Transfusions:Conditions such as thalassemia or sickle cell disease, which require frequent blood transfusions, can result in iron accumulation, leading to high transferrin saturation.
-    Chronic Liver Disease:Conditions such as cirrhosis, hepatitis, or alcoholism can impair iron metabolism and lead to high transferrin saturation.
-    Iron Overload Due to Other Disorders:Chronic blood diseases like thalassemia or sickle cell disease can lead to increased iron storage, which can result in high transferrin saturation.
-    Excessive Vitamin C Intake:High levels of Vitamin C may increase iron absorption and exacerbate iron overload in individuals with high transferrin saturation.
-
-Health Implications of High Transferrin Saturation:
-    Iron Toxicity: Accumulation of excess iron can damage organs, including the liver, heart, and pancreas, leading to cirrhosis, heart disease, and diabetes.
-    Joint Pain: Iron overload can lead to joint pain or arthritis due to iron deposition in the joints.
-    Endocrine Dysfunction: Excess iron can affect the pancreas, leading to diabetes, and may also impact the thyroid, adrenal glands, and pituitary gland.
-    Cardiac Issues: Excess iron can accumulate in the heart, leading to conditions like arrhythmias, heart failure, and cardiomyopathy.
-
-Tips to Manage High Transferrin Saturation (for Iron Overload):
-    Phlebotomy (Blood Donation):Regular blood donations or therapeutic phlebotomy can help reduce the iron levels and improve transferrin saturation. This is often the first line of treatment for hereditary hemochromatosis.
-    Iron Chelation Therapy:In cases of severe iron overload (especially if phlebotomy isn’t possible), iron chelation therapy using medications like deferoxamine or deferasirox can help the body excrete excess iron.
-    Limit Iron-Rich Foods:Reduce the intake of iron-rich foods like red meat, liver, and iron-fortified cereals if iron overload is a concern.
-    Avoid Vitamin C Supplements:Since Vitamin C increases iron absorption, it may be important to avoid high doses of Vitamin C supplements if you have high transferrin saturation.
-    Monitor Iron Levels Regularly:For individuals with known iron overload disorders, regular monitoring of serum ferritin and transferrin saturation is crucial to prevent organ damage and manage iron levels effectively.""")
+            advice.append("""
+<div style="font-family: Arial, sans-serif; line-height: 1.6;">
+    <h2>High Transferrin Saturation – Iron Overload</h2>
+    <p>High transferrin saturation suggests that a larger percentage of transferrin is bound to iron, which could indicate iron overload.</p>
+    <h3>Root Causes of High Transferrin Saturation:</h3>
+    <ul>
+        <li><strong>Hereditary Hemochromatosis:</strong> A genetic disorder causing excessive iron absorption and iron buildup in organs.</li>
+        <li><strong>Excessive Iron Supplementation:</strong> Overuse of iron supplements can lead to high transferrin saturation.</li>
+        <li><strong>Frequent Blood Transfusions:</strong> Conditions like thalassemia or sickle cell disease can result in iron accumulation.</li>
+        <li><strong>Chronic Liver Disease:</strong> Conditions like cirrhosis or hepatitis can impair iron metabolism.</li>
+        <li><strong>Iron Overload Due to Other Disorders:</strong> Blood diseases can increase iron storage, leading to high transferrin saturation.</li>
+        <li><strong>Excessive Vitamin C Intake:</strong> High Vitamin C levels may exacerbate iron overload by increasing absorption.</li>
+    </ul>
+    <h3>Health Implications of High Transferrin Saturation:</h3>
+    <ul>
+        <li><strong>Iron Toxicity:</strong> Excess iron can damage organs like the liver, heart, and pancreas.</li>
+        <li><strong>Joint Pain:</strong> Iron deposition in joints may lead to arthritis.</li>
+        <li><strong>Endocrine Dysfunction:</strong> Iron overload may disrupt hormone production, causing conditions like diabetes.</li>
+        <li><strong>Cardiac Issues:</strong> Excess iron can lead to arrhythmias, heart failure, and cardiomyopathy.</li>
+    </ul>
+    <h3>Tips to Manage High Transferrin Saturation (for Iron Overload):</h3>
+    <ul>
+        <li><strong>Phlebotomy (Blood Donation):</strong> Regular blood donation or therapeutic phlebotomy is often the first-line treatment.</li>
+        <li><strong>Iron Chelation Therapy:</strong> Medications like deferoxamine or deferasirox can help excrete excess iron.</li>
+        <li><strong>Limit Iron-Rich Foods:</strong> Reduce intake of red meat, liver, and iron-fortified cereals.</li>
+        <li><strong>Avoid Vitamin C Supplements:</strong> Avoid high doses of Vitamin C, which increase iron absorption.</li>
+        <li><strong>Monitor Iron Levels:</strong> Regular monitoring of serum ferritin and transferrin saturation can help manage iron levels effectively.</li>
+    </ul>
+</div>
+        """)
 
     return advice if advice else ["No specific advice. Keep maintaining a healthy lifestyle!"]
 
@@ -3390,154 +4507,169 @@ Tips to Manage High Transferrin Saturation (for Iron Overload):
 def homepage():
     return render_template("index.html")
 
+@app.template_filter('extract_h2')
+def extract_h2(value):
+    match = re.search(r'<h2[^>]*>(.*?)</h2>', value, re.IGNORECASE)
+    return match.group(1) if match else 'No Title Available'
+
+app.jinja_env.filters['extract_h2'] = extract_h2
+
 @app.route("/uploads", methods=["GET", "POST"])
 def home():
     if 'values' not in session:
-        session['values'] = {
-    "Haemoglobin": 0,
-    "Total RBC Count": 0,
-    "Packed Cell Volume / Hematocrit": 0,
-    "MCV": 0,
-    "MCH": 0,
-    "MCHC": 0,
-    "RDW": 0,
-    "Total Leucocytes Count": 0,
-    "Neutrophils": 0,
-    "Lymphocytes": 0,
-    "Eosinophils": 0,
-    "Monocytes": 0,
-    "Basophils": 0,
-    "Absolute Neutrophil Count": 0,
-    "Absolute Lymphocyte Count": 0,
-    "Absolute Eosinophil Count": 0,
-    "Absolute Monocyte Count": 0,
-    "Platelet Count": 0,
-    "Erythrocyte Sedimentation Rate": 0,
-    "Fasting Plasma Glucose": 0,
-    "Glycated Hemoglobin": 0,
-    "Triglycerides": 0,
-    "Total Cholesterol": 0,
-    "LDL Cholesterol": 0,
-    "HDL Cholesterol": 0,
-    "VLDL Cholesterol": 0,
-    "Total Cholesterol / HDL Cholesterol Ratio": 0,
-    "LDL Cholesterol / HDL Cholesterol Ratio": 0,
-    "Total Bilirubin": 0,
-    "Direct Bilirubin": 0,
-    "Indirect Bilirubin": 0,
-    "SGPT/ALT": 0,
-    "SGOT/AST": 0,
-    "Alkaline Phosphatase": 0,
-    "Total Protein": 0,
-    "Albumin": 0,
-    "Globulin": 0,
-    "Protein A/G Ratio": 0,
-    "Gamma Glutamyl Transferase": 0,
-    "Creatinine": 0,
-    "e-GFR (Glomerular Filtration Rate)": 0,
-    "Urea": 0,
-    "Blood Urea Nitrogen": 0,
-    "Uric Acid": 0,
-    "T3 Total": 0,
-    "T4 Total": 0,
-    "TSH Ultrasensitive": 0,
-    "Vitamin B12": 0,
-    "25 (OH) Vitamin D2 (Ergocalciferol)": 0,
-    "25 (OH) Vitamin D3 (Cholecalciferol)": 0,
-    "Vitamin D Total (D2 + D3)": 0,
-    "Iron": 0,
-    "Total Iron Binding Capacity": 0,
-    "Transferrin Saturation": 0
-}
+        session['values'] = OrderedDict([
+            ("Haemoglobin", 0),
+            ("Total RBC Count", 0),
+            ("Packed Cell Volume / Hematocrit", 0),
+            ("MCV", 0),
+            ("MCH", 0),
+            ("MCHC", 0),
+            ("RDW", 0),
+            ("Total Leucocytes Count", 0),
+            ("Neutrophils", 0),
+            ("Lymphocytes", 0),
+            ("Eosinophils", 0),
+            ("Monocytes", 0),
+            ("Basophils", 0),
+            ("Absolute Neutrophil Count", 0),
+            ("Absolute Lymphocyte Count", 0),
+            ("Absolute Eosinophil Count", 0),
+            ("Absolute Monocyte Count", 0),
+            ("Platelet Count", 0),
+            ("Erythrocyte Sedimentation Rate", 0),
+            ("Fasting Plasma Glucose", 0),
+            ("Glycated Hemoglobin", 0),
+            ("Triglycerides", 0),
+            ("Total Cholesterol", 0),
+            ("LDL Cholesterol", 0),
+            ("HDL Cholesterol", 0),
+            ("VLDL Cholesterol", 0),
+            ("Total Cholesterol / HDL Cholesterol Ratio", 0),
+            ("LDL Cholesterol / HDL Cholesterol Ratio", 0),
+            ("Total Bilirubin", 0),
+            ("Direct Bilirubin", 0),
+            ("Indirect Bilirubin", 0),
+            ("SGPT/ALT", 0),
+            ("SGOT/AST", 0),
+            ("Alkaline Phosphatase", 0),
+            ("Total Protein", 0),
+            ("Albumin", 0),
+            ("Globulin", 0),
+            ("Protein A/G Ratio", 0),
+            ("Gamma Glutamyl Transferase", 0),
+            ("Creatinine", 0),
+            ("e-GFR (Glomerular Filtration Rate)", 0),
+            ("Urea", 0),
+            ("Blood Urea Nitrogen", 0),
+            ("Uric Acid", 0),
+            ("T3 Total", 0),
+            ("T4 Total", 0),
+            ("TSH Ultrasensitive", 0),
+            ("Vitamin B12", 0),
+            ("25 (OH) Vitamin D2 (Ergocalciferol)", 0),
+            ("25 (OH) Vitamin D3 (Cholecalciferol)", 0),
+            ("Vitamin D Total (D2 + D3)", 0),
+            ("Iron", 0),
+            ("Total Iron Binding Capacity", 0),
+            ("Transferrin Saturation", 0)
+        ])
 
         session.modified = True
 
-    values = session.get('values', {
-    "Haemoglobin": 0,
-    "Total RBC Count": 0,
-    "Packed Cell Volume / Hematocrit": 0,
-    "MCV": 0,
-    "MCH": 0,
-    "MCHC": 0,
-    "RDW": 0,
-    "Total Leucocytes Count": 0,
-    "Neutrophils": 0,
-    "Lymphocytes": 0,
-    "Eosinophils": 0,
-    "Monocytes": 0,
-    "Basophils": 0,
-    "Absolute Neutrophil Count": 0,
-    "Absolute Lymphocyte Count": 0,
-    "Absolute Eosinophil Count": 0,
-    "Absolute Monocyte Count": 0,
-    "Platelet Count": 0,
-    "Erythrocyte Sedimentation Rate": 0,
-    "Fasting Plasma Glucose": 0,
-    "Glycated Hemoglobin": 0,
-    "Triglycerides": 0,
-    "Total Cholesterol": 0,
-    "LDL Cholesterol": 0,
-    "HDL Cholesterol": 0,
-    "VLDL Cholesterol": 0,
-    "Total Cholesterol / HDL Cholesterol Ratio": 0,
-    "LDL Cholesterol / HDL Cholesterol Ratio": 0,
-    "Total Bilirubin": 0,
-    "Direct Bilirubin": 0,
-    "Indirect Bilirubin": 0,
-    "SGPT/ALT": 0,
-    "SGOT/AST": 0,
-    "Alkaline Phosphatase": 0,
-    "Total Protein": 0,
-    "Albumin": 0,
-    "Globulin": 0,
-    "Protein A/G Ratio": 0,
-    "Gamma Glutamyl Transferase": 0,
-    "Creatinine": 0,
-    "e-GFR (Glomerular Filtration Rate)": 0,
-    "Urea": 0,
-    "Blood Urea Nitrogen": 0,
-    "Uric Acid": 0,
-    "T3 Total": 0,
-    "T4 Total": 0,
-    "TSH Ultrasensitive": 0,
-    "Vitamin B12": 0,
-    "25 (OH) Vitamin D2 (Ergocalciferol)": 0,
-    "25 (OH) Vitamin D3 (Cholecalciferol)": 0,
-    "Vitamin D Total (D2 + D3)": 0,
-    "Iron": 0,
-    "Total Iron Binding Capacity": 0,
-    "Transferrin Saturation": 0
-})
+    values = session.get('values', OrderedDict([
+            ("Haemoglobin", 0),
+            ("Total RBC Count", 0),
+            ("Packed Cell Volume / Hematocrit", 0),
+            ("MCV", 0),
+            ("MCH", 0),
+            ("MCHC", 0),
+            ("RDW", 0),
+            ("Total Leucocytes Count", 0),
+            ("Neutrophils", 0),
+            ("Lymphocytes", 0),
+            ("Eosinophils", 0),
+            ("Monocytes", 0),
+            ("Basophils", 0),
+            ("Absolute Neutrophil Count", 0),
+            ("Absolute Lymphocyte Count", 0),
+            ("Absolute Eosinophil Count", 0),
+            ("Absolute Monocyte Count", 0),
+            ("Platelet Count", 0),
+            ("Erythrocyte Sedimentation Rate", 0),
+            ("Fasting Plasma Glucose", 0),
+            ("Glycated Hemoglobin", 0),
+            ("Triglycerides", 0),
+            ("Total Cholesterol", 0),
+            ("LDL Cholesterol", 0),
+            ("HDL Cholesterol", 0),
+            ("VLDL Cholesterol", 0),
+            ("Total Cholesterol / HDL Cholesterol Ratio", 0),
+            ("LDL Cholesterol / HDL Cholesterol Ratio", 0),
+            ("Total Bilirubin", 0),
+            ("Direct Bilirubin", 0),
+            ("Indirect Bilirubin", 0),
+            ("SGPT/ALT", 0),
+            ("SGOT/AST", 0),
+            ("Alkaline Phosphatase", 0),
+            ("Total Protein", 0),
+            ("Albumin", 0),
+            ("Globulin", 0),
+            ("Protein A/G Ratio", 0),
+            ("Gamma Glutamyl Transferase", 0),
+            ("Creatinine", 0),
+            ("e-GFR (Glomerular Filtration Rate)", 0),
+            ("Urea", 0),
+            ("Blood Urea Nitrogen", 0),
+            ("Uric Acid", 0),
+            ("T3 Total", 0),
+            ("T4 Total", 0),
+            ("TSH Ultrasensitive", 0),
+            ("Vitamin B12", 0),
+            ("25 (OH) Vitamin D2 (Ergocalciferol)", 0),
+            ("25 (OH) Vitamin D3 (Cholecalciferol)", 0),
+            ("Vitamin D Total (D2 + D3)", 0),
+            ("Iron", 0),
+            ("Total Iron Binding Capacity", 0),
+            ("Transferrin Saturation", 0)
+        ]))
     advice = None
 
     if request.method == "POST":
         if "pdf_file" in request.files:
             pdf_file = request.files["pdf_file"]
             extracted_text = extract_text_from_pdf(pdf_file)
-            values = extract_values(extracted_text)
             
-            session['values'] = values
-            session.modified = True  
-
+            # Ensure OrderedDict is maintained
+            values = OrderedDict(extract_values(extracted_text))
+            
+            # Store as list of tuples in session
+            session['values'] = list(values.items())  # Convert to list of tuples for session
+            session.modified = True
+            print("Uploaded Values:", values)  # Debug print
+            
             advice = give_health_advice(values)
             return render_template("results.html", values=values, advice=advice)
 
         elif request.form:
-            updated_values = {}
-
-            for test, original_value in values.items():
-                updated_value = request.form.get(test)
-                if updated_value:
-                    updated_values[test] = float(updated_value)
-                else:
-                    updated_values[test] = original_value
+            # Reconstruct OrderedDict from session data
+            values = OrderedDict(session.get('values', []))  # Restore as OrderedDict
             
-            session['values'] = updated_values
-            session.modified = True  
-            advice = give_health_advice(updated_values)
-            return render_template("results.html", values=updated_values, advice=advice)
+            print("Before Update:", values)  # Debug print before update
+            
+            # Update values based on form data
+            for key in values.keys():
+                if key in request.form:
+                    values[key] = float(request.form[key])  # Update values
+            
+            # Save updated values back to session
+            session['values'] = list(values.items())  # Convert back to list of tuples
+            session.modified = True
+            
+            print("Updated Values:", values)  # Debug print after update
+            
+            advice = give_health_advice(values)
+            return render_template("results.html", values=values, advice=advice)
 
-    return render_template("index.html", values={}, advice=advice)
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, port=5001)
