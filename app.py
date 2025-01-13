@@ -71,71 +71,71 @@ def extract_values(text):
             ("Transferrin Saturation", 0)
         ])
     patterns = {
-        "Haemoglobin": r"\s*(.*?Haemoglobin\b.*?|Hgb\b.*?)\s*[:\-]?\s*(\d+(\.\d+)?)\s*",
-        "Total RBC Count": r"\s*(.*?\bR.?B.?C\b.*?)\s*[:\-]?\s*(\d+(\.\d+)?)\s*",
-        "Packed Cell Volume / Hematocrit": r"\s*(.*?Packed Cell Volume.*?|.*?Hematocrit.*?|.*?\bP.?C.?V\b.*?|.*?\bH.?c.?t\b.*?)\s*[:\-]?\s*(\d+(\.\d+)?)\s*",
-        "MCV": r"\s*(\bM.?C.?V\b.*?|.*?Mean Corpuscular Volume.*?)\s*[:\-]?\s*(\d+(\.\d+)?)\s*",
-        "MCH": r"\s*(\bMCH\b.*?|.*?Mean Corpuscular Hemoglobin.*?)\s*[:\-]?\s*(\d+(\.\d+)?)\s*",
-        "MCHC": r"\s*(\bMCHC\b.*?|.*?Mean Corpuscular Hemoglobin Concentration.*?)\s*[:\-]?\s*(\d+(\.\d+)?)\s*",
-        "RDW": r"\s*(\bR.?D.?W\b.*?|.*?Red Cell Distribution Width.*?)\s*[:\-]?\s*(\d+(\.\d+)?)\s*",
-        "Total Leucocytes Count": r"\s*(.*?Total Leucocytes Count.*?|.*?TLC.*?|\bWBC\b.*?)\s*[:\-]?\s*(\d+(\.\d+)?)\s*",
-        "Neutrophils": r"\s*(Neutrophils|Neu)\s*[:\-]?\s*(\d+(\.\d+)?)\s*",
-        "Lymphocytes": r"\s*(Lymphocytes|Lym)\s*[:\-]?\s*(\d+(\.\d+)?)\s*",
-        "Eosinophils": r"\s*(Eosinophils|Eos)\s*[:\-]?\s*(\d+(\.\d+)?)\s*",
-        "Monocytes": r"\s*(Monocytes|Mono)\s*[:\-]?\s*(\d+(\.\d+)?)\s*",
-        "Basophils": r"\s*(Basophils|Baso)\s*[:\-]?\s*(\d+(\.\d+)?)\s*",
-        "Absolute Neutrophil Count": r"\s*(.*?Absolute Neutrophil Count.*?|.*?|Neutrophil\b.*?|ANC)\s*[:\-]?\s*(\d+(\.\d+)?)\s*",
-        "Absolute Lymphocyte Count": r"\s*(.*?Absolute Lymphocyte Count.*?|.*?Lymphocyte\b.*?|ALC)\s*[:\-]?\s*(\d+(\.\d+)?)\s*",
-        "Absolute Eosinophil Count": r"\s*(.*?Absolute Eosinophil Count.*?|.*?Eosinophil\b.*?|AEC)\s*[:\-]?\s*(\d+(\.\d+)?)\s*",
-        "Absolute Monocyte Count": r"\s*(.*?Absolute Monocyte Count.*?|.*?Monocyte\b.*?|AMC)\s*[:\-]?\s*(\d+(\.\d+)?)\s*",
-        "Platelet Count": r"\s*(Platelet Count|PLT)\s*[:\-]?\s*(\d+(\.\d+)?)\s*",
-        "Erythrocyte Sedimentation Rate": r"\s*(.*?Erythrocyte sedimentation.*?|.*?Erythrocyte Sedimentation Rate.*?|\bESR\b.*?)\s*[:\-]?\s*(\d+(\.\d+)?)\s*",
-        "Fasting Plasma Glucose": r"\s*(.*?Fasting Plasma Glucose.*?|.*?Fasting.*?|.*?Fasting Blood Glucose.*?|.*?\bFPG\b.*?)\s*[:\-]?\s*(\d+(\.\d+)?)\s*",
-        "Glycated Hemoglobin": r"\s*(.*?Glycated Haemoglobin.*?|.*?Glycated Hemoglobin.*?|\bHbA1C\b.*?)\s*[:\-]?\s*(\d+(\.\d+)?)\s*",
-        "Triglycerides": r"\s*(.*?Triglycerides.*?|.*?TG\b.*?)\s*[:\-]?\s*(\d+(\.\d+)?)\s*",
-        "Total Cholesterol": r"\s*(Total Cholesterol|TC)\s*[:\-]?\s*(\d+(\.\d+)?)\s*",
-        "LDL Cholesterol": r"\s*(L.?D.?L Cholesterol|\bL.?D.?L\b.*?)\s*[:\-]?\s*(\d+(\.\d+)?)\s*",
-        "HDL Cholesterol": r"\s*(H.?D.?L Cholesterol|\bH.?D.?L\b.*?)\s*[:\-]?\s*(\d+(\.\d+)?)\s*",
-        "VLDL Cholesterol": r"\s*(V.?L.?D.?L Cholesterol|\bV.?L.?D.?L\b.*?)\s*[:\-]?\s*(\d+(\.\d+)?)\s*",
-        "Total Cholesterol / HDL Cholesterol Ratio": r"\s*(.*?Total Cholesterol.?/.?HDL.*?|.*?Total Cholesterol.?/.?HDL Cholesterol Ratio.*?|.*?TC.?/.?HDL.?Ratio.*?|.*?CHOL.?/.?HDL\b.*?|.*?CHO.?/.?HDL\b.*?)\s*[:\-]?\s*(\d+(\.\d+)?)\s*",
-        "LDL Cholesterol / HDL Cholesterol Ratio": r"\s*(LDL Cholesterol / HDL Cholesterol Ratio|LDL/HDL Ratio)\s*[:\-]?\s*(\d+(\.\d+)?)\s*",
-        "Total Bilirubin": r"\s*(.*?Total.?Bilirubin.?|.*?BILIRUBIN.*?Total.*?|.*?BIL-T.*?)\s*[:\-]?\s*(\d+(\.\d+)?)\s*",
-        "Direct Bilirubin": r"\s*(.*?Direct.?Bilirubin.?|.*?BILIRUBIN.*?direct.*?|.*?BIL-D.*?)\s*[:\-]?\s*(\d+(\.\d+)?)\s*",
-        "Indirect Bilirubin": r"\s*(.*?Indirect.?Bilirubin.?|.*?BILIRUBIN.*?indirect.*?|.*?BIL-I.*?)\s*[:\-]?\s*(\d+(\.\d+)?)\s*",
-        "SGPT/ALT": r"\s*(.*?S.?G.?P.?T.*?|.*?A.?L.?T.*?)\s*[:\-]?\s*(\d+(\.\d+)?)\s*",
-        "SGOT/AST": r"\s*(.*?S.?G.?O.?T.*?|.*?A.?S.?T.*?)\s*[:\-]?\s*(\d+(\.\d+)?)\s*",
-        "Alkaline Phosphatase": r"\s*(.*?Alkaline.*?|.*?Alkaline Phosphatase.*?|ALP)\s*[:\-]?\s*(\d+(\.\d+)?)\s*",
-        "Total Protein": r"\s*(.*?Total Protein.*?|.*?Protein\b.*?|PROTEIN, TOTAL|TP)\s*[:\-]?\s*(\d+(\.\d+)?)\s*",
-        "Albumin": r"\s*(Albumin|ALB)\s*[:\-]?\s*(\d+(\.\d+)?)\s*",
-        "Globulin": r"\s*(.*?Globulin.*?|.*?GLO.*?)\s*[:\-]?\s*(\d+(\.\d+)?)\s*",
-        "Protein A/G Ratio": r"\s*(Protein A/G Ratio|A/G Ratio)\s*[:\-]?\s*(\d+(\.\d+)?)\s*",
-        "Gamma Glutamyl Transferase": r"\s*(Gamma Glutamyl Transferase|GAMMA GLUTAMYL|GAMMA GLUTAMYL TRANSPEPTIDASE\b.*?|G.?G.?T)\s*[:\-]?\s*(\d+(\.\d+)?)\s*",
-        "Creatinine": r"\s*(Creatinine\b.*?|Cr)\s*[:\-]?\s*(\d+(\.\d+)?)\s*",
-        "e-GFR (Glomerular Filtration Rate)": r"\s*(\be-GFR\b.*?|.*?\beGFR\b.*?|.*?eGFR\b.*?|Glomerular Filtration Rate)\s*[:\-]?\s*(\d+(\.\d+)?)\s*",
-        "Urea": r"\s*(Urea|Urea.*?)\s*[:\-]?\s*(\d+(\.\d+)?)\s*",
-        "Blood Urea Nitrogen": r"\s*(Blood Urea Nitrogen|.*?UREA NITROGEN.*?|Blood Urea Nitrogen.*?|.*?BUN.*?)\s*[:\-]?\s*(\d+(\.\d+)?)\s*",
-        "Uric Acid": r"\s*(Uric Acid|Uric Acid.*?|UA)\s*[:\-]?\s*(\d+(\.\d+)?)\s*",
-        "T3 Total": r"\s*(.*?T3.*?Total.*?|Triiodothyronine|.*?T3\b.*?)\s*[:\-]?\s*(\d+(\.\d+)?)\s*",
-        "T4 Total": r"\s*(.*?T4.*?Total.*?|.*?T4\b.*?|Thyroxine)\s*[:\-]?\s*(\d+(\.\d+)?)\s*",
-        "TSH Ultrasensitive": r"\s*(\bTSH\b.*?|Ultrasensitive TSH)\s*[:\-]?\s*(\d+(\.\d+)?)\s*",
-        "Vitamin B12": r"\s*(Vitamin B12|\bB12\b.*?)\s*[:\-]?\s*(\d+(\.\d+)?)\s*",
-        "25 (OH) Vitamin D2 (Ergocalciferol)": r"\s*(25 \(OH\) |.*?Vitamin D2.*?|Ergocalciferol)\s*[:\-]?\s*(\d+(\.\d+)?)\s*",
-        "25 (OH) Vitamin D3 (Cholecalciferol)": r"\s*(25 \(OH\) Vitamin D3|.*?Vitamin D3.*?|Cholecalciferol)\s*[:\-]?\s*(\d+(\.\d+)?)\s*",
-        "Vitamin D Total (D2 + D3)": r"\s*(.*?Vitamin D\b.*?|.*?Vitamin D Total.*?|D2\s*\+?\s*D3.*?)\s*[:\-]?\s*(\d+(\.\d+)?)\s*",
-        "Iron": r"\s*(Iron)\s*[:\-]?\s*(\d+(\.\d+)?)\s*",
-        "Total Iron Binding Capacity": r"\s*(.*?Total Iron Binding Capacity.*?|.*?T.?I.?B.?C.*?)\s*[:\-]?\s*(\d+(\.\d+)?)\s*",
-        "Transferrin Saturation": r"\s*(.*?Transferrin Saturation.*?|.*?% OF SATURATION.*?|.*?Transferin.*?)\s*[:\-]?\s*(\d+(\.\d+)?)\s*"
+    "Haemoglobin": r"\s*(.*?HEMOGLOBIN\b|.*?Haemoglobin\b.*?|Hgb\b.*?)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
+    "Total RBC Count": r"\s*(.*?\bR.?B.?C\b.?count|.*?\bR.?B.?C\b.*?)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
+    "Packed Cell Volume / Hematocrit": r"\s*(.*?Packed Cell Volume.*?|.*?Hematocrit.*?|.*?\bP.?C.?V\b.*?|.*?\bH.?c.?t\b.*?)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
+    "MCV": r"\s*(\bM.?C.?V\b.*?|.*?Mean Corpuscular Volume.*?)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
+    "MCH": r"\s*(\bMCH\b.*?|.*?Mean Corpuscular Hemoglobin.*?)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
+    "MCHC": r"\s*(\bMCHC\b.*?|.*?Mean Corpuscular Hemoglobin Concentration.*?)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
+    "RDW": r"\s*(\bR.?D.?W\b.*?|.*?Red Cell Distribution Width.*?)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
+    "Total Leucocytes Count": r"\s*(.*?Total Leucocytes Count.*?|.*?TLC.*?|\bWBC\b.*?)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
+    "Neutrophils": r"\s*(Neutrophils.*?|Neu)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
+    "Lymphocytes": r"\s*(Lymphocytes.*?|Lym)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
+    "Eosinophils": r"\s*(Eosinophils.*?|Eos)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
+    "Monocytes": r"\s*(Monocytes.*?|Mono)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
+    "Basophils": r"\s*(Basophils.*?|Baso)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
+    "Absolute Neutrophil Count": r"\s*(.*?Absolute.?Neutrophil.?Count.*?|.*?Neutrophil\b.*?|ANC)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
+    "Absolute Lymphocyte Count": r"\s*(.*?Absolute.?Lymphocyte.?Count.*?|.*?Lymphocyte\b.*?|ALC)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
+    "Absolute Eosinophil Count": r"\s*(.*?Absolute.?Eosinophil.?Count.*?|.*?Eosinophil\b.*?|AEC)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
+    "Absolute Monocyte Count": r"\s*(.*?Absolute Monocyte Count.*?|.*?Monocyte\b.*?|AMC)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
+    "Platelet Count": r"\s*(Platelet Count.*?|PLT)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
+    "Erythrocyte Sedimentation Rate": r"\s*(.*?Erythrocyte sedimentation.*?|.*?Erythrocyte Sedimentation Rate.*?|\bE.?S.?R\b.*?)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
+    "Fasting Plasma Glucose": r"\s*(.*?Fasting Plasma Glucose.*?|.*?Fasting.*?|.*?Fasting Blood Glucose.*?|.*?\bFPG\b.*?)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
+    "Glycated Hemoglobin": r"\s*(.*?Glycated Haemoglobin.*?HBA1C.*?|.*?Glycated Haemoglobin.*?|.*?Glycated Hemoglobin.*?|\bHbA1C\b.*?)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
+    "Triglycerides": r"\s*(.*?Triglycerides.*?|.*?TG\b.*?)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
+    "Total Cholesterol": r"\s*(Total Cholesterol.*?|TC)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
+    "LDL Cholesterol": r"\s*(L.?D.?L Cholesterol.*?|\bL.?D.?L\b.*?)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
+    "HDL Cholesterol": r"\s*(H.?D.?L Cholesterol.*?|\bH.?D.?L\b.*?)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
+    "VLDL Cholesterol": r"\s*(V.?L.?D.?L Cholesterol.*?|\bV.?L.?D.?L\b.*?)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
+    "Total Cholesterol / HDL Cholesterol Ratio": r"\s*(.*?Total Cholesterol.?/.?HDL.*?|.*?Total Cholesterol.?/.?HDL Cholesterol Ratio.*?|.*?TC.?/.?HDL.?Ratio.*?|.*?CHOL.?/.?HDL\b.*?|.*?CHO.?/.?HDL\b.*?)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
+    "LDL Cholesterol / HDL Cholesterol Ratio": r"\s*(.*?L.?D.?L.?/.?H.?D.?L.*?|.*?L.?D.?L.?/.?H.?D.?L Cholesterol Ratio.*?|.*?LDL Cholesterol.?/.?HDL Cholesterol Ratio.*?|.*?LDL.?/.?HDL Ratio.*?)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
+    "Total Bilirubin": r"\s*(.*?Total.?Bilirubin.?|.*?BILIRUBIN.*?Total.*?|.*?BIL-T.*?)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
+    "Direct Bilirubin": r"\s*(.*?Direct.?Bilirubin.?|.*?BILIRUBIN.*?direct.*?|.*?BIL-D.*?)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
+    "Indirect Bilirubin": r"\s*(.*?Indirect.?Bilirubin.?|.*?BILIRUBIN.*?indirect.*?|.*?BIL-I.*?)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
+    "SGPT/ALT": r"\s*(.*?ALANINE AMINOTRANSFERASE.*?|\bS.?G.?P.?T.?/.?A.?L.?T.*?|\bS.?G.?P.?T.*?|\bA.?L.?T.*?)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
+    "SGOT/AST": r"\s*(.*?ASPARTATE AMINOTRANSFERASE.*?|\bS.?G.?O.?T.?/.?A.?S.?T.*?|\bS.?G.?O.?T.*?)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
+    "Alkaline Phosphatase": r"\s*(.*?Alkaline.*?|.*?Alkaline Phosphatase.*?|ALP)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
+    "Total Protein": r"\s*(.*?Total Protein.*?|.*?Protein\b.*?|PROTEIN, TOTAL.*?|TP)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
+    "Albumin": r"\s*(Albumin.*?|ALB)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
+    "Globulin": r"\s*(.*?Globulin.*?)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
+    "Protein A/G Ratio": r"\s*(Protein A/G Ratio|A/G Ratio)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
+    "Gamma Glutamyl Transferase": r"\s*(Gamma Glutamyl Transferase.*?|GAMMA GLUTAMYL|GAMMA GLUTAMYL TRANSPEPTIDASE\b.*?|G.?G.?T)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
+    "Creatinine": r"\s*(Creatinine\b.*?|Cr)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
+    "e-GFR (Glomerular Filtration Rate)": r"\s*(\be-GFR\b.*?|.*?\beGFR\b.*?|.*?eGFR\b.*?|.*?GFR.*?|Glomerular Filtration Rate.*?)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
+    "Urea": r"\s*(Urea|Urea.*?)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
+    "Blood Urea Nitrogen": r"\s*(Blood Urea Nitrogen|.*?UREA NITROGEN.*?|Blood Urea Nitrogen.*?|.*?BUN.*?)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
+    "Uric Acid": r"\s*(Uric Acid|Uric Acid.*?|UA)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
+    "T3 Total": r"\s*(.*?T3\b|.*?T3.*?Total.*?|Triiodothyronine)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
+    "T4 Total": r"\s*(.*?T4\b|.*?T4.*?Total.*?|Thyroxine)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
+    "TSH Ultrasensitive": r"\s*(\bT.?S.?H\b.*?|Ultrasensitive TSH.*?|.*?T.?S.?H.*?)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
+    "Vitamin B12": r"\s*(Vitamin B12|\bB12\b.*?)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
+    "25 (OH) Vitamin D2 (Ergocalciferol)": r"\s*(25 \(OH\) |.*?Vitamin D2.*?|Ergocalciferol)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
+    "25 (OH) Vitamin D3 (Cholecalciferol)": r"\s*(25 \(OH\) Vitamin D3|.*?Vitamin D3.*?|Cholecalciferol)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
+    "Vitamin D Total (D2 + D3)": r"\s*(D2\s*\+?\s*D3.*?|.*?Vitamin D\b.*?|.*?Vitamin D\b.*?D2\s*\+?\s*D3.*?)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
+    "Iron": r"\s*(Iron)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
+    "Total Iron Binding Capacity": r"\s*(.*?Total Iron Binding Capacity.*?|.*?T.?I.?B.?C.*?)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
+    "Transferrin Saturation": r"\s*(.*?Transferrin Saturation.*?|.*?% OF SATURATION.*?|.*?Transferin.*?)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*"
     }
+
     for test, pattern in patterns.items():
         match = re.search(pattern, text, re.IGNORECASE)
         if match:
-            values[test] = float(match.group(2))
+            values[test] = float(match.group(2).replace(',', ''))
     return values
 
 def give_health_advice(values):
-    advice = []
+        advice = []
     # Haemoglobin (range: 13.0-17.0 g/dL)
-    if "Haemoglobin" in values:
         if values["Haemoglobin"] < 13.0:
             advice.append("""<div>
     <h2>Low Hemoglobin</h2>
@@ -238,7 +238,6 @@ def give_health_advice(values):
 
     # Total RBC Count (range: 4.5-5.5 million cells/μL)
 
-    if "Total RBC Count" in values:
         if values["Total RBC Count"] < 4.5:
             advice.append("""
 <div>
@@ -330,7 +329,6 @@ def give_health_advice(values):
 
 
     # Packed Cell Volume / Hematocrit (range: 40-50%)
-    if "Packed Cell Volume / Hematocrit" in values:
         if values["Packed Cell Volume / Hematocrit"] < 40:
             advice.append("""
 <div>
@@ -427,7 +425,6 @@ def give_health_advice(values):
 
 
     # MCV (range: 83-101 fL)
-    if "MCV" in values:
         if values["MCV"] < 83:
             advice.append("""
 <div>
@@ -522,7 +519,6 @@ def give_health_advice(values):
 """)
 
     # MCH (range: 27-33 pg)
-    if "MCH" in values:
         if values["MCH"] < 27:
             advice.append("""
 <div>
@@ -617,7 +613,6 @@ def give_health_advice(values):
 
 
     # MCHC (range: 320-360 g/dL)
-    if "MCHC" in values:
         if values["MCHC"] < 31.5:
             advice.append("""
 <div>
@@ -711,7 +706,6 @@ def give_health_advice(values):
 
 
     # RDW (range: 11.5-14.5%)
-    if "RDW" in values:
         if values["RDW"] < 11.6:
             advice.append("""
 <div>
@@ -799,7 +793,6 @@ def give_health_advice(values):
 """)
 
     # Total Leucocytes Count (range: 4.0-11.0 x10⁹/L)
-    if "Total Leucocytes Count" in values:
         if values["Total Leucocytes Count"] < 4000:
             advice.append("""
 <div>
@@ -896,7 +889,6 @@ def give_health_advice(values):
 """)
 
     # Neutrophils (range: 40-70%)
-    if "Neutrophils" in values:
         if values["Neutrophils"] < 40:
             advice.append("""
 <div>
@@ -993,7 +985,6 @@ def give_health_advice(values):
 """)
 
     # Lymphocytes (range: 20-40%)
-    if "Lymphocytes" in values:
         if values["Lymphocytes"] < 20:
             advice.append("""
 <div>
@@ -1088,7 +1079,6 @@ def give_health_advice(values):
 """)
 
         # Eosinophils (range: 1-4%)
-    if "Eosinophils" in values:
         if values["Eosinophils"] < 1:
             advice.append("""
 <div>
@@ -1183,7 +1173,6 @@ def give_health_advice(values):
 """)
 
     # Monocytes (range: 2-8%)
-    if "Monocytes" in values:
         if values["Monocytes"] < 2:
             advice.append("""
 <div>
@@ -1279,7 +1268,6 @@ def give_health_advice(values):
 """)
 
     # Basophils (range: 0.5-1%)
-    if "Basophils" in values:
         if values["Basophils"] < 0.5:
             advice.append("""
 <div>
@@ -1376,7 +1364,6 @@ def give_health_advice(values):
 
 
     # Absolute Neutrophil Count (range: 1.5-8.0 x10⁹/L) cells/cumm
-    if "Absolute Neutrophil Count" in values:
         if values["Absolute Neutrophil Count"] < 2000:
             advice.append("""
 <div>
@@ -1472,7 +1459,6 @@ def give_health_advice(values):
 """)
 
     # Absolute Lymphocyte Count (range: 1.0-4.0 x10⁹/L)
-    if "Absolute Lymphocyte Count" in values:
         if values["Absolute Lymphocyte Count"] < 1000:
             advice.append("""
 <div>
@@ -1570,7 +1556,6 @@ def give_health_advice(values):
 """)
 
     # Absolute Eosinophil Count (range: 0.02-0.5 x10⁹/L)
-    if "Absolute Eosinophil Count" in values:
         if values["Absolute Eosinophil Count"] < 20:
             advice.append("""
 <div>
@@ -1667,7 +1652,6 @@ def give_health_advice(values):
 """)
 
     # Absolute Monocyte Count (range: 0.1-1.0 x10⁹/L)
-    if "Absolute Monocyte Count" in values:
         if values["Absolute Monocyte Count"] < 200:
             advice.append("""
 <div>
@@ -1765,7 +1749,6 @@ def give_health_advice(values):
 """)
 
     # Platelet Count (range: 150,000-410,000 cells/μL)
-    if "Platelet Count" in values:
         if values["Platelet Count"] < 150000:
             advice.append("""
 <h2>Low Platelet Count (Thrombocytopenia)</h2>
@@ -1859,7 +1842,6 @@ def give_health_advice(values):
 """)
 
     # Erythrocyte Sedimentation Rate (range: 0-20 mm/hr)
-    if "Erythrocyte Sedimentation Rate" in values:
         if values["Erythrocyte Sedimentation Rate"] < 0:
             advice.append("""
 <h2>Low Erythrocyte Sedimentation Rate (ESR)</h2>
@@ -1956,7 +1938,6 @@ def give_health_advice(values):
 
 
     # Fasting Plasma Glucose (range: 70-100 mg/dL)
-    if "Fasting Plasma Glucose" in values:
         if values["Fasting Plasma Glucose"] < 70:
             advice.append("""
 <h2>Low Fasting Plasma Glucose (Hypoglycemia)</h2>
@@ -2052,7 +2033,6 @@ def give_health_advice(values):
 """)
 
     # Glycated Hemoglobin (HbA1C) (range: 4.0-5.6%)
-    if "Glycated Hemoglobin" in values:
         if values["Glycated Hemoglobin"] < 5.7:
             advice.append("""
 <h2>Low Glycated Hemoglobin (HbA1c)</h2>
@@ -2142,7 +2122,6 @@ def give_health_advice(values):
 """)
 
     # Triglycerides (range: 150 mg/dL)
-    if "Triglycerides" in values:
         if values["Triglycerides"] > 150:
             advice.append("""
         <div>
@@ -2197,7 +2176,6 @@ def give_health_advice(values):
         </div>
         """)
 
-    if "Total Cholesterol" in values:
         if values["Total Cholesterol"] < 125:
             advice.append("""
             <div>
@@ -2251,7 +2229,6 @@ def give_health_advice(values):
 
     # LDL Cholesterol (range: < 100 mg/dL)
     # LDL Cholesterol (range: < 100 mg/dL)
-    if "LDL Cholesterol" in values:
         if values["LDL Cholesterol"] > 130:
             advice.append("""
         <h2>High LDL Cholesterol (Low-Density Lipoprotein Cholesterol)</h2>
@@ -2301,7 +2278,6 @@ def give_health_advice(values):
 
     # HDL Cholesterol (range: > 40 mg/dL for men, > 50 mg/dL for women)
     # HDL Cholesterol (range: > 40 mg/dL)
-    if "HDL Cholesterol" in values:
         if values["HDL Cholesterol"] < 40:
             advice.append("""
         <h2>Low HDL Cholesterol (High-Density Lipoprotein Cholesterol)</h2>
@@ -2344,7 +2320,6 @@ def give_health_advice(values):
         """)
 
 # VLDL Cholesterol (range: 2-30 mg/dL)
-    if "VLDL Cholesterol" in values:
         if values["VLDL Cholesterol"] < 2:
             advice.append("""
         <h2>Low VLDL Cholesterol</h2>
@@ -2418,7 +2393,6 @@ def give_health_advice(values):
         """)
 
     # Total Cholesterol / HDL Cholesterol Ratio (range: 3.5-5.0)
-    if "Total Cholesterol / HDL Cholesterol Ratio" in values:
         if values["Total Cholesterol / HDL Cholesterol Ratio"] > 4.5:
             advice.append("""
         <h2>High Total Cholesterol / HDL Cholesterol Ratio</h2>
@@ -2464,7 +2438,6 @@ def give_health_advice(values):
         </ul>
         """)
 
-    if "LDL Cholesterol / HDL Cholesterol Ratio" in values:
         if values["LDL Cholesterol / HDL Cholesterol Ratio"] > 3:
             advice.append("""
         <h2>High LDL Cholesterol / HDL Cholesterol Ratio</h2>
@@ -2511,7 +2484,6 @@ def give_health_advice(values):
         """)
 
     # Total Bilirubin (range: 0.1-1.2 mg/dL)
-    if "Total Bilirubin" in values:
         if values["Total Bilirubin"] > 1.2:
             advice.append("""<h2>High Total Bilirubin</h2>
 <p><strong>Root Cause:</strong></p>
@@ -2573,7 +2545,6 @@ def give_health_advice(values):
 </ul>
 """)
 
-    if "Direct Bilirubin" in values:
         if values["Direct Bilirubin"] > 0.2:
             advice.append("""
        
@@ -2633,7 +2604,6 @@ def give_health_advice(values):
             </ul>
         """)
 
-    if "Indirect Bilirubin" in values:
         if values["Indirect Bilirubin"] > 1:
             advice.append("""
             <h2>High Indirect Bilirubin (Unconjugated Bilirubin)</h2>
@@ -2713,7 +2683,6 @@ def give_health_advice(values):
 
 
     # SGPT/ALT (range: 7-56 U/L)
-    if "SGPT/ALT" in values:
         if values["SGPT/ALT"] > 50:
             advice.append("""
       
@@ -2787,7 +2756,6 @@ def give_health_advice(values):
         """)
 
     # SGOT/AST (range: 5-40 U/L)
-    if "SGOT/AST" in values:
         if values["SGOT/AST"] > 50:
             advice.append("""
     
@@ -2863,7 +2831,6 @@ def give_health_advice(values):
         
         """)
     # Alkaline Phosphatase (range: 44-147 U/L)
-    if "Alkaline Phosphatase" in values:
         if values["Alkaline Phosphatase"] > 115:
             advice.append("""
     
@@ -2978,7 +2945,6 @@ def give_health_advice(values):
         """)
 
     # Total Protein (range: 6.0-8.3 g/dL)
-    if "Total Protein" in values:
         if values["Total Protein"] < 6.6:
             advice.append("""
     
@@ -3065,7 +3031,6 @@ def give_health_advice(values):
         """)
 
     # Albumin (range: 3.5-5.0 g/dL)
-    if "Albumin" in values:
         if values["Albumin"] < 3.5:
             advice.append("""
     
@@ -3157,7 +3122,6 @@ def give_health_advice(values):
         """)
 
     # Globulin (range: 2.0-3.5 g/dL)
-    if "Globulin" in values:
         if values["Globulin"] < 1.8:
             advice.append("""
     
@@ -3250,7 +3214,6 @@ def give_health_advice(values):
         """)
 
         # Protein A/G Ratio (range: 1.0-2.5)
-    if "Protein A/G Ratio" in values:
         if values["Protein A/G Ratio"] < 0.8:
             advice.append("""
         <div style="font-family: Arial, sans-serif; font-size: 14px;">
@@ -3342,7 +3305,6 @@ def give_health_advice(values):
         """)
 
     # Creatinine (range: 0.6-1.2 mg/dL)
-    if "Creatinine" in values:
         if values["Creatinine"] < 0.7:
             advice.append("""<h3>Low Creatinine (Hypocreatininemia)</h3>
 <p>A low creatinine level is typically rare and is often associated with specific medical conditions or factors that affect muscle mass, kidney function, or hydration.</p>
@@ -3417,7 +3379,6 @@ def give_health_advice(values):
     
 
     # Uric Acid (range: 3.5-7.2 mg/dL)
-    if "Blood Urea Nitrogen" in values:
         if values["Blood Urea Nitrogen"] < 8:
             advice.append("""
         <h2>Low BUN (Hypoazotemia)</h2>
@@ -3488,7 +3449,6 @@ def give_health_advice(values):
             <li><b>Monitor Kidney Function:</b> Regular check-ups can help detect issues early and guide treatment strategies.</li>
         </ul>
         """)
-    if "Uric Acid" in values:
         if values["Uric Acid"] < 3.5:
             advice.append("""
         <div>
@@ -3575,50 +3535,7 @@ def give_health_advice(values):
 
     
     # Bilirubin (range: 0.1-1.2 mg/dL)
-    if "Bilirubin" in values:
-        if values["Bilirubin"] > 1.2:
-            advice.append("""
-        <div>
-            <h2>High Bilirubin (Hyperbilirubinemia)</h2>
-            <p>High bilirubin levels can indicate a variety of health conditions, ranging from liver diseases to blood disorders. Jaundice (yellowing of the skin and eyes) is a visible symptom of high bilirubin levels.</p>
-            <h3>Root Causes of High Bilirubin:</h3>
-            <ul>
-                <li><strong>Liver Disease:</strong> Conditions like hepatitis, cirrhosis, and liver failure impair the liver's ability to conjugate and excrete bilirubin, leading to elevated total bilirubin levels, especially the indirect form.</li>
-                <li><strong>Hemolysis (Increased Red Blood Cell Breakdown):</strong> Hemolytic anemia or sickle cell disease accelerates red blood cell breakdown, increasing indirect (unconjugated) bilirubin levels.</li>
-                <li><strong>Bile Duct Obstruction:</strong> Blockages (e.g., gallstones, bile duct cancer, pancreatitis) prevent proper excretion of bilirubin, causing direct (conjugated) bilirubin to accumulate in the bloodstream.</li>
-                <li><strong>Gilbert's Syndrome:</strong> A common inherited condition where the liver's ability to process bilirubin is reduced, causing mildly elevated indirect bilirubin. It's generally harmless.</li>
-                <li><strong>Neonatal Jaundice:</strong> Newborns, especially premature babies, may have high bilirubin due to an immature liver. This usually resolves on its own (physiological jaundice).</li>
-                <li><strong>Infections or Sepsis:</strong> Severe infections can disrupt liver function and red blood cell turnover, leading to increased bilirubin production and reduced excretion.</li>
-                <li><strong>Alcohol Consumption:</strong> Excessive drinking damages the liver, impairing bilirubin conjugation and leading to elevated levels.</li>
-                <li><strong>Hemoglobinopathies:</strong> Conditions like thalassemia and sickle cell anemia increase red blood cell breakdown, raising indirect bilirubin levels.</li>
-            </ul>
-            <h3>Health Risks of High Bilirubin:</h3>
-            <ul>
-                <li><strong>Jaundice:</strong> Yellowing of the skin and eyes due to bilirubin buildup in tissues.</li>
-                <li><strong>Liver Damage:</strong> Persistent high bilirubin, especially direct bilirubin, often indicates liver dysfunction, such as cirrhosis, hepatitis, or bile duct obstructions.</li>
-                <li><strong>Gallstones:</strong> High conjugated bilirubin levels can contribute to gallstone formation.</li>
-                <li><strong>Chronic Conditions:</strong> Prolonged high bilirubin may indicate underlying chronic conditions, such as hemolytic anemia, requiring management.</li>
-            </ul>
-            <h3>Tips to Lower Bilirubin Levels:</h3>
-            <ul>
-                <li><strong>Hydration:</strong> Staying well-hydrated helps the kidneys process excess bilirubin and reduces jaundice risk.</li>
-                <li><strong>Treat Underlying Conditions:</strong> Addressing liver disease, gallstones, or hemolysis with appropriate treatment (medications, lifestyle changes, or surgery) is essential.</li>
-                <li><strong>Avoid Alcohol:</strong> Reducing or eliminating alcohol consumption supports liver efficiency and lowers bilirubin production.</li>
-                <li><strong>Manage Hemolytic Conditions:</strong> Conditions like hemolytic anemia may require medications (e.g., folic acid supplements), immunosuppressive therapy, or blood transfusions.</li>
-                <li><strong>Phototherapy for Neonatal Jaundice:</strong> For newborns, light therapy is a standard treatment to break down excess bilirubin in the skin.</li>
-                <li><strong>Balanced Diet:</strong> A healthy diet with fruits, vegetables, whole grains, and lean proteins supports liver health and detoxification.</li>
-            </ul>
-            <h3>Medications:</h3>
-            <ul>
-                <li>Medications like ursodeoxycholic acid may be prescribed to improve bile flow and reduce bilirubin levels.</li>
-            </ul>
-            <h3>Monitor for Signs of Liver Damage:</h3>
-            <p>Regular liver function tests and imaging studies may be necessary to assess liver damage if bilirubin levels remain high due to liver disease.</p>
-        </div>
-        """)
-
-        # Gamma Glutamyl Transferase (range: 9-48 U/L)
-    if "Gamma Glutamyl Transferase" in values:
+                # Gamma Glutamyl Transferase (range: 9-48 U/L)
         if values["Gamma Glutamyl Transferase"] < 9:
             advice.append("""
         <div>
@@ -3686,7 +3603,6 @@ def give_health_advice(values):
         """)
 
     # e-GFR (Glomerular Filtration Rate) (range: > 60 mL/min/1.73m²)
-    if "e-GFR (Glomerular Filtration Rate)" in values:
         if values["e-GFR (Glomerular Filtration Rate)"] < 60:
             advice.append("""
         <div style="font-family: Arial, sans-serif; line-height: 1.6;">
@@ -3767,7 +3683,6 @@ def give_health_advice(values):
         """)
 
     # Urea (range: 7-20 mg/dL)
-    if "Urea" in values:
         if values["Urea"] < 7:
             advice.append("""
         <div style="font-family: Arial, sans-serif; line-height: 1.6;">
@@ -3857,7 +3772,6 @@ def give_health_advice(values):
         """)
 
     # T3 Total (range: 80-180 ng/dL)
-    if "T3 Total" in values:
         if values["T3 Total"] < 0.6:
             advice.append("""
         <h2>Low T3 Total (Hypothyroidism)</h2>
@@ -3928,7 +3842,6 @@ def give_health_advice(values):
         """)
 
     # T4 Total (range: 5.0-12.0 µg/dL)
-    if "T4 Total" in values:
         if values["T4 Total"] < 3.2:
             advice.append("""
         <h2>Low T4 Total (Hypothyroidism)</h2>
@@ -4005,7 +3918,6 @@ def give_health_advice(values):
         """)
 
     # TSH Ultrasensitive (range: 0.4-4.0 µIU/mL)
-    if "TSH Ultrasensitive" in values:
         if values["TSH Ultrasensitive"] < 0.55:
             advice.append("""
 <div style="font-family: Arial, sans-serif; line-height: 1.6;">
@@ -4075,7 +3987,6 @@ def give_health_advice(values):
         """)
 
     # Vitamin B12 (range: 200-900 pg/mL)
-    if "Vitamin B12" in values:
         if values["Vitamin B12"] < 211:
             advice.append("""
 <div style="font-family: Arial, sans-serif; line-height: 1.6;">
@@ -4145,7 +4056,6 @@ def give_health_advice(values):
         """)
 
     # 25 (OH) Vitamin D2 (Ergocalciferol) (range: 20-50 ng/mL)
-    if "25 (OH) Vitamin D2 (Ergocalciferol)" in values:
         if values["25 (OH) Vitamin D2 (Ergocalciferol)"] < 20:
             advice.append("""
 <div style="font-family: Arial, sans-serif; line-height: 1.6;">
@@ -4215,7 +4125,6 @@ def give_health_advice(values):
 
     # 25 (OH) Vitamin D3 (Cholecalciferol) (range: 20-50 ng/mL)
     
-    if "25 (OH) Vitamin D3 (Cholecalciferol)" in values:
         if values["25 (OH) Vitamin D3 (Cholecalciferol)"] < 20:
             advice.append("""
 <div style="font-family: Arial, sans-serif; line-height: 1.6;">
@@ -4283,7 +4192,6 @@ def give_health_advice(values):
 </div>
         """)
 
-    if "Vitamin D Total (D2 + D3)" in values:
         if values["Vitamin D Total (D2 + D3)"] < 20:
             advice.append("""
 <div style="font-family: Arial, sans-serif; line-height: 1.6;">
@@ -4352,7 +4260,6 @@ def give_health_advice(values):
         """)
 
     # Iron (range: 50-170 µg/dL)
-    if "Iron" in values:
         if values["Iron"] < 70:
             advice.append("""
 <div style="font-family: Arial, sans-serif; line-height: 1.6;">
@@ -4431,7 +4338,6 @@ def give_health_advice(values):
         """)
 
     # Transferrin Saturation (range: 20-50%)
-    if "Transferrin Saturation" in values:
         if values["Transferrin Saturation"] < 18:
             advice.append("""
 <div style="font-family: Arial, sans-serif; line-height: 1.6;">
@@ -4500,7 +4406,7 @@ def give_health_advice(values):
 </div>
         """)
 
-    return advice if advice else ["No specific advice. Keep maintaining a healthy lifestyle!"]
+        return advice if advice else ["No specific advice. Keep maintaining a healthy lifestyle!"]
 
 @app.route("/", methods=["GET", "POST"])
 def homepage():
@@ -4638,27 +4544,22 @@ def home():
             pdf_file = request.files["pdf_file"]
             extracted_text = extract_text_from_pdf(pdf_file)
             
-            # Ensure OrderedDict is maintained
             values = OrderedDict(extract_values(extracted_text))
             
-            # Store as list of tuples in session
-            session['values'] = list(values.items())  # Convert to list of tuples for session
+            session['values'] = list(values.items())  
             session.modified = True
             
             advice = give_health_advice(values)
             return render_template("results.html", values=values, advice=advice)
 
         elif request.form:
-            # Reconstruct OrderedDict from session data
-            values = OrderedDict(session.get('values', []))  # Restore as OrderedDict
+            values = OrderedDict(session.get('values', [])) 
             
             
-            # Update values based on form data
             for key in values.keys():
                 if key in request.form:
-                    values[key] = float(request.form[key])  # Update values
+                    values[key] = float(request.form[key])  
             
-            # Save updated values back to session
             session['values'] = list(values.items()) 
             session.modified = True
             
@@ -4668,4 +4569,4 @@ def home():
 
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5001)
+    app.run(debug=True)
