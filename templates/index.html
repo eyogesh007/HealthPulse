@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Health Pulse</title>
+    <title>🩺 Health Pulse</title>
     <style>
         body {
             margin: 0;
@@ -205,14 +205,14 @@
     border: none;
     cursor: pointer;
     position: absolute;
-    right: 20px; /* Ensure it's aligned properly */
-    top: 15px;   /* Ensure it's aligned properly */
-    z-index: 1100; /* Keep it above other elements */
+    right: 20px; 
+    top: 15px;  
+    z-index: 1100;
 }
 
 .menu-btn span {
     display: block;
-    width: 25px; /* Slightly increase size for better visibility */
+    width: 25px;
     height: 3px;
     background: black;
     margin: 2px auto;
@@ -237,14 +237,14 @@
 
 @media (max-width: 768px) {
     .menu-btn {
-        display: block; /* Make the menu button visible on smaller screens */
+        display: block; 
     }
 
     .nav {
         display: none;
         flex-direction: column;
         position: absolute;
-        top: 40px; /* Position dropdown below header */
+        top: 40px; 
         right: 15px;
         background: #74b9ff;
         padding: 8px;
@@ -323,6 +323,40 @@
             color: #71B7FB;
             text-decoration: none;
         }
+
+.arrow::before {
+  content: "\2192"; 
+  font-size: 24px;
+  display: inline-block;
+  color: white; 
+}
+
+@media (max-width: 768px) {
+  .arrow::before {
+    content: "\2193"; 
+    font-size: 24px;
+  }
+}
+
+@media (min-width: 768px) {
+  .arrow::before {
+    content: "\27A1"; 
+    font-size: 36px;
+    color: white; 
+  }
+}
+
+
+@keyframes bounce {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-5px);
+    }
+}
+
+
     </style>
 </head>
 <body>
@@ -335,6 +369,7 @@
         </button>
         <nav class="nav" id="nav">
             <a href="#features">Features</a>
+            <a href="#how-to-use">User Guide</a>
             <a href="#upload">Upload</a>
         </nav>
     </header>
@@ -364,10 +399,46 @@
             </div>
             <div class="feature-card">
                 <h3>Real-time Health Analysis</h3>
-                <p>Click to analyze your health data, instantly generating insightful advice and guidance for a healthier lifestyle.</p>
+                <p>Receive instant, personalized insights and guidance tailored to your unique health profile for 54 crucial health metrics.</p>
             </div>
         </div>
     </section>
+
+    <section id="how-to-use" class="features">
+        <h2>User Guide</h2>
+        <div class="feature-list">
+            <div class="feature-card">
+                <h3>Step 1: Open the Website</h3>
+                <p>Start by opening the HealthPulse website in your browser.</p>
+            </div>
+             <!-- Arrow -->
+             <div class="arrow"></div>
+            <div class="feature-card">
+                <h3>Step 2: Upload Your Report</h3>
+                <p>Click on the Choose File button and select your health report in PDF format. Ensure your report is properly compressed.</p>
+            </div>
+             <!-- Arrow -->
+             <div class="arrow"></div>
+            <div class="feature-card">
+                <h3>Step 3: Verify Extracted Values</h3>
+                <p>Review the extracted test values and also make sure that they are in the same units as mentioned. If any values are incorrect, you can edit them directly.</p>
+            </div>
+             <!-- Arrow -->
+             <div class="arrow"></div>
+            <div class="feature-card">
+                <h3>Step 4: Analyze Your Report</h3>
+                <p>If you edited any values, click the "Analyze" button to update the heath advice results. Otherwise, the health advice will display automatically.</p>
+            </div>
+             <!-- Arrow -->
+             <div class="arrow"></div>
+            <div class="feature-card">
+                <h3>Step 5: View Your Health Advice</h3>
+                <p>View your personalized health insights and actionable recommendations based on your test results.</p>
+            </div>
+        </div>
+    </section>
+    
+    
 
     <section id="upload" class="upload">
         <h2>Upload Your Health Report (PDF)</h2>

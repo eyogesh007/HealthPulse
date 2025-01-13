@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Health Test Results</title>
+    <title>🩺 Health Test Results</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -165,6 +165,33 @@ button:hover {
                 color: #71B7FB;
             }
         }
+.sticky-buttons {
+  position: fixed;
+  top: 50%;
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 1000;
+}
+
+.sticky-buttons button {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-family: 'Arial', sans-serif;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.sticky-buttons button:hover {
+  background-color: #0056b3;
+  transform: scale(1.1);
+}
+
     </style>
     <script>
         function toggleInfo(test) {
@@ -349,8 +376,12 @@ button:hover {
         "Transferrin Saturation": "The percentage of transferrin (an iron-binding protein) that is saturated with iron."
     }
     %}
+    <div class="sticky-buttons">
+        <button onclick="scrollToSection('report')">📄</button>
+        <button onclick="scrollToSection('advice')">💡</button>
+      </div>
     <div class="container">
-        <h2>Your Health Report</h2>
+        <h2 id="report">Your Health Report</h2>
         <form action="/uploads" method="POST">
             <table>
                 <thead>
@@ -387,7 +418,7 @@ button:hover {
 
 
 
-<h2 class="head" style="text-align: center; color: white; font-family: 'Arial', sans-serif; margin-bottom: 20px;">
+<h2 id="advice" class="head" style="text-align: center; color: white; font-family: 'Arial', sans-serif; margin-bottom: 20px;">
     Health Advice Based on Your Report
 </h2>
 <div style="display: flex; justify-content: center; flex-direction: column; align-items: center; width: 100%; padding: 20px; background-color: black; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);"> 
@@ -406,12 +437,21 @@ button:hover {
                 </p>
             </div>
         </li>
+        
         {% endfor %}
     </ul>
 </div>
 
 
-
+<script>
+    function scrollToSection(id) {
+      const element = document.getElementById(id);
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth" });
+      }
+    }
+  </script>
+  
 
 
 <script>
