@@ -732,8 +732,68 @@ def give_health_advice(values):
     <div>
         <h3>Foods to Eat:</h3>
         <ul>
-            <li><strong>Balanced Diet:</strong> Include vitamins like B12, folate, iron, and vitamin C to support overall health.</li>
-        </ul>
+        <li>
+            <strong>Foods Rich in Iron:</strong>
+            <ul>
+                <li>Heme Iron: Lean red meat, poultry, fish (e.g., salmon, tuna)</li>
+                <li>Non-Heme Iron: Spinach, lentils, beans, tofu, fortified cereals</li>
+            </ul>
+        </li>
+        <li>
+            <strong>Foods Rich in Vitamin B12:</strong>
+            <ul>
+                <li>Shellfish (clams, crab, oysters)</li>
+                <li>Liver (beef or chicken)</li>
+                <li>Dairy products (milk, yogurt, cheese)</li>
+                <li>Eggs</li>
+                <li>Fortified plant-based milk (almond, soy, oat)</li>
+            </ul>
+        </li>
+        <li>
+            <strong>Foods Rich in Folate (Vitamin B9):</strong>
+            <ul>
+                <li>Dark leafy greens (spinach, kale, Swiss chard)</li>
+                <li>Avocado</li>
+                <li>Asparagus</li>
+                <li>Citrus fruits (oranges, grapefruits)</li>
+                <li>Legumes (chickpeas, black-eyed peas)</li>
+                <li>Fortified grains and cereals</li>
+            </ul>
+        </li>
+        <li>
+            <strong>Foods Rich in Vitamin C:</strong>
+            <ul>
+                <li>Citrus fruits (oranges, lemons, limes)</li>
+                <li>Bell peppers</li>
+                <li>Strawberries</li>
+                <li>Kiwi</li>
+                <li>Broccoli</li>
+                <li>Tomatoes</li>
+            </ul>
+        </li>
+        <li>
+            <strong>Foods Rich in Copper:</strong>
+            <ul>
+                <li>Nuts and seeds (cashews, almonds, sunflower seeds)</li>
+                <li>Shellfish (lobster, crab)</li>
+                <li>Whole grains (quinoa, oats)</li>
+                <li>Dark chocolate</li>
+            </ul>
+        </li>
+        <li>
+            <strong>Foods Rich in Vitamin E:</strong>
+            <ul>
+                <li>Nuts (almonds, hazelnuts)</li>
+                <li>Seeds (sunflower seeds)</li>
+                <li>Vegetable oils (sunflower, safflower, olive oil)</li>
+                <li>Spinach</li>
+                <li>Avocados</li>
+            </ul>
+        </li>
+        <li>
+            <strong>Hydration:</strong> Drink sufficient water daily to support overall blood health.
+        </li>
+    </ul>
     </div>
     <div>
         <h3>Example Meal Plan for Low RDW:</h3>
@@ -3217,7 +3277,7 @@ def give_health_advice(values):
         if values["Protein A/G Ratio"] < 0.8:
             advice.append("""
         <div style="font-family: Arial, sans-serif; font-size: 14px;">
-            <h3 style="color: red;">Low Protein A/G Ratio</h3>
+            <h2>Low Protein A/G Ratio</h2>
             <p>A low A/G ratio occurs when the globulin levels are higher than albumin levels. This imbalance may indicate an underlying health problem.</p>
 
             <h4>Root Cause:</h4>
@@ -3265,7 +3325,7 @@ def give_health_advice(values):
         elif values["Protein A/G Ratio"] > 2:
             advice.append("""
         <div style="font-family: Arial, sans-serif; font-size: 14px;">
-            <h3 style="color: green;">High Protein A/G Ratio</h3>
+            <h2>High Protein A/G Ratio</h2>
             <p>A high A/G ratio occurs when the albumin levels are disproportionately higher than globulin levels, often because globulin levels are abnormally low.</p>
 
             <h4>Root Cause:</h4>
@@ -3301,12 +3361,11 @@ def give_health_advice(values):
                 <li><strong>Protein-Rich Foods:</strong> Increase protein intake with lean meats, fish, legumes, tofu, and nuts.</li>
                 <li><strong>Anti-Inflammatory Foods:</strong> Incorporate foods like turmeric, ginger, and green leafy vegetables to help manage immune response and inflammation.</li>
             </ul>
-        </div>
         """)
 
     # Creatinine (range: 0.6-1.2 mg/dL)
         if values["Creatinine"] < 0.7:
-            advice.append("""<h3>Low Creatinine (Hypocreatininemia)</h3>
+            advice.append("""<h2>Low Creatinine (Hypocreatininemia)</h2>
 <p>A low creatinine level is typically rare and is often associated with specific medical conditions or factors that affect muscle mass, kidney function, or hydration.</p>
 
 <h4>Root Causes of Low Creatinine:</h4>
@@ -3342,7 +3401,7 @@ def give_health_advice(values):
     <li><strong>Manage Hydration:</strong> While adequate hydration is important, avoid excessive fluid intake that may dilute creatinine levels.</li>
 </ul>""")
         elif values["Creatinine"] > 1.2:
-            advice.append("""<h3>High Creatinine (Hypercreatininemia)</h3>
+            advice.append("""<h2>High Creatinine (Hypercreatininemia)</h2>
 <p>High creatinine levels are more commonly seen and typically indicate impaired kidney function or other factors that affect kidney health. The kidneys are responsible for filtering creatinine, so high levels are often a sign that the kidneys are not working properly.</p>
 
 <h4>Root Causes of High Creatinine:</h4>
@@ -3606,7 +3665,7 @@ def give_health_advice(values):
         if values["e-GFR (Glomerular Filtration Rate)"] < 60:
             advice.append("""
         <div style="font-family: Arial, sans-serif; line-height: 1.6;">
-            <h2 style="color: red;">Low e-GFR (Kidney Dysfunction)</h2>
+            <h2 ">Low e-GFR (Kidney Dysfunction)</h2>
             <p>A low e-GFR generally suggests that the kidneys are not functioning optimally and may be at risk of progressing to chronic kidney disease (CKD). The lower the e-GFR, the worse the kidney function.</p>
             
             <h3>Root Causes of Low e-GFR:</h3>
@@ -3651,7 +3710,7 @@ def give_health_advice(values):
         elif values["e-GFR (Glomerular Filtration Rate)"] > 90:
             advice.append("""
         <div style="font-family: Arial, sans-serif; line-height: 1.6;">
-            <h2 style="color: green;">High e-GFR (Hyperfiltration)</h2>
+            <h2 >High e-GFR (Hyperfiltration)</h2>
             <p>A high e-GFR is usually a sign of increased kidney filtration and can sometimes indicate excessive kidney function. Though less common, a high e-GFR may occur under certain conditions.</p>
             
             <h3>Root Causes of High e-GFR:</h3>
@@ -3686,7 +3745,7 @@ def give_health_advice(values):
         if values["Urea"] < 7:
             advice.append("""
         <div style="font-family: Arial, sans-serif; line-height: 1.6;">
-            <h2 style="color: red;">Low Urea (Hypouremia)</h2>
+            <h2>Low Urea (Hypouremia)</h2>
             <p>Low urea levels in the blood can occur due to several factors that influence its production or clearance.</p>
 
             <h3>Root Causes of Low Urea:</h3>
@@ -3730,7 +3789,7 @@ def give_health_advice(values):
         elif values["Urea"] > 20:
             advice.append("""
         <div style="font-family: Arial, sans-serif; line-height: 1.6;">
-            <h2 style="color: red;">High Urea (Hyperuremia)</h2>
+            <h2 >High Urea (Hyperuremia)</h2>
             <p>High urea levels in the blood typically indicate that the kidneys are not efficiently clearing urea or may signify excess protein breakdown.</p>
 
             <h3>Root Causes of High Urea:</h3>
