@@ -443,13 +443,15 @@
     <section id="upload" class="upload">
         <h2>Upload Your Health Report (PDF)</h2>
         <div class="container">
-            <form action="https://medcompanion.vercel.app/uploads" method="POST" enctype="multipart/form-data">
+            <form id="uploadForm" action="https://medcompanion.vercel.app/uploads" method="POST" enctype="multipart/form-data">
                 <input type="file" id="pdf_file" name="pdf_file" accept="application/pdf" required>
                 <button type="submit">Upload</button>
             </form><br>
+            <p id="error-message" style="color: red; display: none;"></p>
+        </div><br>
                 
-                <a style="color:#ff4d4d; text-decoration: none; " target="_blank" href="https://www.ilovepdf.com/compress_pdf">
-                    <span style="color: yellow; font-size: 24px; margin-right: 10px;">&#9888;</span>Please compress your PDF files over here before submitting
+                <a style="color:yellow; text-decoration: none; " target="_blank" href="https://www.ilovepdf.com/compress_pdf">
+                    <span style="color: yellow; font-size: 24px; margin-right: 10px;">&#9888;</span>Please compress your PDF files over <span style="font-weight:bolder ;text-decoration: underline;">here</span> before submitting
                 </a>
             </div>
             
@@ -463,6 +465,30 @@
         function toggleMenu() {
             nav.classList.toggle('active');
         }
+    </script>
+    <script>
+        document.getElementById("uploadForm").addEventListener("submit", function (event) {
+            const fileInput = document.getElementById("pdf_file");
+            const errorMessage = document.getElementById("error-message");
+            const maxSize = 3 * 1024 * 1024;
+    
+            if (fileInput.files.length === 0) {
+                errorMessage.textContent = "Please select a file to upload.";
+                errorMessage.style.display = "block";
+                event.preventDefault(); 
+                return;
+            }
+    
+            const file = fileInput.files[0];
+            if (file.size > maxSize) {
+                errorMessage.textContent = "The file size exceeds the 3MB limit. Please upload a smaller file.";
+                errorMessage.style.display = "block";
+                event.preventDefault(); 
+                return;
+            }
+    
+            errorMessage.style.display = "none";
+        });
     </script>
 </body>
 </html>
