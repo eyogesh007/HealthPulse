@@ -456,6 +456,10 @@ button:hover {
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
+         const adviceSection = document.getElementById('advice');
+        if (adviceSection) {
+            adviceSection.scrollIntoView({ behavior: 'smooth' });
+        }
         const adviceItems = document.querySelectorAll('.advice-item');
         adviceItems.forEach(function (item) {
             item.addEventListener('click', function () {
