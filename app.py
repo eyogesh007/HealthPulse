@@ -63,74 +63,93 @@ def extract_values(text):
             ("T4 Total", 0),
             ("TSH Ultrasensitive", 0),
             ("Vitamin B12", 0),
-            ("25 (OH) Vitamin D2 (Ergocalciferol)", 0),
-            ("25 (OH) Vitamin D3 (Cholecalciferol)", 0),
             ("Vitamin D Total (D2 + D3)", 0),
             ("Iron", 0),
             ("Total Iron Binding Capacity", 0),
             ("Transferrin Saturation", 0)
         ])
     patterns = {
-    "Haemoglobin": r"\s*(.*?HEMOGLOBIN\b|.*?Haemoglobin\b.*?|Hgb\b.*?)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
-    "Total RBC Count": r"\s*(.*?\bR.?B.?C\b.?count|.*?\bR.?B.?C\b.*?)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
-    "Packed Cell Volume / Hematocrit": r"\s*(.*?Packed Cell Volume.*?|.*?Hematocrit.*?|.*?\bP.?C.?V\b.*?|.*?\bH.?c.?t\b.*?)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
-    "MCV": r"\s*(\bM.?C.?V\b.*?|.*?Mean Corpuscular Volume.*?)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
-    "MCH": r"\s*(\bMCH\b.*?|.*?Mean Corpuscular Hemoglobin.*?)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
-    "MCHC": r"\s*(\bMCHC\b.*?|.*?Mean Corpuscular Hemoglobin Concentration.*?)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
-    "RDW": r"\s*(\bR.?D.?W\b.*?|.*?Red Cell Distribution Width.*?)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
-    "Total Leucocytes Count": r"\s*(.*?Total Leucocytes Count.*?|.*?TLC.*?|\bWBC\b.*?)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
-    "Neutrophils": r"\s*(Neutrophils.*?|Neu)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
-    "Lymphocytes": r"\s*(Lymphocytes.*?|Lym)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
-    "Eosinophils": r"\s*(Eosinophils.*?|Eos)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
-    "Monocytes": r"\s*(Monocytes.*?|Mono)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
-    "Basophils": r"\s*(Basophils.*?|Baso)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
-    "Absolute Neutrophil Count": r"\s*(.*?Absolute.?Neutrophil.?Count.*?|.*?Neutrophil\b.*?|ANC)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
-    "Absolute Lymphocyte Count": r"\s*(.*?Absolute.?Lymphocyte.?Count.*?|.*?Lymphocyte\b.*?|ALC)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
-    "Absolute Eosinophil Count": r"\s*(.*?Absolute.?Eosinophil.?Count.*?|.*?Eosinophil\b.*?|AEC)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
-    "Absolute Monocyte Count": r"\s*(.*?Absolute Monocyte Count.*?|.*?Monocyte\b.*?|AMC)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
-    "Platelet Count": r"\s*(Platelet Count.*?|PLT)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
-    "Erythrocyte Sedimentation Rate": r"\s*(.*?Erythrocyte sedimentation.*?|.*?Erythrocyte Sedimentation Rate.*?|\bE.?S.?R\b.*?)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
-    "Fasting Plasma Glucose": r"\s*(.*?Fasting Plasma Glucose.*?|.*?Fasting.*?|.*?Fasting Blood Glucose.*?|.*?\bFPG\b.*?)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
-    "Glycated Hemoglobin": r"\s*(.*?Glycated Haemoglobin.*?HBA1C.*?|.*?Glycated Haemoglobin.*?|.*?Glycated Hemoglobin.*?|\bHbA1C\b.*?)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
-    "Triglycerides": r"\s*(.*?Triglycerides.*?|.*?TG\b.*?)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
-    "Total Cholesterol": r"\s*(Total Cholesterol.*?|TC)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
-    "LDL Cholesterol": r"\s*(L.?D.?L Cholesterol.*?|\bL.?D.?L\b.*?)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
-    "HDL Cholesterol": r"\s*(H.?D.?L Cholesterol.*?|\bH.?D.?L\b.*?)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
-    "VLDL Cholesterol": r"\s*(V.?L.?D.?L Cholesterol.*?|\bV.?L.?D.?L\b.*?)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
-    "Total Cholesterol / HDL Cholesterol Ratio": r"\s*(.*?Total Cholesterol.?/.?HDL.*?|.*?Total Cholesterol.?/.?HDL Cholesterol Ratio.*?|.*?TC.?/.?HDL.?Ratio.*?|.*?CHOL.?/.?HDL\b.*?|.*?CHO.?/.?HDL\b.*?)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
-    "LDL Cholesterol / HDL Cholesterol Ratio": r"\s*(.*?L.?D.?L.?/.?H.?D.?L.*?|.*?L.?D.?L.?/.?H.?D.?L Cholesterol Ratio.*?|.*?LDL Cholesterol.?/.?HDL Cholesterol Ratio.*?|.*?LDL.?/.?HDL Ratio.*?)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
-    "Total Bilirubin": r"\s*(.*?Total.?Bilirubin.?|.*?BILIRUBIN.*?Total.*?|.*?BIL-T.*?)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
-    "Direct Bilirubin": r"\s*(.*?Direct.?Bilirubin.?|.*?BILIRUBIN.*?direct.*?|.*?BIL-D.*?)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
-    "Indirect Bilirubin": r"\s*(.*?Indirect.?Bilirubin.?|.*?BILIRUBIN.*?indirect.*?|.*?BIL-I.*?)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
-    "SGPT/ALT": r"\s*(.*?ALANINE AMINOTRANSFERASE.*?|\bS.?G.?P.?T.?/.?A.?L.?T.*?|\bS.?G.?P.?T.*?|\bA.?L.?T.*?)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
-    "SGOT/AST": r"\s*(.*?ASPARTATE AMINOTRANSFERASE.*?|\bS.?G.?O.?T.?/.?A.?S.?T.*?|\bS.?G.?O.?T.*?)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
-    "Alkaline Phosphatase": r"\s*(.*?Alkaline.*?|.*?Alkaline Phosphatase.*?|ALP)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
-    "Total Protein": r"\s*(.*?Total Protein.*?|.*?Protein\b.*?|PROTEIN, TOTAL.*?|TP)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
-    "Albumin": r"\s*(Albumin.*?|ALB)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
-    "Globulin": r"\s*(.*?Globulin.*?)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
-    "Protein A/G Ratio": r"\s*(Protein A/G Ratio|A/G Ratio)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
-    "Gamma Glutamyl Transferase": r"\s*(Gamma Glutamyl Transferase.*?|GAMMA GLUTAMYL|GAMMA GLUTAMYL TRANSPEPTIDASE\b.*?|G.?G.?T)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
-    "Creatinine": r"\s*(Creatinine\b.*?|Cr)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
-    "e-GFR (Glomerular Filtration Rate)": r"\s*(\be-GFR\b.*?|.*?\beGFR\b.*?|.*?eGFR\b.*?|.*?GFR.*?|Glomerular Filtration Rate.*?)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
-    "Urea": r"\s*(Urea|Urea.*?)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
-    "Blood Urea Nitrogen": r"\s*(Blood Urea Nitrogen|.*?UREA NITROGEN.*?|Blood Urea Nitrogen.*?|.*?BUN.*?)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
-    "Uric Acid": r"\s*(Uric Acid|Uric Acid.*?|UA)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
-    "T3 Total": r"\s*(.*?T3\b|.*?T3.*?Total.*?|Triiodothyronine)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
-    "T4 Total": r"\s*(.*?T4\b|.*?T4.*?Total.*?|Thyroxine)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
-    "TSH Ultrasensitive": r"\s*(\bT.?S.?H\b.*?|Ultrasensitive TSH.*?|.*?T.?S.?H.*?)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
-    "Vitamin B12": r"\s*(Vitamin B12|\bB12\b.*?)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
-    "25 (OH) Vitamin D2 (Ergocalciferol)": r"\s*(25 \(OH\) |.*?Vitamin D2.*?|Ergocalciferol)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
-    "25 (OH) Vitamin D3 (Cholecalciferol)": r"\s*(25 \(OH\) Vitamin D3|.*?Vitamin D3.*?|Cholecalciferol)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
-    "Vitamin D Total (D2 + D3)": r"\s*(D2\s*\+?\s*D3.*?|.*?Vitamin D\b.*?|.*?Vitamin D\b.*?D2\s*\+?\s*D3.*?)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
-    "Iron": r"\s*(Iron)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
-    "Total Iron Binding Capacity": r"\s*(.*?Total Iron Binding Capacity.*?|.*?T.?I.?B.?C.*?)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*",
-    "Transferrin Saturation": r"\s*(.*?Transferrin Saturation.*?|.*?% OF SATURATION.*?|.*?Transferin.*?)\s*[:\-]?\s*(\d{1,3}(,\d{3})*(\.\d+)?)\s*"
+    "Haemoglobin": r"\s*(.*?HEMOGLOBIN[^0-9\n]*|.*?Haemoglobin[^0-9\n]*|.*?Hgb[^0-9\n]*)(\d{1,7}(?:,\d{3})*(?:\.\d+)?)\s*.*?\s*.?.?g.?.?.?/.?d.?l",
+    "Total RBC Count": r"\s*(.*?\bR.?B.?C\b.?count[^0-9\n]*|.*?\bR.?B.?C[^0-9\n]*)(\d{1,7}(?:,\d{3})*(?:\.\d+)?)\s*.*?\s*(/.?cu.?mm|.?/.?l)",
+    "Packed Cell Volume / Hematocrit": r"\s*(.*?Packed Cell Volume[^0-9\n]*|.*?Hematocrit[^0-9\n]*|.*?\bP.?C.?V[^0-9\n]*|.*?\bH.?c.?t[^0-9\n]*)(\d{1,7}(?:,\d{3})*(?:\.\d+)?)\s*.*?\s*%",
+    "MCV": r"\s*(\bM.?C.?V\b[^0-9\n]*|.*?Mean Corpuscular Volume[^0-9\n]*)(\d{1,7}(?:,\d{3})*(?:\.\d+)?)\s*.*?\s*f.?l",
+    "MCH": r"\s*(\bMCH[^0-9\n]*|.*?Mean Corpuscular Hemoglobin[^0-9\n]*)(\d{1,7}(?:,\d{3})*(?:\.\d+)?)\s*.*?\s*p.?g",
+    "MCHC": r"\s*(\bMCHC[^0-9\n]*|.*?Mean Corpuscular Hemoglobin Concentration[^0-9\n]*)(\d{1,7}(?:,\d{3})*(?:\.\d+)?)\s*.*?\s*.?.?g.?.?.?/.?d.?l",
+    "RDW": r"\s*(\bR.?D.?W[^0-9\n]*|.*?Red Cell Distribution Width[^0-9\n]*)(\d{1,7}(?:,\d{3})*(?:\.\d+)?)\s*.*?\s*%",
+    "Total Leucocytes Count": r"\s*(.*?Total Leucocytes Count[^0-9\n]*|.*?TLC[^0-9\n]*|\bWBC[^0-9\n]*)(\d{1,7}(?:,\d{3})*(?:\.\d+)?)\s*.*?\s*(/.?cu.?mm|/.?µ.?l)",
+    "Neutrophils": r"\s*(Neutrophils[^0-9\n]*)(\d{1,7}(?:,\d{3})*(?:\.\d+)?)\s*.*?\s*%",
+    "Lymphocytes": r"\s*(Lymphocytes[^0-9\n]*)(\d{1,7}(?:,\d{3})*(?:\.\d+)?)\s*.*?\s*%",
+    "Eosinophils": r"\s*(Eosinophils[^0-9\n]*)(\d{1,7}(?:,\d{3})*(?:\.\d+)?)\s*.*?\s*%",
+    "Monocytes": r"\s*(Monocytes[^0-9\n]*)(\d{1,7}(?:,\d{3})*(?:\.\d+)?)s*.*?\s*%",
+    "Basophils": r"\s*(Basophils[^0-9\n]*)(\d{1,7}(?:,\d{3})*(?:\.\d+)?)\s*.*?\s*%",
+    "Absolute Neutrophil Count": r".*?Neutrophil[^0-9\n]*(\d{1,7}(?:,\d{3})*(?:\.\d+)?)\s*.*?\s*(/.?cu.?mm|/.?.?.?l)",
+    "Absolute Lymphocyte Count": r".*?Lymphocyte[^0-9\n]*(\d{1,7}(?:,\d{3})*(?:\.\d+)?)\s*.*?\s*(/.?cu.?mm|/.?.?.?l)",
+    "Absolute Eosinophil Count": r".*?Eosinophil[^0-9\n]*(\d{1,7}(?:,\d{3})*(?:\.\d+)?)\s*.*?\s*(/.?cu.?mm|/.?.?.?l)",
+    "Absolute Monocyte Count": r".*?Monocyte[^0-9\n]*(\d{1,7}(?:,\d{3})*(?:\.\d+)?)\s*.*?\s*(/.?cu.?mm|/.?.?.?l)",
+    "Platelet Count": r"\s*(Platelet Count[^0-9\n]*|PLT[^0-9\n]*)(\d{1,7}(?:,\d{3})*(?:\.\d+)?)\s*.*?\s*(/.?cu.?mm|/.?µ.?L)",
+    "Erythrocyte Sedimentation Rate": r"\s*(.*?Erythrocyte sedimentation[^0-9\n]*|.*?Erythrocyte Sedimentation Rate[^0-9\n]*|\bE.?S.?R[^0-9\n]*)(\d{1,7}(?:,\d{3})*(?:\.\d+)?)\s*.*?\s*mm.*?",
+    "Fasting Plasma Glucose": r"\s*(.*?Fasting Plasma Glucose[^0-9\n]*|.*?Fasting[^0-9\n]*|.*?Fasting Blood Glucose[^0-9\n]*|.*?\bFPG[^0-9\n]*)(\d{1,7}(?:,\d{3})*(?:\.\d+)?)\s*.*?\s*.?.?g.?.?.?/.?d.?l",
+    "Glycated Hemoglobin": r"\s*(.*?Glycated Haemoglobin.*?HBA1C[^0-9\n]*|.*?Glycated Haemoglobin[^0-9\n]*|.*?Glycated Hemoglobin[^0-9\n]*|\bHbA1C[^0-9\n]*)(\d{1,7}(?:,\d{3})*(?:\.\d+)?)\s*.*?\s*%",
+    "Triglycerides": r"\s*(.*?Triglycerides[^0-9\n]*|.*?TG[^0-9\n]*)(\d{1,7}(?:,\d{3})*(?:\.\d+)?)\s*.*?\s*.?.?g.?.?.?/.?d.?l",
+    "Total Cholesterol": r"\s*(Total Cholesterol[^0-9\n]*|TC[^0-9\n]*)(\d{1,7}(?:,\d{3})*(?:\.\d+)?)\s*.*?\s*.?.?g.?.?.?/.?d.?l",
+    "LDL Cholesterol": r"\s*(L.?D.?L Cholesterol[^0-9\n]*|\bL.?D.?L[^0-9\n]*)(\d{1,7}(?:,\d{3})*(?:\.\d+)?)\s*.*?\s*.?.?g.?.?.?/.?d.?l",
+    "HDL Cholesterol": r"\s*(H.?D.?L Cholesterol[^0-9\n]*|\bH.?D.?L[^0-9\n]*)(\d{1,7}(?:,\d{3})*(?:\.\d+)?)\s*.*?\s*.?.?g.?.?.?/.?d.?l",
+    "VLDL Cholesterol": r"\s*(V.?L.?D.?L Cholesterol[^0-9\n]*|\bV.?L.?D.?L[^0-9\n]*)(\d{1,7}(?:,\d{3})*(?:\.\d+)?)\s*.*?\s*.?.?g.?.?.?/.?d.?l",
+    "Total Cholesterol / HDL Cholesterol Ratio": r"\s*(.*?Total Cholesterol.?/.?HDL.*?|.*?Total Cholesterol.?/.?HDL Cholesterol Ratio.*?|.*?TC.?/.?HDL.?Ratio.*?|.*?CHOL.?/.?HDL\b.*?|.*?CHO.?/.?HDL\b.*?)\s*[:\-]?\s*(\d{1,7}(,\d{3})*(\.\d+)?)\s*",
+    "LDL Cholesterol / HDL Cholesterol Ratio": r"\s*(.*?L.?D.?L.?/.?H.?D.?L.*?|.*?L.?D.?L.?/.?H.?D.?L Cholesterol Ratio.*?|.*?LDL Cholesterol.?/.?HDL Cholesterol Ratio.*?|.*?LDL.?/.?HDL Ratio.*?)\s*[:\-]?\s*(\d{1,7}(,\d{3})*(\.\d+)?)\s*",
+    "Total Bilirubin": r"\s*(.*?Total.?Bilirubin[^0-9\n]*|.*?BILIRUBIN.*?Total[^0-9\n]*|.*?BIL-T[^0-9\n]*)(\d{1,7}(?:,\d{3})*(?:\.\d+)?)\s*.*?\s*.?.?g.?.?.?/.?d.?l",
+    "Direct Bilirubin": r"\s*(.*?Direct.?Bilirubin[^0-9\n]*|.*?BILIRUBIN.*?direct[^0-9\n]*|.*?BIL-D[^0-9\n]*)(\d{1,7}(?:,\d{3})*(?:\.\d+)?)\s*.*?\s*.?.?g.?.?.?/.?d.?l",
+    "Indirect Bilirubin": r"\s*(.*?Indirect.?Bilirubin[^0-9\n]*|.*?BILIRUBIN.*?indirect[^0-9\n]*|.*?BIL-I[^0-9\n]*)(\d{1,7}(?:,\d{3})*(?:\.\d+)?)\s*.*?\s*.?.?g.?.?.?/.?d.?l",
+    "SGPT/ALT": r"\s*(.*?ALANINE AMINOTRANSFERASE[^0-9\n]*|\bS.?G.?P.?T.?/.?A.?L.?T[^0-9\n]*|\bS.?G.?P.?T[^0-9\n]*|\bA.?L.?T[^0-9\n]*)(\d{1,7}(?:,\d{3})*(?:\.\d+)?)\s*.*?\s*u.?/.?l",
+    "SGOT/AST": r"\s*(.*?ASPARTATE AMINOTRANSFERASE[^0-9\n]*|\bS.?G.?O.?T.?/.?A.?S.?T[^0-9\n]*|\bS.?G.?O.?T[^0-9\n]*)(\d{1,7}(?:,\d{3})*(?:\.\d+)?)\s*.*?\s*u.?/.?l",
+    "Alkaline Phosphatase": r"\s*(.*?Alkaline[^0-9\n]*|.*?Alkaline Phosphatase[^0-9\n]*|ALP[^0-9\n]*)(\d{1,7}(?:,\d{3})*(?:\.\d+)?)\s*.*?\s*u.?/.?l",
+    "Total Protein": r"\s*(.*?Total Protein[^0-9\n]*|.*?Protein[^0-9\n]*|PROTEIN, TOTAL[^0-9\n]*|TP[^0-9\n]*)(\d{1,7}(?:,\d{3})*(?:\.\d+)?)\s*.*?\s*.?.?g.?.?.?/.?d.?l",
+    "Albumin": r"\s*(Albumin[^0-9\n]*|ALB[^0-9\n]*)(\d{1,7}(?:,\d{3})*(?:\.\d+)?)\s*.*?\s*.?.?g.?.?.?/.?d.?l",
+    "Globulin": r"\s*(.*?Globulin[^0-9\n]*)(\d{1,7}(?:,\d{3})*(?:\.\d+)?)\s*.*?\s*.?.?g.?.?.?/.?d.?l",
+    "Protein A/G Ratio": r"\s*(Protein A/G Ratio|A/G Ratio)\s*[:\-]?\s*(\d{1,7}(,\d{3})*(\.\d+)?)\s*",
+    "Gamma Glutamyl Transferase": r"\s*(Gamma Glutamyl Transferase[^0-9\n]*|GAMMA GLUTAMYL[^0-9\n]*|GAMMA GLUTAMYL TRANSPEPTIDASE[^0-9\n]*|G.?G.?T[^0-9\n]*)(\d{1,7}(?:,\d{3})*(?:\.\d+)?)\s*.*?\s*u.?/.?l",
+    "Creatinine": r"\s*(Creatinine[^0-9\n]*|Cr[^0-9\n]*)(\d{1,7}(?:,\d{3})*(?:\.\d+)?)\s*.*?\s*.?.?g.?.?.?/.?d.?l",
+    "e-GFR (Glomerular Filtration Rate)": r"\s*(\be-GFR\b.*?|.*?\beGFR\b.*?|.*?eGFR\b.*?|.*?GFR.*?|Glomerular Filtration Rate.*?)\s*[:\-]?\s*(\d{1,7}(,\d{3})*(\.\d+)?)\s*",
+    "Urea": r"\s*(Urea[^0-9\n]*)(\d{1,7}(?:,\d{3})*(?:\.\d+)?)\s*.*?\s*.?.?g.?.?.?/.?d.?l",
+    "Blood Urea Nitrogen": r"\s*(Blood Urea Nitrogen[^0-9\n]*|.*?UREA NITROGEN[^0-9\n]*|.*?BUN[^0-9\n]*)(\d{1,7}(?:,\d{3})*(?:\.\d+)?)\s*.*?\s*.?.?g.?.?.?/.?d.?l",
+    "Uric Acid": r"\s*(Uric Acid[^0-9\n]*|UA[^0-9\n]*)(\d{1,7}(?:,\d{3})*(?:\.\d+)?)\s*.*?\s*.?.?g.?.?.?/.?d.?l",
+    "T3 Total": r"\s*(.*?T.?3[^0-9\n]*|.*?T3.*?Total[^0-9\n]*|Triiodothyronine[^0-9\n]*)(\d{1,7}(?:,\d{3})*(?:\.\d+)?)\s*.*?\s*/ml",
+    "T4 Total": r"\s*(.*?T.?4[^0-9\n]*|.*?T4.*?Total[^0-9\n]*|Thyroxine[^0-9\n]*)(\d{1,7}(?:,\d{3})*(?:\.\d+)?)\s*.*?\s*/dl",
+    "TSH Ultrasensitive": r"\s*(THYROID STIMULATING HORMONE[^0-9\n]*|\bT.?S.?H[^0-9\n]*|Ultrasensitive TSH[^0-9\n]*|.*?T.?S.?H[^0-9\n]*)(\d{1,7}(?:,\d{3})*(?:\.\d+)?)\s*.*?\s*/ml",
+    "Vitamin B12": r"\s*(Vitamin B.?12[^0-9\n]*|\bB.?12[^0-9\n]*)(\d{1,7}(?:,\d{3})*(?:\.\d+)?)\s*.*?\s*/ml",
+    "Vitamin D Total (D2 + D3)": r"\s*(D2\s*\+?\s*D3[^0-9\n]*|.*?Vitamin D.?[^0-9\n]*|.*?Vitamin D\b.*?D2\s*\+?\s*D3[^0-9\n]*)(\d{1,7}(?:,\d{3})*(?:\.\d+)?)\s*.*?\s*g.?/.?ml",
+    "Iron": r"\s*(Iron[^0-9\n]*)(\d{1,7}(?:,\d{3})*(?:\.\d+)?)\s*.*?\s*/dl",
+    "Total Iron Binding Capacity": r"\s*(.*?Total Iron Binding Capacity[^0-9\n]*|.*?T.?I.?B.?C[^0-9\n]*)(\d{1,7}(?:,\d{3})*(?:\.\d+)?)\s*.*?\s*/dl",
+    "Transferrin Saturation": r"\s*(.*?Transferrin Saturation[^0-9\n]*|.*?% OF SATURATION[^0-9\n]*|.*?Transferin[^0-9\n]*)(\d{1,7}(?:,\d{3})*(?:\.\d+)?)\s*.*?\s*%",
     }
 
     for test, pattern in patterns.items():
         match = re.search(pattern, text, re.IGNORECASE)
         if match:
-            values[test] = float(match.group(2).replace(',', ''))
+            try:
+                
+                group1_value = match.group(1).replace(',', '')
+                
+                group2_value = match.group(2) if match.group(2) is not None else None
+                if group2_value is None:
+                    values[test] = float(group1_value)
+                else:
+                    values[test] = float(group2_value.replace(',', ''))
+        
+            except IndexError:
+                values[test]=float(match.group(1).replace(',', ''))
+            except ValueError:
+                values[test] =float(match.group(1).replace(',', ''))
+
+            finally:
+                pass
+    if values["Protein A/G Ratio"]==0:
+        values["Protein A/G Ratio"]=round(values["Albumin"]/values["Globulin"],2)
+    if values["LDL Cholesterol / HDL Cholesterol Ratio"]==0:
+        values["LDL Cholesterol / HDL Cholesterol Ratio"]=round(values["LDL Cholesterol"]/values["HDL Cholesterol"],2)
+    if values["Total Cholesterol / HDL Cholesterol Ratio"]==0:
+        values["Total Cholesterol / HDL Cholesterol Ratio"]=round(values["Total Cholesterol"]/values["HDL Cholesterol"],2)
+
     return values
 
 def give_health_advice(values):
@@ -4114,143 +4133,9 @@ def give_health_advice(values):
 </div>
         """)
 
-    # 25 (OH) Vitamin D2 (Ergocalciferol) (range: 20-50 ng/mL)
-        if values["25 (OH) Vitamin D2 (Ergocalciferol)"] < 20:
-            advice.append("""
-<div style="font-family: Arial, sans-serif; line-height: 1.6;">
-    <h2>Low 25(OH) Vitamin D2 (Deficiency)</h2>
-    <p>
-        Low levels of 25(OH) Vitamin D2 can occur due to insufficient sunlight exposure, poor dietary intake, or conditions that impair absorption or metabolism of vitamin D. It can lead to vitamin D deficiency and associated health problems.
-    </p>
-    <h3>Root Causes of Low Vitamin D2:</h3>
-    <ul>
-        <li><strong>Inadequate Sunlight Exposure:</strong> Vitamin D is produced in the skin upon exposure to sunlight. Insufficient exposure to sunlight can lead to low vitamin D levels.</li>
-        <li><strong>Dietary Deficiency:</strong> Vitamin D2 is found in plant-based foods and fortified products, but it is not as readily available in the diet as Vitamin D3.</li>
-        <li><strong>Malabsorption Disorders:</strong> Conditions like celiac disease or Crohn’s disease can impair nutrient absorption in the gut.</li>
-        <li><strong>Liver or Kidney Disease:</strong> Impaired conversion of vitamin D2 to its active form due to liver or kidney issues can lead to deficiency.</li>
-        <li><strong>Obesity:</strong> Vitamin D can become sequestered in fat tissue, reducing its availability in the bloodstream.</li>
-        <li><strong>Age:</strong> Older adults have a reduced ability to synthesize vitamin D in the skin and absorb it efficiently.</li>
-        <li><strong>Medications:</strong> Certain drugs can reduce vitamin D absorption or metabolism.</li>
-    </ul>
-    <h3>Health Implications of Low Vitamin D2:</h3>
-    <ul>
-        <li>Bone Health: Osteomalacia and osteoporosis, increasing the risk of fractures.</li>
-        <li>Muscle Weakness: Increases the risk of falls, especially in the elderly.</li>
-        <li>Immune Function: Deficiency may contribute to an increased risk of infections or autoimmune conditions.</li>
-        <li>Mood Disorders: Depression and fatigue have been linked to vitamin D deficiency.</li>
-        <li>Increased Risk of Chronic Diseases: Deficiency is associated with cardiovascular disease, diabetes, and certain cancers.</li>
-    </ul>
-    <h3>Tips to Increase Vitamin D2:</h3>
-    <ul>
-        <li><strong>Sunlight Exposure:</strong> 10-30 minutes of direct sunlight exposure several times a week is often enough.</li>
-        <li><strong>Vitamin D2-Rich Foods:</strong> Include plant-based sources like mushrooms (exposed to UV light), fortified plant-based milks, fortified orange juice, and cereals.</li>
-        <li><strong>Supplements:</strong> Vitamin D2 supplements can help restore levels, especially for those with limited sunlight exposure.</li>
-        <li><strong>Address Underlying Conditions:</strong> Treat conditions like malabsorption disorders or liver disease to improve absorption.</li>
-        <li><strong>Weight Management:</strong> Maintaining a healthy weight can improve vitamin D availability in the bloodstream.</li>
-    </ul>
-</div>
-        """)
-        elif values["25 (OH) Vitamin D2 (Ergocalciferol)"] > 50:
-            advice.append("""
-<div style="font-family: Arial, sans-serif; line-height: 1.6;">
-    <h2>High 25(OH) Vitamin D2 (Toxicity or Excess)</h2>
-    <p>
-        High levels of 25(OH) Vitamin D2 (known as vitamin D toxicity) are rare but can occur due to excessive supplementation or intake of vitamin D2.
-    </p>
-    <h3>Root Causes of High Vitamin D2:</h3>
-    <ul>
-        <li><strong>Excessive Supplementation:</strong> Taking too much vitamin D2 from supplements is the most common cause of toxicity.</li>
-        <li><strong>Excessive Fortified Foods:</strong> Consuming large amounts of fortified foods alongside supplements can contribute to elevated levels.</li>
-        <li><strong>Supplementing with Vitamin D3:</strong> Combined intake of D2 and D3 can lead to elevated total vitamin D levels.</li>
-        <li><strong>Granulomatous Diseases:</strong> Conditions like sarcoidosis or tuberculosis can increase the conversion of vitamin D into its active form.</li>
-        <li><strong>Hyperparathyroidism:</strong> Primary hyperparathyroidism can increase calcium absorption and vitamin D levels.</li>
-    </ul>
-    <h3>Health Implications of High Vitamin D2:</h3>
-    <ul>
-        <li>Hypercalcemia: Symptoms include nausea, vomiting, fatigue, and kidney stones.</li>
-        <li>Risk of Cardiovascular Problems: Chronic hypercalcemia can increase the risk of heart disease and arterial calcification.</li>
-        <li>Renal Dysfunction: Kidney damage or stones may result from excess calcium.</li>
-    </ul>
-    <h3>Tips for Managing High Vitamin D2:</h3>
-    <ul>
-        <li><strong>Discontinue Supplements:</strong> Stop taking high doses of vitamin D2 or D3 under medical guidance.</li>
-        <li><strong>Monitor Blood Calcium Levels:</strong> Blood tests should check for hypercalcemia.</li>
-        <li><strong>Hydration:</strong> Drink plenty of fluids to help flush excess calcium from the body.</li>
-        <li><strong>Address Underlying Conditions:</strong> Manage conditions like sarcoidosis or hyperparathyroidism appropriately.</li>
-        <li><strong>Gradual Reduction of Intake:</strong> Safely lower vitamin D intake to manage levels without complications.</li>
-    </ul>
-</div>
-        """)
+   
 
-    # 25 (OH) Vitamin D3 (Cholecalciferol) (range: 20-50 ng/mL)
     
-        if values["25 (OH) Vitamin D3 (Cholecalciferol)"] < 20:
-            advice.append("""
-<div style="font-family: Arial, sans-serif; line-height: 1.6;">
-    <h2>Low 25(OH) Vitamin D3 (Deficiency)</h2>
-    <p>
-        Low levels of 25(OH) Vitamin D3 can occur due to inadequate sun exposure, poor dietary intake, or conditions that impair the absorption or metabolism of vitamin D. This can lead to vitamin D deficiency, resulting in a range of health problems.
-    </p>
-    <h3>Root Causes of Low Vitamin D3:</h3>
-    <ul>
-        <li><strong>Inadequate Sunlight Exposure:</strong> Vitamin D3 is primarily produced in the skin when exposed to sunlight (UVB rays). Limited sun exposure, especially during winter months or in northern latitudes, can lead to deficiency. Sunscreen can also block UVB rays, reducing production.</li>
-        <li><strong>Dietary Deficiency:</strong> Vitamin D3 is found in animal-based foods such as fatty fish (salmon, mackerel, tuna), egg yolks, fortified dairy products, and liver. People on strict vegetarian or vegan diets may be at risk.</li>
-        <li><strong>Malabsorption Disorders:</strong> Conditions like celiac disease, Crohn's disease, and gastrointestinal surgeries can impair vitamin D absorption.</li>
-        <li><strong>Aging:</strong> Older adults may have a reduced ability to synthesize vitamin D from sunlight and absorb it from food.</li>
-        <li><strong>Obesity:</strong> Higher body fat percentages can lower circulating vitamin D levels as it becomes stored in fat tissue.</li>
-        <li><strong>Liver or Kidney Disease:</strong> Liver and kidney diseases can affect the activation of vitamin D3, resulting in low levels.</li>
-        <li><strong>Medications:</strong> Certain drugs, such as antiepileptics and steroids, can lower vitamin D levels.</li>
-    </ul>
-    <h3>Health Implications of Low Vitamin D3:</h3>
-    <ul>
-        <li><strong>Bone Health:</strong> Deficiency can lead to osteomalacia (soft bones) and osteoporosis (fragile bones), increasing fracture risk.</li>
-        <li><strong>Muscle Weakness:</strong> Associated with increased fall risk, especially in older adults.</li>
-        <li><strong>Weakened Immune System:</strong> Deficiency may increase susceptibility to infections.</li>
-        <li><strong>Mood Disorders:</strong> Linked to depression, anxiety, and other mood-related issues.</li>
-        <li><strong>Chronic Diseases:</strong> Low vitamin D3 levels are associated with cardiovascular disease, type 2 diabetes, and autoimmune conditions.</li>
-    </ul>
-    <h3>Tips to Increase Vitamin D3:</h3>
-    <ul>
-        <li><strong>Sunlight Exposure:</strong> Spend 10–30 minutes a few times a week in direct sunlight. Expose large areas of skin without sunscreen for optimal production.</li>
-        <li><strong>Dietary Sources:</strong> Consume animal-based foods rich in vitamin D3, such as fatty fish, egg yolks, fortified dairy/plant-based milks, and liver.</li>
-        <li><strong>Supplements:</strong> Consider vitamin D3 supplements, especially for those at risk of deficiency. Consult a healthcare provider for appropriate dosage.</li>
-        <li><strong>Address Underlying Conditions:</strong> Treat conditions like malabsorption disorders or liver/kidney diseases to improve absorption and activation.</li>
-        <li><strong>Regular Monitoring:</strong> At-risk individuals (e.g., elderly, those with darker skin, or living in northern climates) should have their vitamin D3 levels checked regularly.</li>
-    </ul>
-</div>
-        """)
-        elif values["25 (OH) Vitamin D3 (Cholecalciferol)"] > 50:
-            advice.append("""
-<div style="font-family: Arial, sans-serif; line-height: 1.6;">
-    <h2>High 25(OH) Vitamin D3 (Toxicity or Excess)</h2>
-    <p>
-        High levels of 25(OH) Vitamin D3 can be caused by excessive supplementation or consumption of fortified foods, leading to vitamin D toxicity. Though less common than deficiency, it can have serious health consequences.
-    </p>
-    <h3>Root Causes of High Vitamin D3:</h3>
-    <ul>
-        <li><strong>Excessive Supplementation:</strong> High doses of vitamin D3 supplements (typically more than 4,000 IU/day, or 10,000 IU/day in extreme cases) can lead to toxicity.</li>
-        <li><strong>Fortified Foods:</strong> Excessive consumption of fortified foods combined with high-dose supplements may contribute to elevated levels.</li>
-        <li><strong>Granulomatous Diseases:</strong> Conditions like sarcoidosis, tuberculosis, or histoplasmosis can enhance vitamin D conversion, leading to elevated blood levels.</li>
-        <li><strong>Hyperparathyroidism:</strong> Overproduction of parathyroid hormone (PTH) can disrupt calcium and vitamin D metabolism, causing elevated levels.</li>
-    </ul>
-    <h3>Health Implications of High Vitamin D3:</h3>
-    <ul>
-        <li><strong>Hypercalcemia:</strong> Excessive vitamin D3 can cause high calcium levels, resulting in nausea, vomiting, weakness, fatigue, and confusion.</li>
-        <li><strong>Kidney Damage:</strong> High calcium levels may lead to kidney stones or renal failure.</li>
-        <li><strong>Bone Pain:</strong> Elevated vitamin D3 can cause bone pain and calcification of soft tissues.</li>
-        <li><strong>Cardiovascular Problems:</strong> Prolonged high levels can lead to arterial calcification, heart disease, or stroke.</li>
-    </ul>
-    <h3>Tips for Managing High Vitamin D3:</h3>
-    <ul>
-        <li><strong>Discontinue Supplements:</strong> Stop high-dose vitamin D3 supplementation and consult a healthcare provider for further evaluation.</li>
-        <li><strong>Monitor Calcium Levels:</strong> Perform blood tests to check for hypercalcemia and take necessary steps to reduce calcium levels.</li>
-        <li><strong>Hydration:</strong> Drink plenty of fluids to help flush excess calcium from the kidneys.</li>
-        <li><strong>Address Underlying Conditions:</strong> Treat conditions like sarcoidosis or hyperparathyroidism to manage calcium and vitamin D metabolism.</li>
-        <li><strong>Gradual Reduction in Vitamin D Intake:</strong> Safely lower vitamin D intake under medical supervision to avoid complications.</li>
-    </ul>
-</div>
-        """)
-
         if values["Vitamin D Total (D2 + D3)"] < 20:
             advice.append("""
 <div style="font-family: Arial, sans-serif; line-height: 1.6;">
@@ -4530,8 +4415,6 @@ def home():
             ("T4 Total", 0),
             ("TSH Ultrasensitive", 0),
             ("Vitamin B12", 0),
-            ("25 (OH) Vitamin D2 (Ergocalciferol)", 0),
-            ("25 (OH) Vitamin D3 (Cholecalciferol)", 0),
             ("Vitamin D Total (D2 + D3)", 0),
             ("Iron", 0),
             ("Total Iron Binding Capacity", 0),
@@ -4589,8 +4472,6 @@ def home():
             ("T4 Total", 0),
             ("TSH Ultrasensitive", 0),
             ("Vitamin B12", 0),
-            ("25 (OH) Vitamin D2 (Ergocalciferol)", 0),
-            ("25 (OH) Vitamin D3 (Cholecalciferol)", 0),
             ("Vitamin D Total (D2 + D3)", 0),
             ("Iron", 0),
             ("Total Iron Binding Capacity", 0),
