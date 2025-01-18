@@ -11,10 +11,7 @@
             color: whitesmoke;
             margin: 0;
             padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
+            overflow-x: hidden;
         }
 
         h2 {
@@ -25,7 +22,7 @@
 
         table {
             width: 90%;
-            max-width: 800px;
+            max-width: 1000px;
             border-collapse: collapse;
             margin: 20px 0;
             background-color: #1a1a1a;
@@ -79,7 +76,7 @@
     border: none;
     border-radius: 4px; 
     cursor: pointer;
-    margin: 15px auto; 
+    margin: 5px 3px; 
     display: block; 
     transition: background-color 0.3s ease, transform 0.2s ease;
 }
@@ -93,7 +90,6 @@ button:hover {
     display: inline-flex;
     justify-content: center;
     align-items: center;
-    margin-left: 8px;
     color: #71B7FB;
     cursor: pointer;
     font-weight: bold;
@@ -108,6 +104,10 @@ button:hover {
 .info-icon:hover {
     background-color: #71B7FB;
     color: #ffffff;
+}
+#blog-content:focus{
+    border: 1px solid white;
+
 }
 
 
@@ -167,11 +167,11 @@ button:hover {
         }
 .sticky-buttons {
   position: fixed;
-  top: 50%;
-  right: 20px;
+  top: 30%;
+  right: 10px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 7px;
   z-index: 1000;
 }
 
@@ -192,6 +192,395 @@ button:hover {
   transform: scale(1.1);
 }
 
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type="number"]:focus {
+    background-color: #555; /* Darken background on focus */
+}
+
+
+.blog-item {
+            background-color: #1a1a1a;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .blog-item h3 {
+            color: #f39c12;
+            margin-bottom: 10px;
+        }
+
+        .blog-item p {
+            color: #ecf0f1;
+        }
+
+
+
+    .comments {
+        list-style: none;
+        padding-left: 0;
+        margin-top: 15px;
+        background-color: #1f2d3a;
+    }
+    .replies {
+        margin-left: 10px;
+        list-style-type: none;
+        margin-bottom: 7px;
+    }
+    .replies li{
+        margin-top: 3px;
+        
+    }
+
+    .comment-item {
+        background-color: #2c3e50;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 100px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .comment-text, .reply-text {
+        margin: 0;
+        font-size: 16px;
+        color: #ecf0f1;
+    }
+    .reply-content-group {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+    .comment-item .reply-item .button-group {
+        display: flex;
+        justify-content: flex-start;
+        
+        margin-top: 10px;
+    }
+
+    
+
+    .button {
+        background-color: #559DDC;
+        border: none;
+        color: white;
+        font-size: 14px;
+        padding: 8px 12px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+
+    .button-small:hover {
+        background-color: #d4ac0d;
+    }
+
+    .reply-content-group {
+    display: flex;
+    justify-content: flex-start;
+    flex-direction: column;
+}
+
+.button-group {
+    display: flex; 
+    align-items:flex-start;
+    justify-content: flex-start; 
+}
+
+.button-small {
+    padding: 6px 6px; /* Smaller padding for compact size */
+    font-size: 12px; /* Reduce font size for a smaller button */
+    border: none;
+    background-color: #007bff; /* Primary button color */
+    color: white;
+    cursor: pointer;
+    border-radius: 4px; /* Rounded corners */
+    display: inline-flex; /* Ensure icon/text alignment */
+    align-items: center;
+    justify-content: flex-start;
+    width: fit-content;
+    height: 24px; /* Adjust height for uniformity */
+    text-align: center;
+}
+
+.button-small i {
+    margin-right: 2px; /* Smaller space between icon and text */
+    font-size: 12px; /* Match icon size to text */
+}
+
+.button-small:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+}
+
+
+
+    .input-field {
+        width: 90%;
+        padding: 10px;
+        border-radius: 6px;
+        margin-top: 10px;
+        border: 1px solid #bdc3c7;
+        font-size: 14px;
+        color: #2c3e50;
+        background-color: #ecf0f1;
+    }
+
+    #comments-container, 
+    #replies-container {
+        margin-top: 10px;
+        padding-left: 20px;
+        border-left: 2px solid #bdc3c7;
+    }
+    .button-groupblog {
+    display: inline-flex; /* Ensures buttons are displayed side by side */
+}
+
+.button-action {
+    padding: 6px 12px; /* Adjust padding for button size */
+    font-size: 14px; /* Font size for readability */
+    border: none;
+    background-color: #007bff; /* Button background color */
+    color: white; /* Button text color */
+    cursor: pointer;
+    border-radius: 4px; /* Rounded corners for a modern look */
+    display: inline-flex; /* Ensures content inside is aligned */
+    align-items: center; /* Centers text and icons vertically */
+    justify-content: center; /* Centers content horizontally */
+}
+
+.button-action:hover {
+    background-color: #0056b3; /* Darker color on hover */
+}
+
+
+
+
+
+   
+    </style>
+    <style>
+/* Updated Comment & Reply Styling */
+.comment-item, .reply-item {
+    background-color: #1f2d3a;
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.comment-text, .reply-text {
+    font-size: 15px;
+    line-height: 1.5;
+    color: #f5f6fa;
+}
+
+.button-small {
+    padding: 6px 8px;
+    font-size: 13px;
+    border: none;
+    background-color: #007bff;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+
+.button-small i {
+    font-size: 12px;
+}
+
+.button-small:hover {
+    background-color: #0056b3;
+}
+
+#comments-container,
+#replies-container {
+    margin-top: 15px;
+    padding-left: 20px;
+    border-left: 2px solid #4b6584;
+}
+
+/* Reply Indentation */
+.reply-item {
+    margin-left: 20px;
+    background-color: #253041;
+}
+
+/* Input Fields */
+textarea {
+    border: 1px solid #4b6584;
+    background-color: #1c2833;
+    color: #d1d8e0;
+    width:99%;
+}
+
+textarea:focus {
+    outline: none;
+    border-color: #3498db;
+}
+
+/* Button Hover Effects */
+button:hover {
+    background-color: #e1b12c;
+    color: black;
+}
+
+/* Icons for Buttons */
+.button-group .button-small i {
+    font-size: 12px;
+    margin-right: 4px;
+}
+ .blogy{
+    border: 1px solid white;
+    padding:7px;
+    list-style-type: none;
+    border-radius: 25px;
+    margin-bottom: 10px;
+    margin-right: 8px;
+    }
+    #blogs-list{
+        width: 90%;
+        padding: 0;
+    }
+    p {
+        text-align: justify;
+    }
+    hr {
+  border-top: 0.8px dashed white;
+}
+.replycol{
+    background-color:#1f2d3a;
+}
+
+#login-btn,#logout-btn {
+            display: block;
+            margin: 5px 3px;
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #login-btn:hover {
+            background-color: #0056b3;
+        }
+
+        /* Styling for the auth section */
+        .auth-section {
+            display: none; /* Initially hidden */
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 300px;
+            padding: 20px;
+            background-color: #1f2d3a;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            z-index: 1000;
+            border: 0.3px solid #1f2d3a;
+        }
+
+        .auth-section h3 {
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .auth-section input {
+            display: block;
+            width: 100%;
+            margin-bottom: 10px;
+            padding: 8px;
+            border-radius: 4px;
+        }
+
+        .auth-section button {
+            width: 100%;
+            padding: 10px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .auth-section button:hover {
+            background-color: #218838;
+        }
+
+        .auth-section .toggle-link {
+            text-align: center;
+            margin-top: 10px;
+            color: #007bff;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .auth-section .toggle-link:hover {
+            color: #0056b3;
+        }
+
+        /* Dark overlay background */
+        #overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 999;
+        }
+        .reply-email {
+  color: #8ab4f8; /* Light blue for email */
+  font-style: italic;
+  font-size: 10px;
+}
+
+textarea {
+    overflow-y: auto;
+    scrollbar-width: thin; /* For Firefox */
+    scrollbar-color: #007bff #1f2d3a; /* For Firefox */
+
+    /* Optional - to make the textarea visually appealing */
+    background-color: black;
+    color: white;
+    border: 0.2px solid #ccc;
+    border-radius: 4px;
+    padding: 10px;
+    resize: none;
+}
+
+/* Webkit Scrollbar Styling */
+textarea::-webkit-scrollbar {
+    width: 8px; /* Width of the vertical scrollbar */
+}
+
+textarea::-webkit-scrollbar-thumb {
+    background-color: #007bff; /* Thumb color */
+    border-radius: 4px; /* Rounded edges */
+    border: 2px solid #1f2d3a; /* Adds spacing around the thumb */
+}
+
+textarea::-webkit-scrollbar-track {
+    background: #1f2d3a; /* Track background */
+    border-radius: 4px;
+}
+
+/* Hover effect for the scrollbar thumb */
+textarea::-webkit-scrollbar-thumb:hover {
+    background-color: #0056b3; /* Darker shade when hovered */
+}
+
     </style>
     <script>
         function toggleInfo(test) {
@@ -204,6 +593,16 @@ button:hover {
         }
     </script>
 </head>
+<script>document.addEventListener("DOMContentLoaded", () => {
+    fetchBlogs();
+});
+document.addEventListener('DOMContentLoaded', () => {
+    const sessionToken = localStorage.getItem('sessionToken');
+    if (sessionToken) {
+        document.getElementById("blog-title").removeAttribute('disabled')
+        document.getElementById("blog-content").removeAttribute('disabled')
+    }
+});</script>
 <body>
     {% set reference_ranges = {
         "Haemoglobin": "13-17",
@@ -379,10 +778,13 @@ button:hover {
     <div class="sticky-buttons">
         <button onclick="scrollToSection('report')">📄</button>
         <button onclick="scrollToSection('advice')">💡</button>
+        <button id="login-btn" onclick="toggleAuthSection()">🔒</button>
+        <button id="logout-btn" onclick="logout()">🔓</button>
       </div>
+      <center>
     <div class="container">
         <h2 id="report">Your Health Report</h2>
-        <form action="https://medcompanion.vercel.app/uploads" method="POST">
+        <form action="/uploads" method="POST">
             <table>
                 <thead>
                     <tr>
@@ -412,6 +814,7 @@ button:hover {
             <button type="submit">Analyze</button>
         </form>
     </div>
+</center>
 </body>
 </html>
 
@@ -441,6 +844,1118 @@ button:hover {
         {% endfor %}
     </ul>
 </div>
+<h2 id="advice" class="head" style="text-align: center; color: white; font-family: 'Arial', sans-serif; margin-bottom: 20px;">
+    Nutritional Advice Based on Your Report
+</h2>
+<div style="display: flex; justify-content: center; flex-direction: column; align-items: center; width: 100%; padding: 20px; background-color: black; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);"> 
+<ul style="list-style-type: none; padding: 0; margin: 0; width: 100%; max-width: 800px;">
+    {% for item in nutrient_advice %}
+    <li class="advice-item" style="margin-bottom: 15px; border: 1px solid #ddd; border-radius: 8px; overflow: hidden; background-color: #1a1a1a; cursor: pointer; transition: box-shadow 0.3s ease; width: 100%; display: flex; flex-direction: column;">
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 15px; background-color: #2c3e50; color: #ffffff;">
+            <div class="advice-summary" style="font-weight: bold; font-size: 16px; width: 100%; word-wrap: break-word;">
+                {{ item.deficiency | safe}}
+            </div>
+            <span style="font-size: 20px; color: #f1c40f;">💡</span>
+        </div>
+        <div class="advice-details" style="display: none; padding: 15px; font-size: 14px; line-height: 1.6; color: white; width: 100%; word-wrap: break-word; overflow-wrap: break-word; box-sizing: border-box;">
+            <p class="preserve-whitespace" style="white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word;">
+                {{ item.recommendation | safe }}
+            </p>
+        </div>
+    </li>
+    {% endfor %}
+</ul>
+
+
+
+
+
+    <!-- Dark Overlay -->
+    <div id="overlay" onclick="toggleAuthSection()"></div>
+
+    <!-- Authentication Section -->
+    <div id="auth-section" class="auth-section">
+        <div id="register-form" style="background-color: #1f2d3a;padding: 4px">
+            <button 
+        onclick="closeRegisterModal()" 
+        style="
+            position: absolute; 
+            top: 8px; 
+            right: 3px; 
+            background-color: #dc3545; 
+            border: none; 
+            color: white; 
+            font-size: 18px; 
+            width: 30px; 
+            height: 30px; 
+            border-radius: 50%; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            cursor: pointer; 
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        "
+        onmouseover="this.style.transform='scale(1.1)'; this.style.boxShadow='0 6px 12px rgba(0, 0, 0, 0.3)';" 
+        onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 8px rgba(0, 0, 0, 0.2)';"
+    >
+        &times;
+    </button>
+            <h3 style="color: white;">Register</h3>
+            <input style="width:98%;color:white;background-color: black;" type="text" id="reg-username" placeholder="Username" required>
+            <input style="width:98%;color:white;background-color: black;" type="email" id="reg-email" placeholder="Email" required>
+            <input style="width:98%;color:white;background-color: black;" type="password" id="reg-password" placeholder="Password" required>
+            <button style="background-color: #559DDC;" onclick="register()">Register</button>
+            <p class="toggle-link" onclick="showLogin()">Already have an account?</p>
+        </div>
+        <div id="login-form" style="display: none;background-color: #1f2d3a;padding: 4px;">
+            <button 
+        onclick="closeRegisterModal()" 
+        style="
+            position: absolute; 
+            top: 8px; 
+            right: 3px; 
+            background-color: #dc3545; 
+            border: none; 
+            color: white; 
+            font-size: 18px; 
+            width: 30px; 
+            height: 30px; 
+            border-radius: 50%; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            cursor: pointer; 
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        "
+        onmouseover="this.style.transform='scale(1.1)'; this.style.boxShadow='0 6px 12px rgba(0, 0, 0, 0.3)';" 
+        onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 8px rgba(0, 0, 0, 0.2)';"
+    >
+        &times;
+    </button>
+            <h3 style="color: white;">Login</h3>
+            <input  style=" width:98%;color: white;background-color: black;" type="email" id="login-email" placeholder="Email" required>
+            <input  style=" width:98%;color: white;background-color: black;" type="password" id="login-password" placeholder="Password" required>
+            <button style="background-color: #559DDC;" onclick="login()">Login</button>
+            <p class="toggle-link" onclick="showRegister()">Don't have an account? Register</p>
+        </div>
+    </div>
+
+<!-- Authentication Section -->
+
+<center>
+<div id="blog-section">
+ 
+<div>
+    <h2>🔓 and Share your stories or health advice to help our community grow stronger</h2>
+    <div style="display: flex; flex-direction: column; width: 90%; margin: auto; padding: 20px;  border-radius: 8px; box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);  ">
+        <input disabled type="text" id="blog-title" placeholder="Blog Title" required style="padding: 10px;background-color: #1c2833; font-size: 16px; border: 1px solid #253041;color: white; border-radius: 4px; margin-bottom: 20px; box-sizing: border-box;">
+        <textarea disabled id="blog-content" placeholder="Blog Content" required style="width: 100%;padding: 10px; font-size: 16px; border: 1px solid #253041;color: white; border-radius: 4px; height: 200px; margin-bottom: 20px; box-sizing: border-box;background-color: #1c2833;"></textarea>
+        <button onclick="checkAndPostBlog()" style="padding: 10px; font-size: 16px; background-color: #007BFF; color: white; border: none; border-radius: 4px; cursor: pointer;">Post Blog</button>
+    </div>
+    
+</div>
+<h2>Blogs <span style="font-size: 18px;">📚</span></h2>
+
+
+<input 
+type="text" 
+id="search-bar" 
+class="search-bar" 
+placeholder="Search blogs by title..." 
+style="width: 80%;padding: 10px;background-color: #1c2833; font-size: 16px; color: white; border-radius: 4px; margin-bottom: 20px; box-sizing: border-box;"
+oninput="search()"
+/></center>
+<ul id="blogs-list"></ul>
+</div>
+<!-- Edit Reply Modal -->
+<div id="edit-reply-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 1000;">
+    <div style="border: 0.2px solid white;background:#1f2d3a; padding: 20px; max-width: 400px; margin: 100px auto; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);">
+      <h3 style="text-align: center;color: white;">Edit Reply</h3>
+      <textarea id="edit-reply-content" rows="4" style="background-color: black;color: white;width: 90%; padding: 10px; border: 0.2px solid #ccc; border-radius: 4px;"></textarea>
+      <div style="text-align: right; margin-top: 10px;">
+        <button onclick="closeEditReplyModal()" style="margin-right: 10px; padding: 5px 10px; border: none; background: #DC3545; border-radius: 4px;">Cancel</button>
+        <button onclick="submitEditReply()" style="padding: 5px 10px; border: none; background: #007bff; color: white; border-radius: 4px;">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="edit-comment-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 1000;">
+    <div style="border: 0.2px solid white;background:#1f2d3a; padding: 20px; max-width: 400px; margin: 100px auto; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);">
+      <h3 style="text-align: center;color: white;">Edit Comment</h3>
+      <textarea id="edit-comment-content" rows="4" style="background-color: black;color: white;width: 90%;  padding: 10px; border: 0.2px solid #ccc; border-radius: 4px;"></textarea>
+      <div style="text-align: right; margin-top: 10px;">
+        <button onclick="closeEditCommentModal()" style="margin-right: 10px; padding: 5px 10px; border: none; background: #DC3545; border-radius: 4px;">Cancel</button>
+        <button onclick="submitEditComment()" style="padding: 5px 10px; border: none; background: #007bff; color: white; border-radius: 4px;">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="edit-blog-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 1000;">
+    <div style="border: 0.2px solid white; background: #1f2d3a; padding: 20px; max-width: 400px; margin: 100px auto; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);">
+        <h3 style="text-align: center; color: white;">Edit Blog</h3>
+        <input id="edit-blog-title" type="text" placeholder="Enter new title" style="background-color: black; color: white; width: 90%; padding: 10px; margin-bottom: 10px; border: 0.2px solid #ccc; border-radius: 4px;">
+        <textarea id="edit-blog-content" rows="4" placeholder="Enter new content" style="background-color: black; color: white; width: 90%;  padding: 10px; border: 0.2px solid #ccc; border-radius: 4px;"></textarea>
+        <div style="text-align: right; margin-top: 10px;">
+            <button onclick="closeEditBlogModal()" style="margin-right: 10px; padding: 5px 10px; border: none; background: #DC3545; color: white; border-radius: 4px;">Cancel</button>
+            <button onclick="submitEditBlog()" style="padding: 5px 10px; border: none; background: #007bff; color: white; border-radius: 4px;">Save</button>
+        </div>
+    </div>
+</div>
+
+  
+  
+
+<script>
+let sessionToken = localStorage.getItem('sessionToken')
+let userEmail = localStorage.getItem('userEmail')
+
+function updateAuthButtons() {
+    const loginBtn = document.getElementById('login-btn');
+    const logoutBtn = document.getElementById('logout-btn');
+
+    if (isLoggedIn()) {
+        loginBtn.style.display = 'none';
+        logoutBtn.style.display = 'inline-block';
+    } else {
+        loginBtn.style.display = 'inline-block';
+        logoutBtn.style.display = 'none';
+    }
+}
+
+document.addEventListener('DOMContentLoaded', updateAuthButtons);
+function isLoggedIn() {
+    // Replace this with actual logic to check session or token
+    return !!localStorage.getItem('sessionToken');
+}
+
+function closeRegisterModal(){
+const authSection = document.getElementById('auth-section');
+    const overlay = document.getElementById('overlay');
+            authSection.style.display = 'none';
+            overlay.style.display = 'none';
+}
+
+function register() {
+const username = document.getElementById('reg-username').value;
+const email = document.getElementById('reg-email').value;
+const password = document.getElementById('reg-password').value;
+fetch('/register', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username, email, password }),
+})
+.then(response => response.json())
+showLogin();
+}
+
+function search(){
+    filterBlogs();
+}
+
+
+function logout() {
+    fetch('/logout', {
+        method: 'GET',
+        credentials: 'include', // Ensures cookies are sent with the request
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.message) {
+            localStorage.clear(); // Clear all data from localStorage
+            // Optionally redirect the user to the login page or refresh the page
+            window.location.reload(); 
+        } 
+    })
+    .catch(error => {
+        console.error('Error during logout:', error);
+    });
+}
+
+
+
+function login() {
+const email = document.getElementById('login-email').value;
+const password = document.getElementById('login-password').value;
+fetch('/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password }),
+})
+.then(response => response.json())
+.then(data => {
+    if (data.sessionToken) {
+        localStorage.setItem('sessionToken', data.sessionToken);
+        localStorage.setItem('userEmail', data.email);
+        userEmail = data.email;
+        sessionToken = data.sessionToken;
+        document.getElementById('auth-section').style.display = 'none';
+        document.getElementById('blog-section').style.display = 'block';
+        fetchBlogs();
+    } 
+})
+.catch(error => console.error('Error during login:', error));
+const authSection = document.getElementById('auth-section');
+    const overlay = document.getElementById('overlay');
+            authSection.style.display = 'none';
+            overlay.style.display = 'none';
+            document.getElementById('login-form').style.display = 'none';
+            document.getElementById('register-form').style.display = 'none';
+}
+
+
+
+async function checkAndPostBlog() {
+try {
+    const email = await checkAuthentication(); // Wait for the authentication check
+
+    if (email) {
+        postBlog(); // Proceed with posting the blog
+    } else {
+        toggleAuthSection(); // Redirect to the authentication section
+    }
+} catch (error) {
+    console.error("Error during authentication check:", error);
+    toggleAuthSection(); // Redirect to the authentication section on error
+}
+}
+
+async function checkAuthentication() {
+try {
+    const response = await fetch('/check_session', {
+        method: 'GET',
+        credentials:  'include', // Include credentials in the request
+    });
+
+    if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    if (data.error) {
+        return null; // User is not authenticated
+    }
+
+    return data.email; // Return authenticated user's email
+} catch (error) {
+    console.error("Error fetching authentication status:", error);
+    return null; // Treat errors as unauthenticated state
+}
+}
+
+
+function postBlog() {
+const title = document.getElementById('blog-title').value;
+const content = document.getElementById('blog-content').value;
+fetch('/blogs', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ title, content, sessionToken, email: userEmail }),
+})
+.then(response => response.json())
+.then(data => {
+    fetchBlogs();
+});
+document.getElementById('blog-title').value=''
+ document.getElementById('blog-content').value='';
+}
+let blogsData = []; // To store blogs globally
+
+
+function fetchBlogs() {
+    fetch('/blogs')
+        .then(response => response.json())
+        .then(data => {
+            blogsData = Object.entries(data);
+            const blogsList = document.getElementById('blogs-list');
+            blogsList.innerHTML = '';
+            Object.entries(data).forEach(([id, blog]) => {
+                const words = blog.content.split(' ');
+                const truncatedContent = words.slice(0, 30).join(' '); // Show first 30 words
+
+                const isContentTruncated = words.length > 30;
+
+                const blogItem = document.createElement('li');
+                blogItem.id = `blog-${id}`;
+                blogItem.className = 'blogy';
+
+                blogItem.innerHTML = `
+                    <h3 id="blog-header-${id}">${blog.title}</h3>
+                    <p id="blog-content-${id}" style="white-space: pre-wrap; text-align: justify; display: inline;">
+  ${truncatedContent}
+  ${isContentTruncated ? `<span href="#" id="read-more-${id}" onclick="showFullContent(event,'${id}','${encodeURIComponent(blog.content)}')" style="color: #559DDC; text-decoration: underline; cursor: pointer;">...Read More</span>` : ''}
+</p>
+
+<br>
+                    ${blog.email === userEmail ? `
+                        <div class="button-groupblog">
+                            <button class="button-action" onclick="deleteBlog('${id}')">Delete Blog</button>
+                            <button class="button-action" onclick="openEditBlogModal('${id}')">Edit Blog</button>
+                        </div>
+                    ` : ''}
+                    
+                    <!-- Toggle comments -->
+                    <button id="comments" class="button" onclick="toggleComments('${id}')">
+                        ${blog.comments && Object.keys(blog.comments).length ? '💬' : '💬'}
+                    </button>
+                    
+                    <div id="comments-container-${id}" style="display:none;">
+                        <textarea style="background-color: #1c2833;color: white" id="comment-content-${id}" class="input-field" placeholder="Add a comment"></textarea>
+                        <button class="button" onclick="addComment('${id}')">Post Comment</button>
+                        <ul class="comments" id="comment-list-${id}">
+                            ${renderComments(blog.comments, id)}
+                        </ul>
+                    </div>
+                `;
+                blogsList.appendChild(blogItem);
+            });
+        });
+}
+
+function toggleAuthSection() {
+            const authSection = document.getElementById('auth-section');
+            const overlay = document.getElementById('overlay');
+            const isHidden = authSection.style.display === 'none' || authSection.style.display === '';
+
+            // Toggle visibility
+            authSection.style.display = isHidden ? 'block' : 'none';
+            overlay.style.display = isHidden ? 'block' : 'none';
+        }
+
+        function showLogin() {
+            document.getElementById('register-form').style.display = 'none';
+            document.getElementById('login-form').style.display = 'block';
+        }
+
+        function showRegister() {
+            document.getElementById('login-form').style.display = 'none';
+            document.getElementById('register-form').style.display = 'block';
+        }
+
+// Filter blogs by title based on the search input
+function filterBlogs() {
+    const query = document.getElementById('search-bar').value.toLowerCase();
+ 
+
+    const filteredBlogs = blogsData.filter(([id, blog]) => {
+        return blog.title.toLowerCase().includes(query); // Add an explicit return statement
+    });
+
+    const blogsList = document.getElementById('blogs-list');
+    blogsList.innerHTML = ''; // Clear the list
+    
+    filteredBlogs.forEach(([id, blog]) => {
+        const words = blog.content.split(' ');
+        const truncatedContent = words.slice(0, 30).join(' ');
+        const isContentTruncated = words.length > 30;
+
+        const blogItem = document.createElement('li');
+        blogItem.className = 'blogy';
+
+        blogItem.innerHTML = `
+            <h3>${blog.title}</h3>
+            <p id="blog-content-${id}" style="white-space: pre-wrap;text-align: justify;">
+                ${truncatedContent}${isContentTruncated ? '...' : ''}
+            </p>
+            ${isContentTruncated ? `
+                <a href="#" id="read-more-${id}" onclick="showFullContent(event, '${id}', '${encodeURIComponent(blog.content)}')">Read More</a>
+            ` : ''}
+            ${blog.email === userEmail ? `
+                <div class="button-groupblog">
+                    <button class="button-action" onclick="deleteBlog('${id}')">Delete Blog</button>
+                    <button class="button-action" onclick="openEditBlogModal('${id}')">Edit Blog</button>
+
+                </div>
+            ` : ''}
+            
+            <button class="button" onclick="toggleComments('${id}')">
+                ${blog.comments && Object.keys(blog.comments).length ? '💬' : '💬'}
+            </button>
+            
+            <div id="comments-container-${id}" style="display: none;">
+                <textarea style="background-color: #1c2833;color: white" id="comment-content-${id}" class="input-field" placeholder="Add a comment"></textarea>
+                <button class="button" onclick="addComment('${id}')">Post Comment</button>
+                <ul class="comments" id="comment-list-${id}">
+                    ${renderComments(blog.comments, id)}
+                </ul>
+            </div>
+        `;
+        blogsList.appendChild(blogItem);
+    });
+}
+
+
+// Helper function to render comments
+// function renderComments(comments = {}, blogId) {
+//     if (!comments || Object.keys(comments).length === 0) {
+//         return '<li>No comments yet.</li>';
+//     }
+
+//     return Object.entries(comments)
+//         .map(([id, comment]) => `
+//             <li>
+//                 <p><strong>${comment.email}:</strong> ${comment.content}</p>
+//             </li>
+//         `)
+//         .join('');
+// }
+// Function to show full content when "Read More" is clicked
+function showFullContent(event,id, fullContent) {
+    event.preventDefault();
+    const contentElement = document.getElementById(`blog-content-${id}`);
+    const readMoreElement = document.getElementById(`read-more-${id}`);
+    contentElement.textContent = decodeURIComponent(fullContent); // Replace with the full content
+    readMoreElement.style.display = 'none'; // Hide the "Read More" link
+}
+
+
+function renderComments(comments, blogId) {
+if (!comments || typeof comments !== 'object') {
+    console.error('Invalid comments data:', comments);
+    comments = {}; 
+}
+return Object.entries(comments).map(([commentId, comment]) => {
+    if (!comment || !comment.content || !comment.email) {
+        console.error('Incomplete comment data:', comment);
+        return ''; 
+    }
+
+    return `
+        
+          <li id="comments-${blogId}-${commentId}" class="comment-item">
+<div class="comment-content-group">
+    <p id="comment-${blogId}-${commentId}" class="comment-text">${comment.content} - <span class="reply-email">${comment.email}</span></p>
+    <div class="button-group">
+        ${comment.email === userEmail ? `
+            <button class="button-small" onclick="editComment('${blogId}', '${commentId}','${comment.content}')">
+    🖉
+</button>
+
+            <button class="button-small" onclick="deleteComment('${blogId}', '${commentId}')">
+               🗑
+            </button>
+            
+        ` : ''}
+        <button class="button-small" onclick="toggleReplies('${blogId}', '${commentId}')">
+                ${comment.replies && Object.keys(comment.replies).length ? 'view replies' : 'No Replies'}
+            </button>
+    </div>
+</div>
+</li>
+            <div class="replycol" id="replies-container-${blogId}-${commentId}" style="display: none;">
+    <textarea 
+        style="background-color: #1c2833; color: white;" 
+        id="reply-${blogId}-${commentId}" 
+        class="input-field" 
+        placeholder="Reply..."></textarea>
+    <button class="button" onclick="addReply('${blogId}', '${commentId}')">Reply</button>
+    <ul class="replies">
+        ${renderReplies(comment.replies, blogId, commentId)}
+    </ul>
+</div>
+
+        </li>
+        <div style="background-color:black;height:7px"></div>
+    `;
+}).join('');
+}
+
+let currentEditParams = null; // To store the parameters for the edit
+
+function editReply(blogId, commentId, replyId,replyContent) {
+    currentEditParams = { blogId, commentId, replyId ,replyContent}; // Store parameters globally
+    document.getElementById('edit-reply-modal').style.display = 'block'; // Show the modal
+    document.getElementById('edit-reply-content').value = replyContent; // Clear the textarea
+}
+
+function closeEditReplyModal() {
+    document.getElementById('edit-reply-modal').style.display = 'none'; // Hide the modal
+    currentEditParams = null; // Clear the parameters
+}
+
+async function submitEditReply() {
+    const { blogId, commentId, replyId } = currentEditParams; // Extracting parameters
+    const editInput = document.getElementById('edit-reply-content');
+    const newContent = editInput ? editInput.value.trim() : "";
+
+    if (!newContent) {
+        alert("Reply content cannot be empty.");
+        return;
+    }
+
+    try {
+        // PUT request to update the reply
+        const updateUrl = `/blogs/${blogId}/comments/${commentId}/replies/${replyId}`;
+        const updateResponse = await fetch(updateUrl, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include', // Include cookies for session token
+            body: JSON.stringify({
+                content: newContent, // Updated reply content
+            }),
+        });
+
+        if (!updateResponse.ok) {
+            const error = await updateResponse.json();
+            return;
+        }
+
+        // PUT succeeded, now fetch the updated list of replies
+        const fetchUrl = `/blogs/${blogId}/comments/${commentId}/replies`;
+        const fetchResponse = await fetch(fetchUrl, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include', // Include cookies
+        });
+
+        if (!fetchResponse.ok) {
+            throw new Error(`Failed to fetch replies: ${fetchResponse.statusText}`);
+        }
+
+        const data = await fetchResponse.json();
+
+        // Render the updated replies
+        renderRepliess(data.replies, commentId, blogId);
+
+
+        // Close the edit modal
+        closeEditReplyModal();
+    } catch (err) {
+        console.error("Error while updating or fetching replies:", err);
+    }
+}
+
+
+function renderRepliess(replies, commentId, blogId) {
+    const repliesContainer = document.getElementById(`replies-container-${blogId}-${commentId}`);
+    if (!repliesContainer) {
+        console.error(`Replies container for comment ID ${commentId} not found.`);
+        return;
+    }
+
+    // Start building the HTML content in a temporary variable
+    let htmlContent = `
+        <textarea 
+            style="background-color: #1c2833; color: white;" 
+            id="reply-${blogId}-${commentId}" 
+            class="input-field" 
+            placeholder="Reply..."></textarea>
+        <button class="button" onclick="addReply('${blogId}', '${commentId}')">Reply</button>
+        <ul class="replies">
+    `;
+
+    // Check if there are replies
+    if (!replies || replies.length === 0) {
+        htmlContent += `
+            <p style="color: white; font-style: italic;">No replies yet.</p>
+        `;
+    } else {
+        // Render each reply
+        replies.forEach(reply => {
+            if (!reply || !reply.email || !reply.content) {
+                console.error('Incomplete reply data:', reply);
+                return;
+            }
+
+            // Append each reply to the HTML content
+            htmlContent += `
+                <li id="reply-${blogId}-${commentId}-${reply.id}">
+                    <div class="reply-content-group">
+                        <p class="reply-text" style="color: white;">
+                            ➤ ${reply.content} - <span class="reply-email">${reply.email}</span>
+                        </p>
+                        <div class="button-group" style="margin-top: 5px;">
+                            ${reply.email === userEmail ? `
+                                <button class="button-small" onclick="editReply('${blogId}', '${commentId}', '${reply.id}', '${reply.content}')">🖉</button>
+                                <button class="button-small" onclick="deleteReply('${blogId}', '${commentId}', '${reply.id}')">🗑</button>
+                            ` : ''}
+                        </div>
+                    </div>
+                </li>
+            `;
+        });
+    }
+
+    // Close the `ul` and add a separator
+    htmlContent += `
+        </ul>
+        <div style="background-color: black; height: 7px;"></div>
+    `;
+
+    // Update the replies container's innerHTML
+    repliesContainer.innerHTML = htmlContent;
+
+    // Make the container visible
+    repliesContainer.style.display = 'block';
+}
+
+
+let currentBlogId, currentCommentId;
+
+function editComment(blogId, commentId,commentContent) {
+    currentBlogId = blogId;
+    currentCommentId = commentId;
+
+    
+            document.getElementById('edit-comment-content').value = commentContent;
+            document.getElementById('edit-comment-modal').style.display = 'block';
+}
+function submitEditComment() {
+    const newContent = document.getElementById('edit-comment-content').value.trim();
+    if (!newContent) {
+        alert('Comment cannot be empty.');
+        return;
+    }
+
+    checkAuthentication().then(email => {
+        if (!email) {
+            alert('Unauthorized.');
+            return;
+        }
+
+        // Update the specific comment using a PUT request
+        fetch(`/blogs/${currentBlogId}/comments/${currentCommentId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            credentials: 'include',
+            body: JSON.stringify({ content: newContent, email: email }),
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Failed to update comment: ${response.statusText}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            closeEditCommentModal();
+            
+            // Fetch the updated comment
+            return fetch(`/blogs/${currentBlogId}/comments/${currentCommentId}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include',
+            });
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Failed to fetch updated comment: ${response.statusText}`);
+            }
+            return response.json();
+        })
+        .then(updatedComment => {
+            // Render only the updated comment
+            document.getElementById(`comment-${currentBlogId}-${currentCommentId}`).innerHTML = `${updatedComment.comment.content} - <span class="reply-email">${updatedComment.comment.email}</span> `;
+
+        })
+        .catch(error => {
+            console.error('Error updating or fetching the comment:', error);
+        });
+    });
+}
+
+function closeEditCommentModal() {
+    document.getElementById('edit-comment-modal').style.display = 'none';
+}
+
+
+
+function renderReplies(replies, blogId, commentId) {
+if (!replies || typeof replies !== 'object') {
+    console.error('Invalid replies data:', replies);
+    replies = {}; 
+}
+
+return Object.entries(replies).map(([replyId, reply]) => {
+    if (!reply || !reply.content || !reply.email) {
+        console.error('Incomplete reply data:', reply);
+        return ''; 
+    }
+
+    return `
+        <li id="reply-${blogId}-${commentId}-${reply.id}">
+<div class="reply-content-group">
+    <p class="reply-text">➤ ${reply.content} - <span class="reply-email">${reply.email}</span></p>
+    <div class="button-group">
+        ${reply.email === userEmail ? `
+            <button class="button-small" onclick="editReply('${blogId}', '${commentId}', '${reply.id}','${reply.content}')">
+                🖉
+            </button>
+            <button class="button-small" onclick="deleteReply('${blogId}', '${commentId}', '${reply.id}')">
+                🗑
+            </button>
+        ` : ''}
+    </div>
+</div>
+</li>
+
+    `;
+}).join('');
+}
+
+
+
+// Function to toggle comments visibility
+function toggleComments(blogId) {
+const commentsContainer = document.getElementById(`comments-container-${blogId}`);
+const isVisible = commentsContainer.style.display === 'block';
+const combutton=document.getElementById("comments")
+
+if (isVisible) {
+    commentsContainer.style.display = 'none';
+    combutton.innerText='💬'
+
+} else {
+    commentsContainer.style.display = 'block';
+    combutton.innerText='💬'
+}
+}
+
+// Function to toggle replies visibility
+function toggleReplies(blogId, commentId) {
+
+    // Get the replies container
+    const repliesContainer = document.getElementById(`replies-container-${blogId}-${commentId}`);
+    
+    // Check if the container exists
+    if (!repliesContainer) {
+        console.error(`Replies container not found: replies-container--${blogId}-${commentId}`);
+        return; // Exit if container doesn't exist
+    }
+
+    // Check the visibility state
+    const isVisible = repliesContainer.style.display === 'block' || repliesContainer.style.display === '';
+
+    // Toggle visibility
+    if (isVisible) {
+        repliesContainer.style.display = 'none'; // Hide the replies
+    } else {
+        repliesContainer.style.display = 'block'; // Show the replies
+    }
+}
+
+
+
+
+async function addComment(blogId) {
+    const commentInput = document.getElementById(`comment-content-${blogId}`);
+    const content = commentInput ? commentInput.value.trim() : "";
+    const email = await checkAuthentication(); // Wait for the authentication check
+   
+    if (email) {
+    if (!content) {
+        alert("Comment cannot be empty.");
+        return;
+    }
+
+    try {
+        // Post the new comment
+        const postResponse = await fetch(`/blogs/${blogId}/comments`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                content: content,
+                email: userEmail, // Assuming `userEmail` contains the logged-in user's email
+            }),
+        });
+
+        if (!postResponse.ok) {
+            const error = await postResponse.json();
+            return;
+        }
+
+        const postData = await postResponse.json();
+
+        // Fetch updated comments
+        const fetchResponse = await fetch(`/blogs/${blogId}/comments`, {
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
+        });
+
+        if (!fetchResponse.ok) {
+            const error = await fetchResponse.json();
+            return;
+        }
+
+        const commentsData = await fetchResponse.json();
+
+        // Render the newly added comment (assume the returned data has the updated comments)
+        var commentId  = postData.comment_id;
+        commentId=parseInt(commentId)
+        const newComment = commentsData.comments[commentId];
+
+        if (newComment) {
+            renderSingleComment(commentId, newComment, blogId);
+        } else {
+            console.error("Newly added comment not found in the updated comments.");
+        }
+
+        // Clear the comment input field
+        if (commentInput) {
+            commentInput.value = "";
+        }
+
+    } catch (error) {
+        console.error("Error adding comment:", error);
+    }
+}
+else{
+        toggleAuthSection();
+}
+}
+function renderSingleComment(commentId, comment, blogId) {
+    const commentsContainer = document.getElementById(`comments-container-${blogId}`);
+    if (!commentsContainer) {
+        console.error(`Comments container for blog ID ${blogId} not found.`);
+        return;
+    }
+    comment=comment.comment
+    // Check if the comment data is valid
+    if (!comment || !comment.content || !comment.email) {
+        console.error(`Invalid comment data for comment ID ${commentId}:`, comment);
+        return;
+    }
+
+    // Create the comment element
+    const commentElement = document.createElement('li');
+    commentElement.id = `comment-${commentId}`;
+    commentElement.className = 'comment-item';
+    commentElement.innerHTML = `
+        <div class="comment-content-group">
+            <p id="comment-${blogId}-${commentId}" class="comment-text">${comment.content} - <span class="reply-email">${comment.email}</span></p>
+            <div class="button-group">
+                ${comment.email === userEmail ? `
+                    <button class="button-small" onclick="editComment('${blogId}', '${commentId}', '${comment.content}')">🖉</button>
+                    <button class="button-small" onclick="deleteComment('${blogId}', '${commentId}')">🗑</button>
+                ` : ''}
+                <button class="button-small" onclick="toggleReplies('${blogId}', '${commentId}')">
+                    ${comment.replies && Object.keys(comment.replies).length ? 'View Replies' : 'No Replies'}
+                </button>
+            </div>
+        </div>
+        <div class="replycol" id="replies-container-${blogId}-${commentId}" style="display: none;">
+            <textarea 
+                style="background-color: #1c2833; color: white;" 
+                id="reply-${blogId}-${commentId}" 
+                class="input-field" 
+                placeholder="Reply..."></textarea>
+            <button class="button" onclick="addReply('${blogId}', '${commentId}')">Reply</button>
+            <ul class="replies">
+                ${renderReplies(comment.replies, blogId, commentId)}
+            </ul>
+        </div>
+    `;
+
+    // Check if the comment already exists in the container
+    const existingComment = document.getElementById(`comment-${commentId}`);
+    if (existingComment && existingComment.parentNode === commentsContainer) {
+        // Replace the existing comment with the updated one
+        commentsContainer.replaceChild(commentElement, existingComment);
+    } else {
+        // Add the new comment to the end of the comments list
+        commentsContainer.appendChild(commentElement);
+    }
+}
+
+
+
+
+async function addReply(blogId, commentId) {
+
+    const replyContent = document.getElementById(`reply-${blogId}-${commentId}`).value.trim();
+    const email = await checkAuthentication(); // Wait for the authentication check
+
+    if (email) {
+      
+
+    if (!replyContent) {
+        return alert('Reply cannot be empty.');
+    }
+
+    try {
+        // POST request to add a new reply
+        const postResponse = await fetch(`/blogs/${blogId}/comments/${commentId}/replies`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include', // Include cookies for session token
+            body: JSON.stringify({
+                content: replyContent,
+                email: userEmail, // Use the current user's email
+            }),
+        });
+
+        if (!postResponse.ok) {
+            const error = await postResponse.json();
+            return;
+        }
+
+        const postData = await postResponse.json();
+
+        // Fetch the updated replies after adding the new one
+        const fetchUrl = `/blogs/${blogId}/comments/${commentId}/replies`;
+        const fetchResponse = await fetch(fetchUrl, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include', // Include cookies
+        });
+
+        if (!fetchResponse.ok) {
+            throw new Error(`Failed to fetch updated replies: ${fetchResponse.statusText}`);
+        }
+
+        const data = await fetchResponse.json();
+
+        // Render the updated replies
+        renderRepliess(data.replies, commentId, blogId);
+
+        // Clear the reply input field
+        document.getElementById(`reply-${blogId}-${commentId}`).value = "";
+    } catch (error) {
+        console.error('Error adding reply:', error);
+    }
+    } else {
+        toggleAuthSection(); // Redirect to the authentication section
+    }
+}
+
+
+function openEditBlogModal(blogId) {
+
+    // Fetch blog details
+    fetch(`/blogs/${blogId}`)
+        .then(response => response.json())
+        .then(blog => {
+            // Populate the modal fields
+            document.getElementById('edit-blog-title').value = blog.title || '';
+            document.getElementById('edit-blog-content').value = blog.content || '';
+        })
+        .catch(error => console.error('Error fetching blog details:', error));
+
+    // Store blog ID and show modal
+    document.getElementById('edit-blog-modal').dataset.blogId = blogId;
+    document.getElementById('edit-blog-modal').style.display = 'block';
+}
+
+function closeEditBlogModal() {
+    document.getElementById('edit-blog-modal').style.display = 'none';
+}
+
+function submitEditBlog() {
+    const blogId = document.getElementById('edit-blog-modal').dataset.blogId;
+    const title = document.getElementById('edit-blog-title').value.trim();
+    const content = document.getElementById('edit-blog-content').value.trim();
+
+    if (!title || !content) {
+        alert('Title and content cannot be empty.');
+        return;
+    }
+
+    // Send PUT request to update blog
+    fetch(`/blogs/${blogId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title, content, sessionToken }),
+    })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById(`blog-content-${blogId}`).innerText=content
+            document.getElementById(`blog-header-${blogId}`).innerText=title
+            closeEditBlogModal();
+        })
+        .catch(error => {
+            console.error('Error updating blog:', error);
+        });
+}
+
+function deleteBlog(id) {
+   
+        fetch(`/blogs/${id}?sessionToken=${sessionToken}`, { method: 'DELETE' })
+        .then(response => response.json())
+        .then(data => {
+            if (data.message) {
+
+                // Remove the blog from the DOM
+                const blogElement = document.getElementById(`blog-${id}`);
+                if (blogElement) {
+                    blogElement.remove();
+                } else {
+                    console.error(`Blog element with ID blog-${id} not found.`);
+                }
+            } 
+        })
+        .catch(error => {
+            console.error('Error deleting blog:', error);
+        });
+    }
+
+
+
+function deleteComment(blogId, commentId) {
+    if (confirm("Are you sure you want to delete this comment?")) {
+        fetch(`/blogs/${blogId}/comments/${commentId}`, {
+            method: 'DELETE',
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.message) {
+
+                // Remove the comment from the DOM
+                const commentElement = document.getElementById(`comments-${blogId}-${commentId}`);
+                if (commentElement) {
+                    commentElement.remove();
+                } else {
+                    console.error(`Comment element with ID comment-${commentId} not found.`);
+                }
+            } 
+        })
+        .catch(error => {
+            console.error('Error deleting comment:', error);
+        });
+    }
+}
+
+
+function deleteReply(blogId, commentId, replyId) {
+    
+        fetch(`/blogs/${blogId}/comments/${commentId}/replies/${replyId}`, {
+            method: 'DELETE',
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.message) {
+
+                // Remove the reply from the DOM
+                const replyElement = document.getElementById(`reply-${blogId}-${commentId}-${replyId}`);
+                if (replyElement) {
+                    replyElement.remove();
+                } else {
+                    console.error(`Reply element with ID reply-${replyId} not found.`);
+                }
+            } 
+        })
+        .catch(error => {
+            console.error('Error deleting reply:', error);
+        });
+    }
+
+
+</script>
+
+
+
 
 
 <script>
