@@ -2,10 +2,456 @@ import io
 import pdfplumber
 import re
 from collections import OrderedDict
-from flask import Flask, render_template, request, session
+from flask import Flask, render_template, request, jsonify, redirect, make_response, session
+import requests
+import hashlib
+import random
+import string
 
 app = Flask(__name__)
 app.secret_key = 'your_unique_secret_key'
+
+database_url = "https://medcompanion-e671e-default-rtdb.firebaseio.com"
+session_store = {}
+def hash_password(password):
+    return hashlib.sha256(password.encode()).hexdigest()
+def generate_session_token():
+    return ''.join(random.choices(string.ascii_letters + string.digits, k=32))
+
+@app.route('/register', methods=['POST'])
+def register():
+    data = request.json
+    username = data['username']
+    email = data['email']
+    password = hash_password(data['password'])
+    users = requests.get(f"{database_url}/users.json").json() or {}
+    if any(user.get('email') == email for user in users.values()):
+        return jsonify({"error": "User already exists"}), 400
+    new_user = {"username": username, "email": email, "password": password}
+    response = requests.post(f"{database_url}/users.json", json=new_user)
+    if response.ok:
+        return jsonify({"message": "Registration successful"}), 201
+    return jsonify({"error": "Registration failed"}), 500
+
+@app.route('/blogs/<blog_id>/comments', methods=['POST'])
+def add_comment(blog_id):
+    # Ensure JSON data is received
+    data = request.get_json()
+    if not data or "content" not in data or "email" not in data:
+        return jsonify({"error": "Content and email are required."}), 400
+
+    # Construct the new comment
+    comment = {
+        "content": data["content"],
+        "email": data["email"],
+        "replies": {}
+    }
+
+    # Fetch existing comments for the blog
+    response = requests.get(f"{database_url}/blogs/{blog_id}/comments.json")
+    if response.status_code != 200:
+        return jsonify({"error": "Failed to fetch comments."}), 500
+
+    comments = response.json() or {}  # Load comments or initialize as empty
+    if isinstance(comments, list):  # Convert list to dict if necessary
+        comments = {str(i): comment for i, comment in enumerate(comments)}
+
+    # Generate a new comment ID
+    if comments:
+        try:
+            last_id = max(map(int, comments.keys()))  # Find the highest numeric key
+        except ValueError:
+            last_id = 0  # Handle cases where keys are not numeric
+        comment_id = str(last_id + 1)  # Increment the ID
+    else:
+        comment_id = "1"  # Start with "1" if no comments exist
+
+    # Add the new comment
+    comments[comment_id] = comment
+
+    # Update the comments in the database
+    put_response = requests.put(f"{database_url}/blogs/{blog_id}/comments.json", json=comments)
+    if put_response.status_code != 200:
+        return jsonify({"error": "Failed to update comments in the database."}), 500
+
+    # Return success response
+    return jsonify({"message": "Comment added successfully!", "comment_id": comment_id}), 200
+
+
+
+
+
+def get_commentdetails(blog_id, comment_id):
+    url = f"{database_url}/blogs/{blog_id}/comments/{comment_id}.json"
+    response = requests.get(url)
+    if response.status_code == 200:
+        comment = response.json() 
+        if comment:
+            return comment
+        else:
+            return None 
+    else:
+        return None
+
+
+
+@app.route('/login', methods=['POST'])
+def login():
+    data = request.get_json()
+    email = data.get('email')
+    password =password = hash_password(data['password'])
+    users = requests.get(f"{database_url}/users.json").json() or {}
+    user = next((u for u in users.values() if u['email'] == email and u['password'] == password), None)
+    if user:
+        session_token = generate_session_token()
+        requests.post(f"{database_url}/sessions.json", json={"email": email, "sessionToken": session_token})
+        session[session_token] = {'email': email}
+        session_store[session_token] = {'email': email}
+        response = make_response(jsonify({'message': 'Login successful', 'sessionToken': session_token, 'email': email}))
+        response.set_cookie('sessionToken', session_token, httponly=True, secure=True)
+        return response
+    else:
+        return jsonify({'error': 'Invalid email or password'}), 401
+
+
+@app.route('/check_session', methods=['GET'])
+def check_session():
+    session_token = request.cookies.get('sessionToken')
+    if not session_token:
+        return jsonify({'error': 'Session expired or not valid'}), 403
+
+    user_data = session[session_token].get('email')
+
+    if user_data:
+        return jsonify({'email': user_data})
+
+    return jsonify({'error': 'Session expired or invalid'}), 403
+
+@app.route('/blogs/<blog_id>/comments', methods=['GET'])
+def get_all_comments(blog_id):
+    response = requests.get(f"{database_url}/blogs/{blog_id}/comments.json")
+    if response.status_code != 200:
+        return jsonify({"error": "Failed to fetch comments."}), 500
+
+    comments = response.json() or {}
+    return jsonify({"comments": comments}), 200
+
+
+@app.route('/logout', methods=['GET'])
+def logout():
+    session_token = request.cookies.get('sessionToken')
+    if session_token in session:
+        session.pop('session_token', None)
+        response = jsonify({'message': 'Logout successful'})
+        response.delete_cookie('sessionToken') 
+        return response
+    return jsonify({'error': 'No active session'}), 400
+
+@app.route('/blogs/<blog_id>/comments/<comment_id>/replies', methods=['POST'])
+def add_reply(blog_id, comment_id):
+    data = request.get_json()
+
+    # Extract the reply content and email from the request
+    reply_content = data.get('content')
+    email = data.get('email')
+
+    # Validate required fields
+    if not reply_content or not email:
+        return jsonify({"error": "Reply content and email are required."}), 400
+
+    # Get the comment by blog_id and comment_id (you should define this function)
+    comment = get_commentdetails(blog_id, comment_id)
+    if not comment:
+        return jsonify({"error": "Comment not found."}), 404
+
+    # Initialize replies as an empty list if it doesn't exist
+    if 'replies' not in comment or not isinstance(comment['replies'], list):
+        comment['replies'] = []
+
+    # Create a new reply dictionary
+    reply = {
+        "id": len(comment['replies']) + 1,  # Generate a unique reply_id
+        "content": reply_content,
+        "email": email
+    }
+
+    # Append the new reply to the replies list
+    comment['replies'].append(reply)
+
+    # Update the comment in the database
+    url = f"{database_url}/blogs/{blog_id}/comments/{comment_id}.json"
+    response = requests.put(url, json=comment)
+
+    # Handle response from the database
+    if response.status_code == 200:
+        return jsonify({"message": "Reply added successfully.", "reply": reply}), 200
+    else:
+        return jsonify({"error": "Failed to add reply."}), 500
+
+
+@app.route('/blogs', methods=['POST'])
+def post_blog():
+    data = request.json
+    session_token = request.cookies.get('sessionToken')
+    email = session.get(session_token)['email']
+
+    if not email:
+        return jsonify({"error": "Unauthorized"}), 403
+
+    blog = {"title": data['title'], "content": data['content'], "email": email}
+    response = requests.post(f"{database_url}/blogs.json", json=blog)
+    if response.ok:
+        return jsonify({"message": "Blog posted successfully"}), 201
+    return jsonify({"error": "Failed to post blog"}), 500
+
+@app.route('/blogs/<blog_id>/comments/<comment_id>', methods=['GET'])
+def get_comment(blog_id, comment_id):
+    response = requests.get(f"{database_url}/blogs/{blog_id}/comments/{comment_id}.json")
+    if response.status_code != 200:
+        return jsonify({"error": "Failed to fetch the comment."}), 500
+
+    comment = response.json()
+    if not comment:
+        return jsonify({"error": "Comment not found."}), 404
+
+    return jsonify({"comment": comment}), 200
+
+
+@app.route('/blogs', methods=['GET'])
+def fetch_blogs():
+    blogs = requests.get(f"{database_url}/blogs.json").json() or {}
+    return jsonify(blogs), 200
+
+@app.route('/blogs/<blog_id>', methods=['GET'])
+def get_blog(blog_id):
+    # Fetch the blog data from the database
+    url = f"{database_url}/blogs/{blog_id}.json"
+    response = requests.get(url)
+    
+    # Check if the blog exists
+    if response.status_code != 200 or response.json() is None:
+        return jsonify({"error": "Blog not found."}), 404
+    
+    blog_data = response.json()
+    
+    # Return the blog data
+    return jsonify(blog_data), 200
+
+
+@app.route('/blogs/<blog_id>', methods=['PUT'])
+def edit_blog(blog_id):
+    data = request.json
+    session_token = request.cookies.get('sessionToken')
+    email = session.get(session_token)['email']
+
+    if not email:
+        return jsonify({"error": "Unauthorized"}), 403
+
+    blog = requests.get(f"{database_url}/blogs/{blog_id}.json").json()
+    if not blog or blog['email'] != email:
+        return jsonify({"error": "Permission denied"}), 403
+
+    updated_blog = {"title": data['title'], "content": data['content'], "email": email}
+    response = requests.put(f"{database_url}/blogs/{blog_id}.json", json=updated_blog)
+    if response.ok:
+        return jsonify({"message": "Blog updated successfully"}), 200
+    return jsonify({"error": "Failed to update blog"}), 500
+
+@app.route('/blogs/<blog_id>', methods=['DELETE'])
+def delete_blog(blog_id):
+    session_token = request.cookies.get('sessionToken')
+    email = session.get(session_token)['email']
+
+    if not email:
+        return jsonify({"error": "Unauthorized"}), 403
+
+    blog = requests.get(f"{database_url}/blogs/{blog_id}.json").json()
+    if not blog or blog['email'] != email:
+        return jsonify({"error": "Permission denied"}), 403
+
+    response = requests.delete(f"{database_url}/blogs/{blog_id}.json")
+    if response.ok:
+        return jsonify({"message": "Blog deleted successfully"}), 200
+    return jsonify({"error": "Failed to delete blog"}), 500
+
+def get_email_from_session(session_token):
+    sessions = requests.get(f"{database_url}/sessions.json").json() or {}
+    session = next((s for s in sessions.values() if s['sessionToken'] == session_token), None)
+    return session['email'] if session else None
+
+@app.route('/blogs/<blog_id>/comments/<comment_id>', methods=['PUT'])
+def edit_comment(blog_id, comment_id):
+    data = request.get_json()
+    
+    # Extract the content and email from the incoming request
+    content = data.get('content')
+    session_token = request.cookies.get('sessionToken')
+    email = session.get(session_token)['email']
+    
+    # Validate content and email
+    if not content or not email:
+        return jsonify({"error": "Content or email is missing."}), 400
+    
+    # Fetch the current comment from Firebase
+    comment = get_commentdetails(blog_id, comment_id)
+    if not comment:
+        return jsonify({"error": "Comment not found."}), 404
+    # Check if the logged-in user is the owner of the comment
+    if comment.get('email') != email:
+        return jsonify({"error": "Unauthorized access. You can only edit your own comment."}), 403
+
+    # Update the content of the comment
+    comment['content'] = content
+
+    # Save the updated comment back to Firebase
+    url = f"{database_url}/blogs/{blog_id}/comments/{comment_id}.json"
+    response = requests.put(url, json=comment)
+    
+    if response.status_code == 200:
+        return jsonify({"message": "Comment updated successfully."}), 200
+    else:
+        return jsonify({"error": "Failed to update comment."}), 500
+
+
+
+@app.route('/blogs/<blog_id>/comments/<comment_id>', methods=['DELETE'])
+def delete_comment(blog_id, comment_id):
+    session_token = request.cookies.get('sessionToken')
+    email = session.get(session_token)['email']
+
+    if not email:
+        return jsonify({"error": "Unauthorized"}), 403
+
+    comment = get_commentdetails(blog_id, comment_id)
+    if not comment or comment['email'] != email:
+        return jsonify({"error": "Permission denied"}), 403
+
+    url = f"{database_url}/blogs/{blog_id}/comments/{comment_id}.json"
+    response = requests.delete(url)
+    
+    if response.ok:
+        return jsonify({"message": "Comment deleted successfully"}), 200
+    return jsonify({"error": "Failed to delete comment"}), 500
+
+@app.route('/blogs/<blog_id>/comments/<comment_id>/replies/<int:reply_id>', methods=['DELETE'])
+def delete_reply(blog_id, comment_id, reply_id):
+    # Get the session token from cookies
+    session_token = request.cookies.get('sessionToken')
+    email = session.get(session_token)['email']
+
+    # Check if the user is authenticated
+    if not email:
+        return jsonify({"error": "Unauthorized"}), 403
+
+    # Fetch the comment from the database
+    comment = get_commentdetails(blog_id, comment_id)
+    if not comment:
+        return jsonify({"error": "Comment not found."}), 404
+
+    # Get the replies list from the comment
+    replies = comment.get('replies', [])
+
+    # Validate the reply ID
+    if reply_id < 1 or reply_id > len(replies):
+        return jsonify({"error": "Reply not found."}), 404
+
+    # Find the reply by index (adjust for 0-based indexing)
+    reply_index = reply_id - 1
+    reply = replies[reply_index]
+
+    # Check if the reply belongs to the authenticated user
+    if reply['email'] != email:
+        return jsonify({"error": "Unauthorized access. You can only delete your own reply."}), 403
+
+    # Delete the reply from the replies list
+    del replies[reply_index]
+
+    # Update the replies in the comment
+    comment['replies'] = replies
+
+    # Update the comment in the database
+    url = f"{database_url}/blogs/{blog_id}/comments/{comment_id}.json"
+    response = requests.put(url, json=comment)
+
+    # Return the appropriate response based on the database operation result
+    if response.status_code == 200:
+        return jsonify({"message": "Reply deleted successfully."}), 200
+    else:
+        return jsonify({"error": "Failed to delete reply."}), 500
+
+@app.route('/blogs/<blog_id>/comments/<comment_id>/replies/<int:reply_id>', methods=['PUT'])
+def edit_reply(blog_id, comment_id, reply_id):
+    # Parse the JSON payload
+    data = request.get_json()
+    reply_content = data.get('content')
+
+    # Get the session token from cookies
+    session_token = request.cookies.get('sessionToken')
+
+    # Validate the session and retrieve the user's email
+    if not session_token or session_token not in session:
+        return jsonify({"error": "Unauthorized. Please log in."}), 403
+    email =session.get(session_token)['email']
+
+    # Validate the reply content
+    if not reply_content or reply_content.strip() == "":
+        return jsonify({"error": "Reply content cannot be empty."}), 400
+
+    # Fetch the comment from the database
+    comment = get_commentdetails(blog_id, comment_id)
+    if not comment:
+        return jsonify({"error": "Comment not found."}), 404
+
+    # Get the replies list
+    replies = comment.get('replies', [])
+    if not isinstance(replies, list):
+        return jsonify({"error": "Invalid data format for replies."}), 500
+
+    # Find the reply by its ID
+    reply = next((r for r in replies if r.get('id') == reply_id), None)
+    if not reply:
+        return jsonify({"error": "Reply not found."}), 404
+
+    # Check if the reply belongs to the authenticated user
+    if reply.get('email') != email:
+        return jsonify({"error": "Unauthorized access. You can only edit your own reply."}), 403
+
+    # Update the reply content
+    reply['content'] = reply_content
+
+    # Update the comment in Firebase
+    url = f"{database_url}/blogs/{blog_id}/comments/{comment_id}.json"
+    response = requests.put(url, json=comment)
+
+    # Handle the response from Firebase
+    if response.status_code == 200:
+        return jsonify({"message": "Reply updated successfully."}), 200
+    else:
+        return jsonify({"error": "Failed to update reply."}), 500
+
+@app.route('/blogs/<blog_id>/comments/<comment_id>/replies', methods=['GET'])
+def get_replies(blog_id, comment_id):
+    # Get the session token from cookies
+    session_token = request.cookies.get('sessionToken')
+
+    # Validate the session
+    if not session_token or session_token not in session:
+        return jsonify({"error": "Unauthorized. Please log in."}), 403
+
+    # Fetch the comment from the database
+    comment = get_commentdetails(blog_id, comment_id)
+    if not comment:
+        return jsonify({"error": "Comment not found."}), 404
+
+    # Get the replies list
+    replies = comment.get('replies', [])
+    if not isinstance(replies, list):
+        return jsonify({"error": "Invalid data format for replies."}), 500
+
+    # Return the replies as JSON
+    return jsonify({"replies": replies}), 200
+
+
 def extract_text_from_pdf(pdf_file):
     text = ""
     with pdfplumber.open(io.BytesIO(pdf_file.read())) as pdf:
@@ -4352,6 +4798,328 @@ def give_health_advice(values):
 
         return advice if advice else ["No specific advice. Keep maintaining a healthy lifestyle!"]
 
+def analyze_deficiencies(results):
+    advice = []
+
+    if float(results['Haemoglobin']) < 13 or float(results['Iron']) < 70 or float(results['Transferrin Saturation']) < 18:
+        advice.append({
+            "deficiency": "Iron Deficiency",
+            "recommendation": """
+                <h3>Iron Deficiency</h3>
+                <ul>
+                    <li><strong>Diet:</strong> Increase intake of iron-rich foods like red meat, liver, spinach, lentils, beans, and fortified cereals.</li>
+                    <li><strong>Supplements:</strong> Consider iron supplements (ferrous sulfate) after consulting your doctor. Take with Vitamin C to improve absorption.</li>
+                    <li><strong>Lifestyle:</strong> Avoid tea/coffee during meals as it inhibits iron absorption.</li>
+                </ul>
+            """
+        })
+
+    if float(results['Vitamin B12']) < 211:
+        advice.append({
+            "deficiency": "Vitamin B12 Deficiency",
+            "recommendation": """
+                <h3>Vitamin B12 Deficiency</h3>
+                <ul>
+                    <li><strong>Diet:</strong> Include animal products like eggs, milk, cheese, chicken, and fish. For vegetarians, try fortified cereals or plant-based milks.</li>
+                    <li><strong>Supplements:</strong> Take Vitamin B12 supplements or injections based on severity.</li>
+                    <li><strong>Lifestyle:</strong> Regularly monitor levels if on a vegan diet.</li>
+                </ul>
+            """
+        })
+
+    if float(results['Vitamin D Total (D2 + D3)']) < 30:
+        advice.append({
+            "deficiency": "Vitamin D Deficiency",
+            "recommendation": """
+                <h3>Vitamin D Deficiency</h3>
+                <ul>
+                    <li><strong>Diet:</strong> Include fatty fish (salmon, mackerel), egg yolks, and fortified dairy products.</li>
+                    <li><strong>Supplements:</strong> Vitamin D3 supplements (cholecalciferol) are recommended, especially during winter.</li>
+                    <li><strong>Lifestyle:</strong> Spend 15-20 minutes in sunlight daily (preferably in the morning).</li>
+                </ul>
+            """
+        })
+
+    if float(results['Total Protein']) < 6.6 or float(results['Albumin']) < 3.5:
+        advice.append({
+            "deficiency": "Protein Deficiency",
+            "recommendation": """
+                <h3>Protein Deficiency</h3>
+                <ul>
+                    <li><strong>Diet:</strong> Increase lean protein sources like chicken, turkey, eggs, tofu, beans, nuts, and seeds.</li>
+                    <li><strong>Supplements:</strong> Consider protein powders if dietary intake is insufficient.</li>
+                    <li><strong>Lifestyle:</strong> Ensure balanced meals with protein in every meal.</li>
+                </ul>
+            """
+        })
+
+    if float(results['Total Cholesterol']) > 200 or float(results['LDL Cholesterol']) > 100 or float(results['Triglycerides']) > 150:
+        advice.append({
+            "deficiency": "Cholesterol Imbalance",
+            "recommendation": """
+                <h3>Cholesterol Imbalance</h3>
+                <ul>
+                    <li><strong>Diet:</strong> Reduce saturated fats and trans fats. Include foods high in omega-3 fatty acids (salmon, walnuts, flaxseeds). Add soluble fiber from oats, fruits, and vegetables.</li>
+                    <li><strong>Supplements:</strong> Omega-3 fish oil supplements can help lower triglycerides.</li>
+                    <li><strong>Lifestyle:</strong> Exercise regularly (150 minutes/week), maintain a healthy weight, and avoid smoking.</li>
+                </ul>
+            """
+        })
+
+    if float(results['Fasting Plasma Glucose']) > 100 or float(results['Glycated Hemoglobin']) > 5.7:
+        advice.append({
+            "deficiency": "High Blood Sugar",
+            "recommendation": """
+                <h3>High Blood Sugar</h3>
+                <ul>
+                    <li><strong>Diet:</strong> Follow a low-glycemic index diet with whole grains, vegetables, lean protein, and healthy fats. Avoid sugary foods and refined carbs.</li>
+                    <li><strong>Supplements:</strong> Chromium and magnesium supplements may help regulate blood sugar levels.</li>
+                    <li><strong>Lifestyle:</strong> Regular exercise, stress management, and weight loss are critical.</li>
+                </ul>
+            """
+        })
+    
+        # 9. Thyroid Dysfunction
+    if float(results['TSH Ultrasensitive']) > 4.78:
+        advice.append({
+            "deficiency": "Hypothyroidism",
+            "recommendation": """<ul>
+<li><strong>Diet</strong>: Add iodine-rich foods like iodized salt, seaweed, fish, and dairy. Selenium-rich foods (Brazil nuts) also support thyroid health.</li>
+<li><strong>Supplements</strong>: Consult your doctor for levothyroxine if diagnosed.</li>
+<li><strong>Lifestyle</strong>: Regular check-ups and medication adherence are critical.</li>
+</ul>"""
+        })
+
+    # 10. Uric Acid Elevation (Gout Risk)
+    if float(results['Uric Acid']) > 7.2:
+        advice.append({
+            "deficiency": "High Uric Acid (Gout Risk)",
+            "recommendation": """<ul>
+<li><strong>Diet</strong>: Reduce purine-rich foods like red meat, shellfish, and alcohol. Increase cherries, citrus fruits, and water intake.</li>
+<li><strong>Supplements</strong>: Vitamin C may help reduce uric acid levels.</li>
+<li><strong>Lifestyle</strong>: Maintain a healthy weight and avoid dehydration.</li>
+</ul>"""
+        })
+
+    # 11. Kidney Health (Creatinine and e-GFR)
+    if float(results['Creatinine']) > 1.2 or float(results['e-GFR (Glomerular Filtration Rate)']) < 90:
+        advice.append({
+            "deficiency": "Kidney Function Impairment",
+            "recommendation": """<ul>
+<li><strong>Diet</strong>: Limit protein intake to moderate levels. Avoid high-sodium and high-potassium foods if advised by your doctor.</li>
+<li><strong>Supplements</strong>: Avoid nephrotoxic supplements without consulting a healthcare professional.</li>
+<li><strong>Lifestyle</strong>: Stay hydrated and monitor kidney function regularly.</li>
+</ul>"""
+        })
+
+    # 12. High SGPT/ALT or SGOT/AST (Liver Health)
+    if float(results['SGPT/ALT']) > 50 or float(results['SGOT/AST']) > 50:
+        advice.append({
+            "deficiency": "Liver Health Issues",
+            "recommendation": """<ul>
+<li><strong>Diet</strong>: Avoid alcohol and processed foods. Add antioxidant-rich foods like berries, leafy greens, and green tea.</li>
+<li><strong>Supplements</strong>: Milk thistle or N-acetylcysteine may help, but consult your doctor.</li>
+<li><strong>Lifestyle</strong>: Maintain a healthy weight and avoid hepatotoxic substances.</li>
+</ul>"""
+        })
+
+    # 16. Anemia (Low Red Blood Cell Count)
+    if float(results.get('Total RBC Count', '0')) < 4.2:
+        advice.append({
+            "deficiency": "Anemia",
+            "recommendation": """<ul>
+<li><strong>Diet</strong>: Focus on foods rich in iron, folate, and Vitamin B12, such as red meat, spinach, beans, and eggs.</li>
+<li><strong>Supplements</strong>: Iron or multivitamin supplements may help, based on the cause of anemia.</li>
+<li><strong>Lifestyle</strong>: Monitor symptoms like fatigue and dizziness and consult a doctor for further investigation.</li>
+</ul>"""
+        })
+
+    if float(results['Erythrocyte Sedimentation Rate']) > 15:
+        advice.append({
+        "deficiency": "High ESR (Inflammation)",
+        "recommendation": """
+        <h2>Diet</h2>
+        <p>Consume anti-inflammatory foods like fatty fish, turmeric, ginger, berries, and green tea.</p>
+        <h2>Supplements</h2>
+        <p>Omega-3 fatty acids or turmeric with curcumin may help reduce inflammation.</p>
+        <h2>Lifestyle</h2>
+        <p>Identify and manage underlying conditions, and practice regular stress management techniques.</p>
+        """
+    })
+
+    if float(results['Alkaline Phosphatase']) < 43:
+        advice.append({
+        "deficiency": "Low Alkaline Phosphatase",
+        "recommendation": """
+        <h2>Diet</h2>
+        <p>Increase intake of zinc and Vitamin B6-rich foods such as poultry, fish, nuts, and whole grains.</p>
+        <h2>Supplements</h2>
+        <p>Zinc or Vitamin B6 supplements may be required if dietary intake is insufficient.</p>
+        <h2>Lifestyle</h2>
+        <p>Ensure regular health check-ups to monitor bone and liver health.</p>
+        """
+    })
+
+    if float(results['Alkaline Phosphatase']) > 115:
+        advice.append({
+        "deficiency": "High Alkaline Phosphatase",
+        "recommendation": """
+        <h2>Diet</h2>
+        <p>Limit intake of processed foods and ensure adequate hydration.</p>
+        <h2>Supplements</h2>
+        <p>Avoid unnecessary supplements, especially those containing Vitamin D and calcium, without consulting a doctor.</p>
+        <h2>Lifestyle</h2>
+        <p>Investigate underlying causes, such as bone or liver issues, with medical guidance.</p>
+        """
+    })
+
+    if float(results['RDW']) > 14:
+        advice.append({
+        "deficiency": "High RDW (Possible Anemia or Nutritional Deficiency)",
+        "recommendation": """
+        <h2>Diet</h2>
+        <p>Include foods rich in iron, folate, and Vitamin B12 such as spinach, lentils, red meat, and eggs.</p>
+        <h2>Supplements</h2>
+        <p>Depending on the cause, iron or multivitamin supplements may be beneficial.</p>
+        <h2>Lifestyle</h2>
+        <p>Regularly monitor blood parameters and address the underlying condition with professional advice.</p>
+        """
+    })
+
+    if float(results['Total Bilirubin']) > 1.2:
+        advice.append({
+        "deficiency": "Elevated Bilirubin (Liver Health Concern)",
+        "recommendation": """
+        <h2>Diet</h2>
+        <p>Follow a liver-friendly diet with fruits, vegetables, and whole grains. Avoid alcohol and fatty foods.</p>
+        <h2>Supplements</h2>
+        <p>Milk thistle or turmeric may support liver health, but consult your doctor first.</p>
+        <h2>Lifestyle</h2>
+        <p>Manage stress, stay hydrated, and maintain a healthy weight.</p>
+        """
+    })
+
+    if float(results['Urea']) > 43 or float(results['Blood Urea Nitrogen']) > 20:
+        advice.append({
+        "deficiency": "High Urea or BUN (Kidney Stress)",
+        "recommendation": """
+        <h2>Diet</h2>
+        <p>Limit high-protein foods such as red meat and dairy if advised by a healthcare provider. Increase hydration.</p>
+        <h2>Supplements</h2>
+        <p>Avoid nephrotoxic supplements without medical advice.</p>
+        <h2>Lifestyle</h2>
+        <p>Monitor kidney function and avoid excessive exercise that can increase protein breakdown.</p>
+        """
+    })
+
+    if float(results['Globulin']) < 1.8:
+        advice.append({
+        "deficiency": "Low Globulin Levels",
+        "recommendation": """
+        <h2>Diet</h2>
+        <p>Increase intake of protein-rich foods like eggs, dairy, beans, and lean meats.</p>
+        <h2>Supplements</h2>
+        <p>Consider protein powders or amino acid supplements if necessary.</p>
+        <h2>Lifestyle</h2>
+        <p>Ensure a balanced diet and address any underlying infections or inflammation.</p>
+        """
+    })
+
+    if float(results['Globulin']) > 3.6:
+        advice.append({
+        "deficiency": "High Globulin Levels",
+        "recommendation": """
+        <h2>Diet</h2>
+        <p>Focus on anti-inflammatory foods such as leafy greens, berries, and fatty fish. Avoid excessive processed or fatty foods.</p>
+        <h2>Lifestyle</h2>
+        <p>Consult a doctor to investigate potential chronic infections or immune-related disorders.</p>
+        """
+    })
+
+    if float(results['T3 Total']) < 0.6 or float(results['T4 Total']) < 3.2:
+        advice.append({
+        "deficiency": "Hypothyroidism (Low Thyroid Hormones)",
+        "recommendation": """
+        <h2>Diet</h2>
+        <p>Include iodine-rich foods such as iodized salt, seaweed, and seafood. Selenium-rich foods (Brazil nuts, sunflower seeds) also help.</p>
+        <h2>Supplements</h2>
+        <p>Consult a doctor for thyroid hormone replacement therapy if required.</p>
+        <h2>Lifestyle</h2>
+        <p>Regularly monitor thyroid levels and ensure medication adherence if prescribed.</p>
+        """
+    })
+
+    if float(results['T3 Total']) > 1.81 or float(results['T4 Total']) > 12.6:
+        advice.append({
+        "deficiency": "Hyperthyroidism (Overactive Thyroid)",
+        "recommendation": """
+        <h2>Diet</h2>
+        <p>Avoid iodine-rich foods like seaweed and iodized salt if advised by a doctor. Focus on a balanced diet to manage energy levels.</p>
+        <h2>Lifestyle</h2>
+        <p>Consult an endocrinologist for appropriate treatment and regularly monitor thyroid levels.</p>
+        """
+    })
+
+    if float(results['Albumin']) < 3.5:
+        advice.append({
+        "deficiency": "Low Albumin Levels",
+        "recommendation": """
+        <h2>Diet</h2>
+        <p>Add high-quality protein sources such as eggs, chicken, fish, and dairy.</p>
+        <h2>Supplements</h2>
+        <p>Protein supplements or albumin infusion may be required in severe cases, based on medical advice.</p>
+        <h2>Lifestyle</h2>
+        <p>Stay hydrated and manage chronic illnesses that may affect protein metabolism.</p>
+        """
+    })
+
+    if float(results['Gamma Glutamyl Transferase']) > 55:
+        advice.append({
+        "deficiency": "High GGT (Liver Health Concern)",
+        "recommendation": """
+        <h2>Diet</h2>
+        <p>Avoid alcohol and focus on liver-supporting foods like green vegetables, citrus fruits, and garlic.</p>
+        <h2>Supplements</h2>
+        <p>Milk thistle or NAC may support liver detoxification after consulting a healthcare provider.</p>
+        <h2>Lifestyle</h2>
+        <p>Avoid hepatotoxic substances and maintain a healthy lifestyle.</p>
+        """
+    })
+
+    if float(results['Platelet Count']) > 410000:
+        advice.append({
+        "deficiency": "High Platelet Count (Thrombocytosis)",
+        "recommendation": """
+        <h2>Diet</h2>
+        <p>Maintain a balanced diet with anti-inflammatory foods such as olive oil, nuts, and fatty fish.</p>
+        <h2>Supplements</h2>
+        <p>Avoid supplements that may exacerbate clotting without medical advice.</p>
+        <h2>Lifestyle</h2>
+        <p>Address underlying causes like inflammation or infection with medical support.</p>
+        """
+    })
+
+    if float(results['Platelet Count']) < 150000:
+        advice.append({
+        "deficiency": "Low Platelet Count (Thrombocytopenia)",
+        "recommendation": """
+        <h2>Diet</h2>
+        <p>Include foods that promote platelet production like papaya leaves, spinach, pumpkin, and citrus fruits.</p>
+        <h2>Supplements</h2>
+        <p>Consult a doctor for appropriate treatments or supplements like folate or Vitamin K.</p>
+        <h2>Lifestyle</h2>
+        <p>Avoid activities that may lead to injuries or excessive bleeding.</p>
+        """
+    })
+
+
+
+    return advice if advice else ["No specific advice. Keep maintaining a healthy lifestyle!"]
+
+   
+
+
+
 @app.route("/", methods=["GET", "POST"])
 def homepage():
     return render_template("index.html")
@@ -4490,7 +5258,8 @@ def home():
             session.modified = True
             
             advice = give_health_advice(values)
-            return render_template("results.html", values=values, advice=advice)
+            nutrient_advice=analyze_deficiencies(values)
+            return render_template("results.html", values=values, advice=advice,nutrient_advice=nutrient_advice)
 
         elif request.form:
             values = OrderedDict(session.get('values', [])) 
@@ -4505,7 +5274,8 @@ def home():
             
             
             advice = give_health_advice(values)
-            return render_template("results.html", values=values, advice=advice)
+            nutrient_advice=analyze_deficiencies(values)
+            return render_template("results.html", values=values, advice=advice,nutrient_advice=nutrient_advice)
 
 
 if __name__ == "__main__":
