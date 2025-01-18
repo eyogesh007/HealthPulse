@@ -1063,14 +1063,15 @@ function logout() {
     .then(response => response.json())
     .then(data => {
         if (data.message) {
-            localStorage.clear(); // Clear all data from localStorage
-            // Optionally redirect the user to the login page or refresh the page
+            localStorage.clear(); 
+            updateAuthButtons();
             window.location.reload(); 
         } 
     })
     .catch(error => {
         console.error('Error during logout:', error);
     });
+    
 }
 
 
@@ -1090,6 +1091,11 @@ fetch('/login', {
         localStorage.setItem('userEmail', data.email);
         userEmail = data.email;
         sessionToken = data.sessionToken;
+        if (sessionToken) {
+        document.getElementById("blog-title").removeAttribute('disabled')
+        document.getElementById("blog-content").removeAttribute('disabled')
+    }
+        updateAuthButtons();
         document.getElementById('auth-section').style.display = 'none';
         document.getElementById('blog-section').style.display = 'block';
         fetchBlogs();
@@ -1102,6 +1108,7 @@ const authSection = document.getElementById('auth-section');
             overlay.style.display = 'none';
             document.getElementById('login-form').style.display = 'none';
             document.getElementById('register-form').style.display = 'none';
+    
 }
 
 
@@ -1718,7 +1725,7 @@ function renderSingleComment(commentId, comment, blogId) {
         console.error(`Comments container for blog ID ${blogId} not found.`);
         return;
     }
-    comment=comment.comment
+ 
     // Check if the comment data is valid
     if (!comment || !comment.content || !comment.email) {
         console.error(`Invalid comment data for comment ID ${commentId}:`, comment);
