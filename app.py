@@ -355,9 +355,7 @@ def delete_reply(blog_id, comment_id, reply_id):
    
 
     # Find the reply by index (adjust for 0-based indexing)
-    print(replies)
     for i in range(len(replies)):
-        print(replies[i].get('id'),reply_id)
         if replies[i].get('id')==reply_id:
 
             
@@ -5144,7 +5142,6 @@ def blogs():
 
 @app.route("/userblog/<blog_id>", methods=["GET"])
 def blogpage(blog_id):
-    print(f"Blog ID: {blog_id}")  # For debugging purposes
     # Pass the blog_id to the HTML template
     return render_template("userblog.html", blog_id=blog_id)
 
