@@ -7,6 +7,7 @@ import requests
 import hashlib
 import random
 import string
+import pdfplumber
 
 app = Flask(__name__)
 app.secret_key = 'your_unique_secret_key'
@@ -589,12 +590,23 @@ def extract_values(text):
 
             finally:
                 pass
-    if values["Protein A/G Ratio"]==0:
-        values["Protein A/G Ratio"]=round(values["Albumin"]/values["Globulin"],2)
-    if values["LDL Cholesterol / HDL Cholesterol Ratio"]==0:
-        values["LDL Cholesterol / HDL Cholesterol Ratio"]=round(values["LDL Cholesterol"]/values["HDL Cholesterol"],2)
-    if values["Total Cholesterol / HDL Cholesterol Ratio"]==0:
-        values["Total Cholesterol / HDL Cholesterol Ratio"]=round(values["Total Cholesterol"]/values["HDL Cholesterol"],2)
+    if values["Protein A/G Ratio"] == 0:
+        if values["Globulin"] != 0:
+            values["Protein A/G Ratio"] = round(values["Albumin"] / values["Globulin"], 2)
+        else:
+            values["Protein A/G Ratio"] = 0
+
+    if values["LDL Cholesterol / HDL Cholesterol Ratio"] == 0:
+        if values["HDL Cholesterol"] != 0:
+            values["LDL Cholesterol / HDL Cholesterol Ratio"] = round(values["LDL Cholesterol"] / values["HDL Cholesterol"], 2)
+        else:
+            values["LDL Cholesterol / HDL Cholesterol Ratio"] = 0
+
+    if values["Total Cholesterol / HDL Cholesterol Ratio"] == 0:
+        if values["HDL Cholesterol"] != 0:
+            values["Total Cholesterol / HDL Cholesterol Ratio"] = round(values["Total Cholesterol"] / values["HDL Cholesterol"], 2)
+        else:
+            values["Total Cholesterol / HDL Cholesterol Ratio"] = 0
 
     return values
 
@@ -5123,6 +5135,18 @@ def analyze_deficiencies(results):
 @app.route("/", methods=["GET", "POST"])
 def homepage():
     return render_template("index.html")
+
+@app.route("/blogspage", methods=["GET", "POST"])
+def blogs():
+    return render_template("blog.html")
+
+@app.route("/userblog/<blog_id>", methods=["GET"])
+def blogpage(blog_id):
+    print(f"Blog ID: {blog_id}")  # For debugging purposes
+    # Pass the blog_id to the HTML template
+    return render_template("userblog.html", blog_id=blog_id)
+
+
 
 @app.template_filter('extract_h2')
 def extract_h2(value):
