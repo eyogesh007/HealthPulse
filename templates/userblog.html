@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Blog</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: black;
+            color: white;
+            padding: 20px;
+        }
+
+        
+
+        .button {
+            padding: 10px 20px;
+            background-color: #559ddc;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        .button:hover {
+            background-color: #4682b4;
+        }
+
+        .blog-container {
+            margin-top: 20px;
+            background-color: black;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .comments, .replies {
+            margin-left: 10px;
+            margin-top: 5px;
+            list-style: none;
+            padding: 0;
+        }
+
+        .comment-item {
+            margin-bottom: 5px;
+            padding: 8px;
+            background-color: #374a5a;
+            border-radius: 5px;
+        }
+        .reply-item{
+            margin-bottom: 2px;
+            padding: 3px;
+            background-color: #374a5a;
+            border-radius: 5px;            
+        }
+
+        .toggle-button {
+            padding: 5px 10px;
+            background-color: #559ddc;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .toggle-button:hover {
+            background-color: #4682b4;
+        }
+
+        .comment-text, .reply-text {
+        margin: 0;
+        font-size: 16px;
+        color: #ecf0f1;
+    }
+    .reply-email {
+  color: #8ab4f8; /* Light blue for email */
+  font-style: italic;
+  font-size: 10px;
+}
+    </style>
+</head>
+<body>
+
+    <div id="blog-container" class="blog-container"></div>
+
+    <script>
+        fetchBlog()
+        async function fetchBlog() {
+
+            blogContainer=document.getElementById("blog-container")
+            blogContainer.innerHTML = "";
+
+            const urlPath = window.location.pathname;
+            const blogId = urlPath.split("/")[2];
+
+            try {
+                const response = await fetch(`/blogs/${blogId}`);
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || "Failed to fetch the blog.");
+                }
+
+                const blog = await response.json();
+                
+
+                blogContainer.innerHTML = `
+                    <h2 style="text-align:center">${blog.title}</h2>
+                    <p style="white-space: pre-wrap;text-align:justify">${blog.content}</p>
+                    ${blog.comments ? `
+                        <button class="toggle-button" onclick="toggleComments()">
+                        💬
+                    </button>
+                        <ul class="comments" id="comments-list" style="display: none;">
+                            ${Object.entries(blog.comments)
+                                .filter(([_, comment]) => comment) // Filter out null comments
+                                .map(([commentId, comment]) => `
+                                    <li class="comment-item">
+    <p id="comment" class="comment-text">${comment.content} - <span class="reply-email">${comment.email}</span></p>
+                                        ${comment.replies && Array.isArray(comment.replies) && comment.replies.length > 0 ? `
+                                           <br> <button class="toggle-button" onclick="toggleReplies('${commentId}')">View Replies</button>
+                                            <ul class="replies" id="replies-list-${commentId}" style="display: none;">
+                                                ${comment.replies
+                                                    .filter(reply => reply) // Filter out null replies
+                                                    .map(reply => `
+                                                        <li class="reply-item">
+                                                            <p class="reply-text" style="color: white;">
+                            ➤ ${reply.content} - <span class="reply-email">${reply.email}</span>
+                        </p>
+                                                        </li>
+                                                    `).join("")}
+                                            </ul>
+                                        ` : `<br><button class="toggle-button">No replies</button>`}
+                                    </li>
+                                `).join("")}
+                        </ul>
+                    ` : `<br><button class="toggle-button">No Comments</button>`}
+                `;
+            } catch (error) {
+console.log(error)            }
+        }
+
+        function toggleComments() {
+            const commentsList = document.getElementById("comments-list");
+            commentsList.style.display = commentsList.style.display === "none" ? "block" : "none";
+        }
+
+        function toggleReplies(commentId) {
+            const repliesList = document.getElementById(`replies-list-${commentId}`);
+            repliesList.style.display = repliesList.style.display === "none" ? "block" : "none";
+        }
+    </script>
+</body>
+</html>

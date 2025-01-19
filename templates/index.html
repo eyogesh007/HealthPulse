@@ -371,6 +371,7 @@
             <a href="#features">Features</a>
             <a href="#how-to-use">User Guide</a>
             <a href="#upload">Upload</a>
+            <a href="#community-section">Blogs</a>
         </nav>
     </header>
 
@@ -448,7 +449,7 @@
     <section id="upload" class="upload">
         <h2>Upload Your Health Report (PDF)</h2>
         <div class="container">
-            <form id="uploadForm" action="/uploads" method="POST" enctype="multipart/form-data">
+            <form id="uploadForm" action="http://127.0.0.1:5000//uploads" method="POST" enctype="multipart/form-data">
                 <input type="file" id="pdf_file" name="pdf_file" accept="application/pdf" required>
                 <button type="submit">Upload</button>
             </form><br>
@@ -462,6 +463,23 @@
             
                     </div>
     </section>
+
+    <section id="community-section" style="text-align: center; padding: 50px; background-color: black; border-radius: 10px; margin: 20px auto; max-width: 800px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+        <h2 style="color: white; font-size: 1.5em; margin-bottom: 20px;">Want to Share Your Life Experiences?</h2>
+        <p style="color: white; font-size: 1.1em; margin-bottom: 30px;">
+            Whether it's sharing your personal journey, offering advice, or seeking support from like-minded individuals, 
+            our community blog is here for you. Join the conversation and inspire others with your story.
+        </p>
+        <a href="/blogspage" style="text-decoration: none;">
+            <button style="background-color: #007bff; color: white; padding: 10px 20px; font-size: 13px; border: none; border-radius: 5px; cursor: pointer; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+                Visit the Blog Page
+            </button>
+        </a>
+        <p style="color: white; font-size: 0.9em; margin-top: 20px;">
+            Click the button to explore the stories, share your experiences, and connect with the community.
+        </p>
+    </section>
+    
 
     <footer class="footer">
         <p>&copy; 2025 HealthPulse. All rights reserved.  </footer>
