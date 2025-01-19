@@ -401,6 +401,10 @@
                 <h3>Real-time Health Analysis</h3>
                 <p>Receive instant, personalized insights and guidance tailored to your unique health profile for 54 crucial health metrics.</p>
             </div>
+            <div class="feature-card">
+                <h3>Community Blogs</h3>
+                <p>Share your journey, give advice, take advice, and join the discussion!</p>
+            </div>
         </div>
     </section>
 
@@ -425,16 +429,17 @@
             </div>
              <!-- Arrow -->
              <div class="arrow"></div>
-            <div class="feature-card">
-                <h3>Step 4: Analyze Your Report</h3>
-                <p>If you edited any values, click the "Analyze" button to update the heath advice results. Otherwise, the health advice will display automatically.</p>
-            </div>
-             <!-- Arrow -->
-             <div class="arrow"></div>
-            <div class="feature-card">
-                <h3>Step 5: View Your Health Advice</h3>
+             <div class="feature-card">
+                <h3>Step 4: View Your Health Advice</h3>
                 <p>View your personalized health insights and actionable recommendations based on your test results.</p>
             </div>
+            <div class="arrow"></div>
+            <div class="feature-card">
+                <h3>Step 5: Explore Blogs</h3>
+                <p>Share your health journey or read tips and advice from others in our community blog section. Engage with comments and replies to connect and learn!</p>
+            </div>
+            
+            
         </div>
     </section>
     
@@ -443,7 +448,7 @@
     <section id="upload" class="upload">
         <h2>Upload Your Health Report (PDF)</h2>
         <div class="container">
-            <form id="uploadForm" action="https://medcompanion.vercel.app/uploads" method="POST" enctype="multipart/form-data">
+            <form id="uploadForm" action="/uploads" method="POST" enctype="multipart/form-data">
                 <input type="file" id="pdf_file" name="pdf_file" accept="application/pdf" required>
                 <button type="submit">Upload</button>
             </form><br>
@@ -468,27 +473,38 @@
     </script>
     <script>
         document.getElementById("uploadForm").addEventListener("submit", function (event) {
-            const fileInput = document.getElementById("pdf_file");
-            const errorMessage = document.getElementById("error-message");
-            const maxSize = 3 * 1024 * 1024;
-    
-            if (fileInput.files.length === 0) {
-                errorMessage.textContent = "Please select a file to upload.";
-                errorMessage.style.display = "block";
-                event.preventDefault(); 
-                return;
-            }
-    
-            const file = fileInput.files[0];
-            if (file.size > maxSize) {
-                errorMessage.textContent = "The file size exceeds the 3MB limit. Please upload a smaller file.";
-                errorMessage.style.display = "block";
-                event.preventDefault(); 
-                return;
-            }
-    
-            errorMessage.style.display = "none";
-        });
+    const fileInput = document.getElementById("pdf_file");
+    const errorMessage = document.getElementById("error-message");
+    const maxSize = 3 * 1024 * 1024;
+
+    if (fileInput.files.length === 0) {
+        errorMessage.textContent = "Please select a file to upload.";
+        errorMessage.style.display = "block";
+        event.preventDefault(); 
+        return;
+    }
+
+    const file = fileInput.files[0];
+
+    // Check if the file type is PDF
+    if (file.type !== "application/pdf") {
+        errorMessage.textContent = "Invalid file type. Please upload a PDF file.";
+        errorMessage.style.display = "block";
+        event.preventDefault(); 
+        return;
+    }
+
+    // Check if the file size exceeds the limit
+    if (file.size > maxSize) {
+        errorMessage.textContent = "The file size exceeds the 3MB limit. Please upload a smaller file.";
+        errorMessage.style.display = "block";
+        event.preventDefault(); 
+        return;
+    }
+
+    errorMessage.style.display = "none";
+});
+
     </script>
 </body>
 </html>
