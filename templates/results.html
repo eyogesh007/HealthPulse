@@ -209,7 +209,7 @@ button:hover {
 }
 
 .sticky-buttons button {
-  padding: 10px 20px;
+  padding: 3px 3px;
   background-color: #007bff;
   color: white;
   border: none;
@@ -493,9 +493,8 @@ button:hover {
 
 #login-btn,#logout-btn {
             display: block;
-            margin: 5px 3px;
-            padding: 10px 20px;
-            font-size: 16px;
+            padding: 3px 3px;
+            font-size: 14px;
             background-color: #007bff;
             color: white;
             border: none;
@@ -808,14 +807,20 @@ document.addEventListener('DOMContentLoaded', () => {
         "Transferrin Saturation": "The percentage of transferrin (an iron-binding protein) that is saturated with iron."
     }
     %}
+    <a href="/" style="position: fixed;z-index: 1000;background-color: black; top: 10px; left: 7px; text-decoration: none; font-size: 18px; color: white; padding: 4px 3px; border-radius: 5px; cursor: pointer;">
+        🔙
+    </a>
+    
     <div class="sticky-buttons">
-        <button onclick="scrollToSection('report')">📄</button>
-        <button onclick="scrollToSection('advice')">💡</button>
         <button id="login-btn" onclick="toggleAuthSection()">🔒</button>
         <button id="logout-btn" onclick="logout()">🔓</button>
+        <button onclick="scrollToSection('report')">📄</button>
+        <button onclick="scrollToSection('advice')">💡</button>
+        <button onclick="scrollToSection('movetoblogs')">📚</button>
       </div>
       <center>
     <div class="container">
+        <br>
         <h2 id="report">Your Health Report</h2>
         <form action="/uploads" method="POST">
             <table>
@@ -868,7 +873,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <span style="font-size: 20px; color: #f1c40f;">💡</span>
             </div>
             <div class="advice-details" style="display: none; padding: 15px; font-size: 14px; line-height: 1.6; color: white; width: 100%; word-wrap: break-word; overflow-wrap: break-word; box-sizing: border-box;">
-                <p class="preserve-whitespace" style="white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word;">
+                <p class="preserve-whitespace" style="word-wrap: break-word; overflow-wrap: break-word;">
                     {{ adv | safe }}
                 </p>
             </div>
@@ -891,7 +896,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <span style="font-size: 20px; color: #f1c40f;">💡</span>
         </div>
         <div class="advice-details" style="display: none; padding: 15px; font-size: 14px; line-height: 1.6; color: white; width: 100%; word-wrap: break-word; overflow-wrap: break-word; box-sizing: border-box;">
-            <p class="preserve-whitespace" style="white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word;">
+            <p class="preserve-whitespace" style=" word-wrap: break-word; overflow-wrap: break-word;">
                 {{ item.recommendation | safe }}
             </p>
         </div>
@@ -990,7 +995,7 @@ document.addEventListener('DOMContentLoaded', () => {
     </div>
     
 </div>
-<h2>Blogs <span style="font-size: 18px;">📚</span></h2>
+<h2 id="movetoblogs">Blogs <span style="font-size: 18px;">📚</span></h2>
 
 
 <input 
@@ -1371,7 +1376,7 @@ return Object.entries(comments).map(([commentId, comment]) => {
     <div class="button-group">
         ${comment.email === userEmail ? `
             <button class="button-small" onclick="editComment('${blogId}', '${commentId}','${comment.content}')">
-    🖋️
+    ✏️
 </button>
 
             <button class="button-small" onclick="deleteComment('${blogId}', '${commentId}')">
@@ -1513,7 +1518,7 @@ function renderRepliess(replies, commentId, blogId) {
                         </p>
                         <div class="button-group" style="margin-top: 5px;">
                             ${reply.email === userEmail ? `
-                                <button class="button-small" onclick="editReply('${blogId}', '${commentId}', '${reply.id}', '${reply.content}')">🖋️</button>
+                                <button class="button-small" onclick="editReply('${blogId}', '${commentId}', '${reply.id}', '${reply.content}')">✏️</button>
                                 <button class="button-small" onclick="deleteReply('${blogId}', '${commentId}', '${reply.id}')">🗑</button>
                             ` : ''}
                         </div>
@@ -1629,7 +1634,7 @@ return Object.entries(replies).map(([replyId, reply]) => {
     <div class="button-group">
         ${reply.email === userEmail ? `
             <button class="button-small" onclick="editReply('${blogId}', '${commentId}', '${reply.id}','${reply.content}')">
-                🖋️
+                ✏️
             </button>
             <button class="button-small" onclick="deleteReply('${blogId}', '${commentId}', '${reply.id}')">
                 🗑
@@ -1775,7 +1780,7 @@ function renderSingleComment(commentId, comment, blogId) {
             <p id="comment-${blogId}-${commentId}" class="comment-text">${comment.content} - <span class="reply-email">${comment.email}</span></p>
             <div class="button-group">
                 ${comment.email === userEmail ? `
-                    <button class="button-small" onclick="editComment('${blogId}', '${commentId}', '${comment.content}')">🖋️</button>
+                    <button class="button-small" onclick="editComment('${blogId}', '${commentId}', '${comment.content}')">✏️</button>
                     <button class="button-small" onclick="deleteComment('${blogId}', '${commentId}')">🗑</button>
                 ` : ''}
                 <button class="button-small" onclick="toggleReplies('${blogId}', '${commentId}')">
