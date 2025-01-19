@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🩺 MedCompanion</title>
+    <title>MedCompanion</title>
+    <link rel="icon" href="{{ url_for('static', filename='favicon.png') }}" type="image/png">
+
     <style>
         body {
             margin: 0;
@@ -361,7 +363,7 @@
 </head>
 <body>
     <header class="header">
-        <div class="logo">🩺 MedCompanion</div>
+        <div class="logo">🤝 MedCompanion</div>
         <button class="menu-btn" onclick="toggleMenu()">
             <span></span>
             <span></span>
@@ -449,7 +451,7 @@
     <section id="upload" class="upload">
         <h2>Upload Your Health Report (PDF)</h2>
         <div class="container">
-            <form id="uploadForm" action="http://127.0.0.1:5000//uploads" method="POST" enctype="multipart/form-data">
+            <form id="uploadForm" action="/uploads" method="POST" enctype="multipart/form-data">
                 <input type="file" id="pdf_file" name="pdf_file" accept="application/pdf" required>
                 <button type="submit">Upload</button>
             </form><br>
