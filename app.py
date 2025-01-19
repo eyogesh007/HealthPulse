@@ -352,33 +352,35 @@ def delete_reply(blog_id, comment_id, reply_id):
     # Get the replies list from the comment
     replies = comment.get('replies', [])
 
-    # Validate the reply ID
-    if reply_id < 1 or reply_id > len(replies):
-        return jsonify({"error": "Reply not found."}), 404
+   
 
     # Find the reply by index (adjust for 0-based indexing)
-    reply_index = reply_id - 1
-    reply = replies[reply_index]
+    print(replies)
+    for i in range(len(replies)):
+        print(replies[i].get('id'),reply_id)
+        if replies[i].get('id')==reply_id:
 
-    # Check if the reply belongs to the authenticated user
-    if reply['email'] != email:
-        return jsonify({"error": "Unauthorized access. You can only delete your own reply."}), 403
+            
+            # Check if the reply belongs to the authenticated user
+            if replies[i].get('email') != email:
+                return jsonify({"error": "Unauthorized access. You can only delete your own reply."}), 403
 
-    # Delete the reply from the replies list
-    del replies[reply_index]
+            # Delete the reply from the replies list
+            del replies[i]
 
-    # Update the replies in the comment
-    comment['replies'] = replies
+            # Update the replies in the comment
+            comment['replies'] = replies
 
-    # Update the comment in the database
-    url = f"{database_url}/blogs/{blog_id}/comments/{comment_id}.json"
-    response = requests.put(url, json=comment)
+            # Update the comment in the database
+            url = f"{database_url}/blogs/{blog_id}/comments/{comment_id}.json"
+            response = requests.put(url, json=comment)
 
-    # Return the appropriate response based on the database operation result
-    if response.status_code == 200:
-        return jsonify({"message": "Reply deleted successfully."}), 200
-    else:
-        return jsonify({"error": "Failed to delete reply."}), 500
+            # Return the appropriate response based on the database operation result
+            if response.status_code == 200:
+                return jsonify({"message": "Reply deleted successfully."}), 200
+            else:
+                return jsonify({"error": "Failed to delete reply."}), 500
+    return jsonify({"error": "Reply not found."}), 404
 
 @app.route('/blogs/<blog_id>/comments/<comment_id>/replies/<int:reply_id>', methods=['PUT'])
 def edit_reply(blog_id, comment_id, reply_id):
