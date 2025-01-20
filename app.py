@@ -199,7 +199,7 @@ def post_blog():
     if not email:
         return jsonify({"error": "Unauthorized"}), 403
 
-    blog = {"title": data['title'], "content": data['content'], "email": email}
+    blog = {"title": data['title'], "content": data['content'], "email": email,"createdOn":data['createdOn']}
     response = requests.post(f"{database_url}/blogs.json", json=blog)
     if response.ok:
         return jsonify({"message": "Blog posted successfully"}), 201
