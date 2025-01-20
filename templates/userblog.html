@@ -11,7 +11,8 @@
             font-family: Arial, sans-serif;
             background-color: black;
             color: white;
-            padding: 20px;
+            padding: 0;
+            margin: 0;
         }
 
         
@@ -81,10 +82,28 @@
   font-style: italic;
   font-size: 10px;
 }
+.header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: #74b9ff;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo {
+            font-size: 1.1em;
+            font-weight: bold;
+            color: black}
     </style>
 </head>
 <body>
-
+    <header class="header">
+        <div class="logo">🤝 MedCompanion</div>
+    </header>
     <div id="blog-container" class="blog-container"></div>
 
     <script>
@@ -110,6 +129,8 @@
                 blogContainer.innerHTML = `
                     <h2 style="text-align:center">${blog.title}</h2>
                     <p style="white-space: pre-wrap;text-align:justify">${blog.content}</p>
+                    <span class="reply-email">Created by ${blog.email}</span>
+                    <br><br>
                     ${blog.comments ? `
                         <button class="toggle-button" onclick="toggleComments()">
                         💬

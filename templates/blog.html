@@ -211,7 +211,7 @@ button:hover {
 
 .sticky-buttons button {
   padding: 3px 3px;
-  background-color: #007bff;
+  background-color: #559DDC;
   color: white;
   border: none;
   border-radius: 5px;
@@ -330,7 +330,7 @@ input[type="number"]:focus {
     padding: 6px 6px; /* Smaller padding for compact size */
     font-size: 12px; /* Reduce font size for a smaller button */
     border: none;
-    background-color: #007bff; /* Primary button color */
+    background-color: #559DDC; /* Primary button color */
     color: white;
     cursor: pointer;
     border-radius: 4px; /* Rounded corners */
@@ -378,7 +378,7 @@ input[type="number"]:focus {
     padding: 6px 12px; /* Adjust padding for button size */
     font-size: 14px; /* Font size for readability */
     border: none;
-    background-color: #007bff; /* Button background color */
+    background-color: #559DDC; /* Button background color */
     color: white; /* Button text color */
     cursor: pointer;
     border-radius: 4px; /* Rounded corners for a modern look */
@@ -417,7 +417,7 @@ input[type="number"]:focus {
     padding: 6px 8px;
     font-size: 13px;
     border: none;
-    background-color: #007bff;
+    background-color: #559DDC;
     color: white;
     border-radius: 4px;
     cursor: pointer;
@@ -496,7 +496,7 @@ button:hover {
             display: block;
             padding: 3px 3px;
             font-size: 14px;
-            background-color: #007bff;
+            background-color: #559DDC;
             color: white;
             border: none;
             border-radius: 5px;
@@ -553,7 +553,7 @@ button:hover {
         .auth-section .toggle-link {
             text-align: center;
             margin-top: 10px;
-            color: #007bff;
+            color: #559DDC;
             cursor: pointer;
             text-decoration: underline;
         }
@@ -582,7 +582,7 @@ button:hover {
 textarea {
     overflow-y: auto;
     scrollbar-width: thin; /* For Firefox */
-    scrollbar-color: #007bff #1f2d3a; /* For Firefox */
+    scrollbar-color: #559DDC #1f2d3a; /* For Firefox */
 
     /* Optional - to make the textarea visually appealing */
     background-color: black;
@@ -599,7 +599,7 @@ textarea::-webkit-scrollbar {
 }
 
 textarea::-webkit-scrollbar-thumb {
-    background-color: #007bff; /* Thumb color */
+    background-color: #559DDC; /* Thumb color */
     border-radius: 4px; /* Rounded edges */
     border: 2px solid #1f2d3a; /* Adds spacing around the thumb */
 }
@@ -613,7 +613,23 @@ textarea::-webkit-scrollbar-track {
 textarea::-webkit-scrollbar-thumb:hover {
     background-color: #0056b3; /* Darker shade when hovered */
 }
+.header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: #74b9ff;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
 
+        .logo {
+            font-size: 1.1em;
+            font-weight: bold;
+            color: black;
+        }
     </style>
     <script>
         function toggleInfo(test) {
@@ -637,10 +653,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });</script>
 <body>
+    <header class="header">
+        <div class="logo">🤝 MedCompanion</div>
+        
+        
+    </header>
 
     <div class="sticky-buttons">
         <button id="login-btn" onclick="toggleAuthSection()">🔒</button>
         <button id="logout-btn" onclick="logout()">🔓</button>
+        <button onclick="scrollToSection('blog-section')">📮</button>
       </div>
 
 <br>
@@ -723,11 +745,11 @@ document.addEventListener('DOMContentLoaded', () => {
  
 <div>
     <h2 class="head" style="text-align: center; color: white; font-family: 'Arial', sans-serif; margin-bottom: 20px;">
-        🔓 and Share your stories or health advice to help our community grow stronger</h2>
+        🔓 and Share your stories or health advices to help our community grow stronger</h2>
     <div style="display: flex; flex-direction: column; width: 90%; padding: 20px;  border-radius: 8px; box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);  ">
         <input disabled type="text" id="blog-title" placeholder="Blog Title" required style="padding: 10px;background-color: #1c2833; font-size: 16px; border: 1px solid #253041;color: white; border-radius: 4px; margin-bottom: 20px; box-sizing: border-box;">
         <textarea disabled id="blog-content" placeholder="Blog Content" required style="width: 100%;padding: 10px; font-size: 16px; border: 1px solid #253041;color: white; border-radius: 4px; height: 200px; margin-bottom: 20px; box-sizing: border-box;background-color: #1c2833;"></textarea>
-        <button onclick="checkAndPostBlog()" style="padding: 10px; font-size: 16px; background-color: #007BFF; color: white; border: none; border-radius: 4px; cursor: pointer;">Post Blog</button>
+        <button onclick="checkAndPostBlog()" style="padding: 10px; font-size: 16px; background-color: #74b9ff; color: white; border: none; border-radius: 4px; cursor: pointer;">Post Blog</button>
     </div>
     
 </div>
@@ -753,7 +775,7 @@ oninput="search()"
       <textarea id="edit-reply-content" rows="4" style="background-color: black;color: white;width: 90%; padding: 10px; border: 0.2px solid #ccc; border-radius: 4px;"></textarea>
       <div style="text-align: right; margin-top: 10px;">
         <button onclick="closeEditReplyModal()" style="margin-right: 10px; padding: 5px 10px; border: none; background: #DC3545; border-radius: 4px;">Cancel</button>
-        <button onclick="submitEditReply()" style="padding: 5px 10px; border: none; background: #007bff; color: white; border-radius: 4px;">Save</button>
+        <button onclick="submitEditReply()" style="padding: 5px 10px; border: none; background: #559DDC; color: white; border-radius: 4px;">Save</button>
       </div>
     </div>
   </div>
@@ -764,7 +786,7 @@ oninput="search()"
       <textarea id="edit-comment-content" rows="4" style="background-color: black;color: white;width: 90%;  padding: 10px; border: 0.2px solid #ccc; border-radius: 4px;"></textarea>
       <div style="text-align: right; margin-top: 10px;">
         <button onclick="closeEditCommentModal()" style="margin-right: 10px; padding: 5px 10px; border: none; background: #DC3545; border-radius: 4px;">Cancel</button>
-        <button onclick="submitEditComment()" style="padding: 5px 10px; border: none; background: #007bff; color: white; border-radius: 4px;">Save</button>
+        <button onclick="submitEditComment()" style="padding: 5px 10px; border: none; background: #559DDC; color: white; border-radius: 4px;">Save</button>
       </div>
     </div>
   </div>
@@ -776,7 +798,7 @@ oninput="search()"
         <textarea id="edit-blog-content" rows="4" placeholder="Enter new content" style="background-color: black; color: white; width: 90%;  padding: 10px; border: 0.2px solid #ccc; border-radius: 4px;"></textarea>
         <div style="text-align: right; margin-top: 10px;">
             <button onclick="closeEditBlogModal()" style="margin-right: 10px; padding: 5px 10px; border: none; background: #DC3545; color: white; border-radius: 4px;">Cancel</button>
-            <button onclick="submitEditBlog()" style="padding: 5px 10px; border: none; background: #007bff; color: white; border-radius: 4px;">Save</button>
+            <button onclick="submitEditBlog()" style="padding: 5px 10px; border: none; background: #559DDC; color: white; border-radius: 4px;">Save</button>
         </div>
     </div>
 </div>
@@ -1135,7 +1157,6 @@ function shareBlog(blogId) {
 
 function renderComments(comments, blogId) {
 if (!comments || typeof comments !== 'object') {
-    console.error('Invalid comments data:', comments);
     comments = {}; 
 }
 return Object.entries(comments).map(([commentId, comment]) => {
@@ -1179,7 +1200,7 @@ return Object.entries(comments).map(([commentId, comment]) => {
 </div>
 
         </li>
-        <div style="background-color:black;height:7px"></div>
+       
     `;
 }).join('');
 }
@@ -1393,7 +1414,6 @@ function closeEditCommentModal() {
 
 function renderReplies(replies, blogId, commentId) {
 if (!replies || typeof replies !== 'object') {
-    console.error('Invalid replies data:', replies);
     replies = {}; 
 }
 
