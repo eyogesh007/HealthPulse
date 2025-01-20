@@ -98,12 +98,47 @@
             font-size: 1.1em;
             font-weight: bold;
             color: black}
+            .sticky-buttons {
+  position: fixed;
+  top: 30%;
+  right: 7px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  z-index: 1000;
+}
+
+.sticky-buttons button {
+  padding: 3px 3px;
+  background-color: #559DDC;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-family: 'Arial', sans-serif;
+  font-size: 16px;
+  transition: all 0.3s ease;
+    margin-bottom: 5px;
+}
+
+.sticky-buttons button:hover {
+  background-color: #0056b3;
+  transform: scale(1.1);
+}
     </style>
 </head>
 <body>
     <header class="header">
         <div class="logo">🤝 MedCompanion</div>
     </header>
+    <p style="text-align: center; font-style: italic; color: yellow; font-size: 14px;">
+        ⚠ This is a view-only page.
+    </p>
+    <div class="sticky-buttons">
+        <button><a href="/" style="  text-decoration: none; font-size: 18px; color: white; padding: px 2px; border-radius: 5px; cursor: pointer;">
+            🏠
+        </a></button>
+      </div>
     <div id="blog-container" class="blog-container"></div>
 
     <script>
@@ -129,7 +164,7 @@
                 blogContainer.innerHTML = `
                     <h2 style="text-align:center">${blog.title}</h2>
                     <p style="white-space: pre-wrap;text-align:justify">${blog.content}</p>
-                    <span class="reply-email">Created by ${blog.email}</span>
+                    <span class="reply-email">Created by ${blog.email} - Created on ${blog.createdOn}</span>
                     <br><br>
                     ${blog.comments ? `
                         <button class="toggle-button" onclick="toggleComments()">

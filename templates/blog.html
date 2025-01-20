@@ -663,6 +663,9 @@ document.addEventListener('DOMContentLoaded', () => {
         <button id="login-btn" onclick="toggleAuthSection()">🔒</button>
         <button id="logout-btn" onclick="logout()">🔓</button>
         <button onclick="scrollToSection('blog-section')">📮</button>
+        <button><a href="/" style="  text-decoration: none; font-size: 18px; color: white; padding: 2px 2px; border-radius: 5px; cursor: pointer;">
+            🏠
+        </a></button>
       </div>
 
 <br>
@@ -955,10 +958,29 @@ try {
 function postBlog() {
 const title = document.getElementById('blog-title').value;
 const content = document.getElementById('blog-content').value;
+if (title === "" || content === "") {
+    alert("Title or content cannot be empty.");
+    return;
+}
+const getISTDateTime = () => {
+    const now = new Date();
+    const options = { timeZone: 'Asia/Kolkata', hour12: false };
+    return new Intl.DateTimeFormat('en-GB', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        timeZone: 'Asia/Kolkata'
+    }).format(now).replace(',', '').replace(/\//g, '-');
+};
+
+const createdOn = getISTDateTime(); 
 fetch('/blogs', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ title, content, sessionToken, email: userEmail }),
+    body: JSON.stringify({ title, content, sessionToken, email: userEmail,createdOn }),
 })
 .then(response => response.json())
 .then(data => {
@@ -993,7 +1015,7 @@ function fetchBlogs() {
   ${truncatedContent}
   ${isContentTruncated ? `<span href="#" id="read-more-${id}" onclick="showFullContent(event,'${id}','${encodeURIComponent(blog.content)}')" style="color: #71B7FB; text-decoration: underline; cursor: pointer;">...Read More</span>` : ''}
 </p><br>
-<span class="reply-email">Created by ${blog.email}</span>
+<span class="reply-email">Created by ${blog.email} - Created on ${blog.createdOn}</span>
 <br>
                     ${blog.email === userEmail ? `
                         <div class="button-groupblog">
@@ -1072,7 +1094,7 @@ function filterBlogs() {
             </p>
             ${isContentTruncated ? `
                 <a href="#" id="read-more-${id}" onclick="showFullContent(event, '${id}', '${encodeURIComponent(blog.content)}')">Read More</a>
-            ` : ''}<br><span class="reply-email">Created by ${blog.email}</span><br>
+            ` : ''}<br><span class="reply-email">Created by ${blog.email} - Created on ${blog.createdOn}</span><br>
             ${blog.email === userEmail ? `
                 <div class="button-groupblog">
                     <button class="button-action" onclick="deleteBlog('${id}')">Delete Blog</button>
